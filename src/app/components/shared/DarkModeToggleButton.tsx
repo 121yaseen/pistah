@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { FiSun, FiMoon } from "react-icons/fi";
 
 const DarkModeToggle: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -23,12 +24,25 @@ const DarkModeToggle: React.FC = () => {
   };
 
   return (
-    <button
-      onClick={toggleDarkMode}
-      className="p-2 bg-gray-300 dark:bg-gray-700 text-black dark:text-white rounded"
-    >
-      {isDarkMode ? "Light Mode" : "Dark Mode"}
-    </button>
+    <div className="flex items-center gap-2">
+      {/* Sun Icon */}
+      <FiSun
+        className={`transition-transform text-2xl ${isDarkMode ? "text-gray-400" : "text-yellow-500"
+          }`}/>
+
+      {/* Slider */}
+      <button
+        onClick={toggleDarkMode}
+        className={`relative w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center transition-colors`}>
+        <span
+          className={`absolute w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${isDarkMode ? "translate-x-6" : "translate-x-1"}`} />
+      </button>
+
+      {/* Moon Icon */}
+      <FiMoon
+        className={`transition-transform text-2xl ${isDarkMode ? "text-purple-500" : "text-gray-400"
+          }`} />
+    </div>
   );
 };
 
