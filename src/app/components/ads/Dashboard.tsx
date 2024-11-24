@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import useSWR from "swr";
 import AdList from "./AdList";
-import DarkModeToggle from "../shared/DarkModeToggleButton"; // Import the toggle button
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { AdWithBoard } from "@/types/ad";
@@ -24,11 +23,7 @@ const Dashboard: React.FC = () => {
   );
 
   return (
-    <div className="p-6 bg-white text-gray-700 dark:bg-gray-900 dark:text-gray-200 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Ads Dashboard</h1>
-        <DarkModeToggle />
-      </div>
+    <div className="p-6 bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-200 min-h-screen">
       <div className="flex justify-between items-center mb-4">
         <label htmlFor="date-picker" className="text-lg font-medium">
           Select Date:
