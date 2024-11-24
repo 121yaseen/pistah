@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import AdBoardForm from "./publisherForm";
 import { AdBoard } from "./adBoard";
-import DarkModeToggle from "../components/shared/DarkModeToggleButton";
 
 const PublisherProfilePage: React.FC = () => {
     const [adBoards, setAdBoards] = useState<AdBoard[]>([]);
