@@ -1,15 +1,13 @@
-import path from "path";
-import { readJSON } from "../utils/fileUtils";
-import { Ad, AdBoard } from "../types/ad";
+import { PrismaClient } from "@prisma/client";
 
-const databasePath = path.join(process.cwd(), "src/database/database.json");
+const prisma = new PrismaClient();
 
-export const getAds = (): Ad[] => {
-  const database = readJSON(databasePath);
-  return database.ads;
+// Fetch all ads
+export const getAds = async () => {
+  return await prisma.ad.findMany();
 };
 
-export const getAdBoards = (): AdBoard[] => {
-  const database = readJSON(databasePath);
-  return database.adBoards;
+// Fetch all ad boards
+export const getAdBoards = async () => {
+  return await prisma.adBoard.findMany();
 };

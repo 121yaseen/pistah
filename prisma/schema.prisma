@@ -1,0 +1,33 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Ad {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  title              String
+  downloadLink       String
+  adBoardId          String   @db.ObjectId
+  adDisplayStartDate DateTime
+  adDisplayEndDate   DateTime
+  adDuration         String
+  adBoard            AdBoard  @relation(fields: [adBoardId], references: [id])
+}
+
+model AdBoard {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  boardName           String
+  location            String
+  dimensions          String
+  boardType           String
+  isAvailable         Boolean
+  dailyRate           Float
+  operationalHours    String
+  ownerContact        String
+  lastMaintenanceDate DateTime
+  ads                 Ad[]
+}

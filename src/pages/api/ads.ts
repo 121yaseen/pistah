@@ -17,7 +17,7 @@ export default async function handler(
   }
 
   try {
-    const ads = fetchFilteredAds(date);
+    const ads = await fetchFilteredAds(date);
     res.status(200).json(ads);
   } catch (error) {
     console.log(error);
