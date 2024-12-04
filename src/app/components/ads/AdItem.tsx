@@ -1,27 +1,30 @@
-import { AdWithBoard } from "@/types/ad";
 import React from "react";
-import LinkButton from "../shared/LinkButton";
+import { AdWithBoard } from "@/types/ad";
 
 interface AdItemProps {
-  ad: AdWithBoard; // Use the extended type
+  ad: AdWithBoard;
 }
 
 const AdItem: React.FC<AdItemProps> = ({ ad }) => (
-  <tr className="hover:bg-gray-100 dark:hover:bg-gray-700">
-    <td className="py-2 px-4 border-b text-gray-700 dark:text-gray-300">
+  <tr>
+    <td className="py-2 px-4 border-b text-gray-800 dark:text-gray-200">
       {ad.title}
     </td>
-    <td className="py-2 px-4 border-b text-gray-700 dark:text-gray-300">
-      {ad.adBoard?.boardName || "N/A"}
+    <td className="py-2 px-4 border-b text-gray-800 dark:text-gray-200">
+      {ad.adBoard.location}
     </td>
-    <td className="py-2 px-4 border-b text-gray-700 dark:text-gray-300">
-      {ad.adBoard?.location || "N/A"}
-    </td>
-    <td className="py-2 px-4 border-b text-gray-700 dark:text-gray-300">
+    <td className="py-2 px-4 border-b text-gray-800 dark:text-gray-200">
       {ad.adDuration}
     </td>
-    <td className="py-2 px-4 border-b">
-      <LinkButton link={ad.downloadLink} />
+    <td className="py-2 px-4 border-b text-gray-800 dark:text-gray-200">
+      <a
+        href={ad.downloadLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-500 hover:underline"
+      >
+        Download
+      </a>
     </td>
   </tr>
 );

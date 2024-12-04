@@ -11,7 +11,7 @@ export interface Ad {
 }
 
 export interface AdWithBoard extends Ad {
-  adBoard?: AdBoard | null;
+  adBoard: AdBoard;
 }
 
 export interface AdBoard {
