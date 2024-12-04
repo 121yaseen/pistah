@@ -10,36 +10,19 @@ export interface Ad {
   adDuration: string;
 }
 
-export type AdBoard =
-  | {
-      boardType: AdBoardType.STATIC;
-      id: number;
-      boardName: string;
-      location: string;
-      dimensions: string;
-      isAvailable: boolean;
-      dailyRate: number;
-      operationalHours: string;
-      ownerContact: string;
-      lastMaintenanceDate: Date;
-      additionalNotes?: string;
-    }
-  | {
-      boardType: AdBoardType.DIGITAL | AdBoardType.MOVING_DIGITAL;
-      id: number;
-      boardName: string;
-      location: string;
-      dimensions: string;
-      isAvailable: boolean;
-      dailyRate: number;
-      operationalHours: string;
-      ownerContact: string;
-      lastMaintenanceDate: Date;
-      digitalFeatures: string[];
-      mobilityDetails?: string; // Only for moving digital boards
-      additionalNotes?: string;
-    };
-
 export interface AdWithBoard extends Ad {
   adBoard?: AdBoard | null;
+}
+
+export interface AdBoard {
+  id?: number;
+  pic: File | null;
+  boardType?: AdBoardType;
+  boardName: string;
+  location: string;
+  dailyRate: number;
+  ownerContact: string;
+  count: number;
+  size: string;
+  more: string;
 }

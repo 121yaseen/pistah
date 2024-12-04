@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import AdBoardForm from "./publisherForm";
-import { AdBoard, getDefaultAdBoard } from "./adBoard";
+import { AdBoard } from "@/types/ad";
+import { AdBoardType } from "../enums/AdBoardType";
 
 const PublisherProfilePage: React.FC = () => {
   const [adBoards, setAdBoards] = useState<AdBoard[]>([]);
@@ -11,10 +12,20 @@ const PublisherProfilePage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
-  // Open modal for adding new ad space
   const openAddModal = () => {
     setIsEditing(false);
-    setCurrentAdBoard(getDefaultAdBoard());
+    setCurrentAdBoard({
+      id: undefined,
+      pic: null,
+      boardType: AdBoardType.STATIC,
+      boardName: "",
+      location: "",
+      dailyRate: 1500, // Default daily rate in rupees
+      ownerContact: "",
+      count: 1,
+      size: "",
+      more: "",
+    });
     setIsModalOpen(true);
   };
 
@@ -173,6 +184,9 @@ const PublisherProfilePage: React.FC = () => {
                 >
                   <div>
                     <p>
+                      <strong>Title:</strong> {adBoard.boardName}
+                    </p>
+                    <p>
                       <strong>Type:</strong> {adBoard.boardType}
                     </p>
                     <p>
@@ -180,9 +194,6 @@ const PublisherProfilePage: React.FC = () => {
                     </p>
                     <p>
                       <strong>Location:</strong> {adBoard.location}
-                    </p>
-                    <p>
-                      <strong>Dimensions:</strong> {adBoard.dimensions}
                     </p>
                     <p>
                       <strong>Daily Rate:</strong> {adBoard.dailyRate}
