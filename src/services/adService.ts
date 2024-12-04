@@ -1,4 +1,5 @@
-import { getAds, getAdBoards } from "../repositories/adRepository";
+import { getAdBoards } from "@/repositories/adBoardRepository";
+import { getAds } from "@/repositories/adRepository";
 
 export const fetchFilteredAds = async (date: string) => {
   const ads = await getAds();

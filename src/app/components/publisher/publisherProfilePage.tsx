@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AdBoardForm from "./publisherForm";
 import { AdBoard } from "@/types/ad";
-import { AdBoardType } from "../enums/AdBoardType";
+import { AdBoardType } from "../../enums/AdBoardType";
+import { createAdBoard, fetchAdBoards } from "@/app/services/adBoardService";
 
 const PublisherProfilePage: React.FC = () => {
   const [adBoards, setAdBoards] = useState<AdBoard[]>([]);
@@ -12,6 +13,18 @@ const PublisherProfilePage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
+  useEffect(() => {
+    const loadAdBoards = async () => {
+      try {
+        const data = await fetchAdBoards(); // Fetch data from the service
+        setAdBoards(data); // Update state with fetched data
+      } catch (error) {
+        console.error("Error loading ad boards:", error);
+      }
+    };
+
+    loadAdBoards();
+  }, []);
   const openAddModal = () => {
     setIsEditing(false);
     setCurrentAdBoard({
@@ -53,7 +66,8 @@ const PublisherProfilePage: React.FC = () => {
     }
   };
 
-  const handleAddAdBoard = () => {
+  const handleAddAdBoard = async () => {
+    await createAdBoard(currentAdBoard);
     if (currentAdBoard) {
       setAdBoards([...adBoards, currentAdBoard]);
       closeModal();
