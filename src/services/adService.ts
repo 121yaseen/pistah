@@ -1,10 +1,11 @@
 import { getAdBoards } from "@/repositories/adBoardRepository";
 import { getAds } from "@/repositories/adRepository";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const fetchFilteredAds = async (date: string) => {
   const ads = await getAds();
   const adBoards = await getAdBoards();
-  console.log(date);
+
   // const requestedDate = new Date(date);
 
   // const filteredAds = ads.filter(

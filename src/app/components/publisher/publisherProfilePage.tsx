@@ -89,9 +89,6 @@ const PublisherProfilePage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting ad boards to the backend:", adBoards);
-
-    // Simulate sending to a backend
     try {
       const response = await fetch("/api/adBoards", {
         method: "POST",

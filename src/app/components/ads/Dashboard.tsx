@@ -2,62 +2,57 @@
 
 import React, { useState } from "react";
 import useSWR from "swr";
-import AdList from "./AdList";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { AdWithBoard } from "@/types/ad";
 import { fetchAds } from "@/app/services/adService";
+import AdBoardList from "./AdBoardList";
+import DateRangePicker from "../shared/DateRangePicker";
 
 const Dashboard: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
 
-  // Dynamically construct the SWR key based on the selected date
-  const formattedDate = selectedDate?.toISOString().split("T")[0];
+  const formattedStartDate = startDate?.toISOString().split("T")[0];
+  // const formattedEndDate = endDate?.toISOString().split("T")[0];
+
   const {
     data: ads,
     error,
     isValidating,
-  } = useSWR<AdWithBoard[]>(
-    formattedDate ? `/api/ads?date=${formattedDate}` : null,
-    () => fetchAds(formattedDate)
-  );
+  } = useSWR<AdWithBoard[]>(`/api/ads`, () => fetchAds(formattedStartDate));
+
+  const handleTodayClick = () => {
+    const today = new Date();
+    setStartDate(today);
+    setEndDate(today);
+  };
 
   return (
     <div className="p-6 bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-200 min-h-screen">
-      <div className="flex justify-between items-center mb-4">
-        <label htmlFor="date-picker" className="text-lg font-medium">
-          Select Date:
-        </label>
-        <DatePicker
-          id="date-picker"
-          selected={selectedDate}
-          onChange={(date) => setSelectedDate(date)}
-          dateFormat="yyyy-MM-dd"
-          className="p-2 border rounded bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+      {/* Header */}
+      <div className="mb-6">
+        <DateRangePicker
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+          onTodayClick={handleTodayClick}
         />
       </div>
-      {error && (
-        <div className="text-red-500 dark:text-red-300">
-          Error loading ads. Please try again.
-        </div>
-      )}
-      {isValidating && !ads && (
-        <div className="text-center text-gray-700 dark:text-gray-300">
-          Loading ads...
-        </div>
-      )}
-      {ads?.length ? (
-        <>
-          <h2 className="text-xl mb-4">Total Ads: {ads.length}</h2>
-          <AdList ads={ads} />
-        </>
-      ) : (
-        !isValidating && (
+
+      {/* Content */}
+      <div>
+        {error ? (
+          <div className="text-red-500">Error loading ads.</div>
+        ) : isValidating && !ads ? (
+          <div>Loading ads...</div>
+        ) : ads && ads.length > 0 ? (
+          <AdBoardList ads={ads} />
+        ) : (
           <p className="text-center text-gray-700 dark:text-gray-300">
             No ads available for the selected date.
           </p>
-        )
-      )}
+        )}
+      </div>
     </div>
   );
 };

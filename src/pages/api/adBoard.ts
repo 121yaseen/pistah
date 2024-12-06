@@ -26,7 +26,6 @@ export default async function handler(
   if (req.method === "GET") {
     try {
       const adBoards = await getAdBoards();
-      console.log("AdBoards", adBoards);
       return res.status(200).json(adBoards);
     } catch (error) {
       console.error("Error fetching ad boards:", error);

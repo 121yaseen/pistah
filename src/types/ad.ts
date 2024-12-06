@@ -8,6 +8,7 @@ export interface Ad {
   adDisplayStartDate: string;
   adDisplayEndDate: string;
   adDuration: string;
+  thumbnailUrl: string;
 }
 
 export interface AdWithBoard extends Ad {
