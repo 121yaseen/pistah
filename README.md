@@ -1,36 +1,119 @@
-# Pistah is a platform to list all digital bill boards and enable ad providers(ad agencies, businesses, individuals etc.) to push their Ads directly to Billboards without much hassle and delays'.'
+# Pistah
+
+Pistah is a platform designed to list all digital billboards and enable ad providers (ad agencies, businesses, individuals, etc.) to push their ads directly to billboards with ease, eliminating delays and operational hassle.
+
+## Features
+
+- **Billboard Management:** Easily list and manage digital billboards with all relevant details.
+- **Ad Booking:** Allow businesses to book and upload advertisements with real-time scheduling.
+- **Seamless Integration:** Ad providers can directly interact with billboard owners through the platform.
+- **Date Range Selection:** Advanced date pickers for precise ad scheduling.
+- **Dark Mode Support:** User-friendly interface with light and dark mode options.
+- **Responsive Design:** Optimized for all devices.
+
+## Tech Stack
+
+- **Frontend:** [Next.js](https://nextjs.org) for server-rendered React applications.
+- **Backend:** Node.js with Prisma ORM and MongoDB for data persistence.
+- **UI Framework:** Tailwind CSS for fast and responsive design.
+- **Image Optimization:** Integrated with Next.js `next/image`.
+- **Database:** MongoDB.
+- **Deployment:** Vercel (for hosting).
+
+## Prerequisites
+
+Make sure you have the following installed on your system:
+
+- [Node.js](https://nodejs.org) (v16 or higher)
+- [npm](https://www.npmjs.com) or [yarn](https://yarnpkg.com)
+- MongoDB instance running locally or remotely
+- [Prisma CLI](https://www.prisma.io/docs/getting-started/quickstart) for managing the database schema
 
 ## Getting Started
 
-First, run the development server:
+Follow these steps to set up the project locally:
+
+### 1. Clone the Repository
 
 ```bash
+git clone https://github.com/your-username/pistah.git
+cd pistah
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Configure Environment Variables
+
+Create a .env file in the root directory and add the following variables:
+
+```bash
+DATABASE_URL=mongodb+srv://<username>:<password>@<cluster-url>/pistah?retryWrites=true&w=majority
+```
+
+Replace `<`username`>`, `<`password`>`, and `<`cluster-url`>` with your MongoDB credentials and URL.
+
+### 4. Run Development Server
+
+``` bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open <http://localhost:3000> with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Database Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### 1. Initialize the Database
 
-## Learn More
+Run Prisma migrations to set up the MongoDB schema:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx prisma db push
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Seed the Database
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Add initial data to the database:
 
-## Deploy on Vercel
+```bash
+npm run seed
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Folder Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```bash
+├── public               # Static assets (images, etc.)
+├── src
+│   ├── app
+│   │   ├── components   # Reusable UI components
+│   │   ├── services     # Service layer (API integrations)
+│   │   ├── pages        # Application pages
+│   │   └── types        # TypeScript interfaces
+│   ├── database         # Database schema and seed files
+│   ├── repositories     # Database interaction layer
+│   └── utils            # Utility functions
+├── prisma               # Prisma schema and migrations
+├── .env                 # Environment variables
+├── tailwind.config.js   # Tailwind CSS configuration
+├── next.config.js       # Next.js configuration
+└── README.md            # Project documentation
+```
+
+## Deployment
+
+The easiest way to deploy this application is with Vercel.
+
+#### 1. Push your code to GitHub
+
+#### 2. Connect your repository to Vercel
+
+#### 3. Add the environment variables in the Vercel dashboard
+
+#### 4. Deploy your application
