@@ -16,6 +16,7 @@ const config: Config = {
       },
       colors: {
         secondaryBlue: "#001464",
+        dashboardBg: "#e5e7eb",
       },
     },
   },
