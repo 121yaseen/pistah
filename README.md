@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Pistah is a platform to list all digital bill boards and enable ad providers(ad agencies, businesses, individuals etc.) to push their Ads directly to Billboards without much hassle and delays'.'
 
 ## Getting Started
 
