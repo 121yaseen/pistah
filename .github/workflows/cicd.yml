@@ -11,22 +11,36 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
-      - name: Create -env file
-        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env && echo "SITE_URL=${{ secrets.SITE_URL }}" >> .env
-      - name: Build docker image
+
+      - name: Create .env file
+        run: |
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+
+      - name: Build Docker image
         run: docker build -t 121yaseen/pistah .
-      - name: Login to docker hub
+
+      - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - name: Publish Image to Dockerhub
+
+      - name: Publish Image to Docker Hub
         run: docker push 121yaseen/pistah:latest
 
   deploy:
     needs: build
     runs-on: self-hosted
     steps:
-      - name: Pull Image from Dockerhub
+      - name: Pull Docker image from Docker Hub
         run: docker pull 121yaseen/pistah:latest
-      - name: Delete old container if exists
-        run: docker rm -f pistah-container
-      - name: Run docker container
-        run: docker run -d -p 3000:3000 --name pistah-container --env-file .env 121yaseen/pistah
+
+      - name: Remove old container (if exists)
+        run: |
+          if [ "$(docker ps -aq -f name=pistah-container)" ]; then
+            docker rm -f pistah-container
+          fi
+
+      - name: Run new Docker container
+        run: |
+          docker run -d -p 3000:3000 \
+            --name pistah-container \
+            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            121yaseen/pistah
