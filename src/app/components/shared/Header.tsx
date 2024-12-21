@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import DarkModeToggle from "../shared/DarkModeToggleButton";
 import { usePathname } from "next/navigation";
@@ -13,6 +13,10 @@ type HeaderProps = {
 export default function Header({ navLinks = [] }: HeaderProps) {
   const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null); // Ref for the dropdown menu
+  const profilePicRef = useRef<HTMLDivElement | null>(null); // Ref for the profile picture container
+
+  // Effect to manage dark mode from local storage
   useEffect(() => {
     const root = document.documentElement;
     const savedTheme = localStorage.getItem("theme");
@@ -20,6 +24,24 @@ export default function Header({ navLinks = [] }: HeaderProps) {
     if (savedTheme === "dark") {
       root.classList.add("dark");
     }
+  }, []);
+
+  // Effect to detect clicks outside the dropdown or profile pic and close the dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
+        profilePicRef.current && !profilePicRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false); // Close dropdown if click is outside
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside); // Clean up the event listener
+    };
   }, []);
 
   return (
@@ -52,7 +74,10 @@ export default function Header({ navLinks = [] }: HeaderProps) {
         ))}
 
         {/* Profile Picture */}
-        <div className="relative">
+        <div
+          ref={profilePicRef}
+          className="relative"
+        >
           <Image
             src="/profile.jpg" // Replace with your actual profile picture URL
             alt="Profile"
@@ -62,15 +87,21 @@ export default function Header({ navLinks = [] }: HeaderProps) {
             onClick={() => setDropdownOpen(!dropdownOpen)}
           />
           {dropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md text-gray-800 z-50">
+            <div
+              ref={dropdownRef}
+              className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md text-gray-800 z-50 dark:bg-gray-800 dark:text-white"
+            >
               <ul className="py-2">
-                <li className="px-4 py-2 hover:bg-gray-100">
+                <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
                   <Link href="/profile">My Profile</Link>
                 </li>
-                <li className="px-4 py-2 hover:bg-gray-100">
+                <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
                   <Link href="/dashboard">My Dashboard</Link>
                 </li>
-                <li className="px-4 py-2 hover:bg-gray-100">
+                <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <Link href="/inventory">My Inventory</Link>
+                </li>
+                <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
                   <DarkModeToggle />
                 </li>
               </ul>
