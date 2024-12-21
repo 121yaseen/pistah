@@ -1,5 +1,5 @@
+import PublisherInventoryPage from "../components/profile/publisherInventory";
 import Header from "../components/shared/Header";
-import PublisherInventoryPage from "../components/publisher/publisherInventory";
 
 export default function PublisherPage() {
   const navLinks = [

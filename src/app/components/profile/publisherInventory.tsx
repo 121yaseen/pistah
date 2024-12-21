@@ -90,23 +90,23 @@ const PublisherInventoryPage: React.FC = () => {
     setAdBoards(adBoards.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("/api/adBoards", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adBoards }),
-      });
-      if (response.ok) {
-        alert("Ad boards saved successfully!");
-      } else {
-        console.error("Failed to save ad boards");
-      }
-    } catch (error) {
-      console.error("Error saving ad boards:", error);
-    }
-  };
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await fetch("/api/adBoards", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ adBoards }),
+  //     });
+  //     if (response.ok) {
+  //       alert("Ad boards saved successfully!");
+  //     } else {
+  //       console.error("Failed to save ad boards");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error saving ad boards:", error);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen w-full bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
