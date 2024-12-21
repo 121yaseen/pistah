@@ -18,6 +18,9 @@ const config: Config = {
         secondaryBlue: "#001464",
         dashboardBg: "#e5e7eb",
       },
+      fontFamily: {
+        allerta: ['"Allerta"', "sans-serif"],
+      },
     },
   },
   plugins: [],

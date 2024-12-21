@@ -1,22 +1,6 @@
-import Header from "./components/shared/Header";
-import Dashboard from "./components/ads/Dashboard";
+import { redirect } from "next/navigation";
 
 export default function AppHome() {
-  const navLinks = [
-    {
-      href: "/publisher",
-      label: "My Profile",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-DXFpesytRtBxTDt3pmlwFLKZAPbUkQ_CDg&s",
-    }, // Link to Publisher Page
-  ];
-
-  return (
-    <>
-      <Header navLinks={navLinks} />
-      <main>
-        <Dashboard />
-      </main>
-    </>
-  );
+  redirect("/dashboard"); // Automatically redirect to /dashboard
+  return null; // Return nothing since the redirect will take over
 }
