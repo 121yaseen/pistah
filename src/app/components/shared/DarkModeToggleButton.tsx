@@ -27,21 +27,29 @@ const DarkModeToggle: React.FC = () => {
     <div className="flex items-center gap-2">
       {/* Sun Icon */}
       <FiSun
-        className={`transition-transform text-2xl ${isDarkMode ? "text-gray-400" : "text-yellow-500"
-          }`}/>
+        className={`transition-transform text-2xl ${
+          isDarkMode ? "text-gray-400" : "text-yellow-500"
+        }`}
+      />
 
       {/* Slider */}
       <button
         onClick={toggleDarkMode}
-        className={`relative w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center transition-colors`}>
+        className={`relative w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center transition-colors`}
+      >
         <span
-          className={`absolute w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${isDarkMode ? "translate-x-6" : "translate-x-1"}`} />
+          className={`absolute w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${
+            isDarkMode ? "translate-x-6" : "translate-x-1"
+          }`}
+        />
       </button>
 
       {/* Moon Icon */}
       <FiMoon
-        className={`transition-transform text-2xl ${isDarkMode ? "text-purple-500" : "text-gray-400"
-          }`} />
+        className={`transition-transform text-2xl ${
+          isDarkMode ? "text-purple-500" : "text-gray-400"
+        }`}
+      />
     </div>
   );
 };

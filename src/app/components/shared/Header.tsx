@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import DarkModeToggle from "../shared/DarkModeToggleButton";
 import { usePathname } from "next/navigation";
@@ -13,6 +13,14 @@ type HeaderProps = {
 export default function Header({ navLinks = [] }: HeaderProps) {
   const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  useEffect(() => {
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem("theme");
+    console.log(savedTheme);
+    if (savedTheme === "dark") {
+      root.classList.add("dark");
+    }
+  }, []);
 
   return (
     <header className="flex justify-between items-center px-6 py-3 bg-[#001464] text-white shadow-md relative">

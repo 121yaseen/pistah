@@ -12,8 +12,6 @@ const Dashboard: React.FC = () => {
   const [endDate, setEndDate] = useState<Date | null>(null);
 
   const formattedStartDate = startDate?.toISOString().split("T")[0];
-  // const formattedEndDate = endDate?.toISOString().split("T")[0];
-
   const {
     data: ads,
     error,
