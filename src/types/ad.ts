@@ -4,7 +4,7 @@ export interface Ad {
   id: number;
   title: string;
   downloadLink: string;
-  adBoardId: number;
+  adBoardId: string;
   adDisplayStartDate: string;
   adDisplayEndDate: string;
   adDuration: string;

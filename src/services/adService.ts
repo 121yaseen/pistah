@@ -1,22 +1,21 @@
-import { getAdBoards } from "@/repositories/adBoardRepository";
 import { getAds } from "@/repositories/adRepository";
+import { createAdAsync, getAdBoards } from "@/repositories/adBoardRepository";
+import { Ad } from "@/types/ad";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const fetchFilteredAds = async (date: string) => {
+export const fetchFilteredAds = async () => {
   const ads = await getAds();
   const adBoards = await getAdBoards();
 
-  // const requestedDate = new Date(date);
-
-  // const filteredAds = ads.filter(
-  //   (ad) =>
-  //     requestedDate >= new Date(ad.adDisplayStartDate) &&
-  //     requestedDate <= new Date(ad.adDisplayEndDate)
-  // );
-
+  console.log(ads);
+  console.log(adBoards);
   const filteredAds = ads.map((ad) => {
     const adBoard = adBoards.find((board) => board.id == ad.adBoardId);
     return { ...ad, adBoard: adBoard || undefined };
   });
+  console.log(filteredAds);
   return filteredAds;
+};
+
+export const createAd = async (adData: Ad) => {
+  await createAdAsync(adData); // Save ad using the repository
 };

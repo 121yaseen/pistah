@@ -1,16 +1,14 @@
 import { AdWithBoard } from "@/types/ad";
 
 export const fetchAds = async (date?: string): Promise<AdWithBoard[]> => {
-  const today = new Date();
-  const formattedDate = date || today.toISOString().split("T")[0];
-
+  console.log(date);
   const response = await fetch("/api/ads", {
-    method: "POST",
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ date: formattedDate }),
   });
+  console.log("response", response);
 
   if (!response.ok) {
     throw new Error("Failed to fetch ads");
