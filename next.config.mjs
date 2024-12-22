@@ -1,8 +1,8 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["150763658.v2.pressablecdn.com"], // Add your hostname here
+    domains: ["150763658.v2.pressablecdn.com"],
   },
 };
+
 export default nextConfig;

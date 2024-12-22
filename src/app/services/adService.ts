@@ -8,7 +8,6 @@ export const fetchAds = async (date?: string): Promise<AdWithBoard[]> => {
       "Content-Type": "application/json",
     },
   });
-  console.log("response", response);
 
   if (!response.ok) {
     throw new Error("Failed to fetch ads");

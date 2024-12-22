@@ -10,7 +10,6 @@ export default async function handler(
 
   if (req.method === "POST") {
     const adData = req.body;
-    console.log("Ad data:", adData);
 
     // Validate adData before proceeding
     if (

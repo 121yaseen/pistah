@@ -9,12 +9,15 @@ import CreateAdModal from "../modals/CreateAdModal";
 import DarkModeToggle from "./DarkModeToggleButton";
 import InventoryIcon from "@/icons/inventoryIcon";
 import DashboardIcon from "@/icons/dashboardIcon";
+import { useSession } from "next-auth/react";
 
 type HeaderProps = {
   navLinks?: { href: string; label: string }[];
 };
 
 export default function Header({ navLinks = [] }: HeaderProps) {
+  const { data: session } = useSession();
+
   const pathname = usePathname();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null); // Ref for the dropdown menu
@@ -64,8 +67,10 @@ export default function Header({ navLinks = [] }: HeaderProps) {
       <div className="flex items-center gap-6 relative">
         {/* Create Ad Button */}
         {pathname === "/dashboard" && (
-          <button onClick={() => setIsModalOpen(true)} // Open the modal on click
-            className="h-10 px-5 bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-200 font-semibold text-lg rounded-full shadow-md border border-gray-300 dark:border-gray-700 hover:shadow-lg transition flex items-center justify-center">
+          <button
+            onClick={() => setIsModalOpen(true)} // Open the modal on click
+            className="h-10 px-5 bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-200 font-semibold text-lg rounded-full shadow-md border border-gray-300 dark:border-gray-700 hover:shadow-lg transition flex items-center justify-center"
+          >
             Create Ad
           </button>
         )}
@@ -75,7 +80,10 @@ export default function Header({ navLinks = [] }: HeaderProps) {
           <Link
             key={link.href}
             href={link.href}
-            className={`${pathname === link.href ? "underline underline-offset-4" : ""} font-medium`}>
+            className={`${
+              pathname === link.href ? "underline underline-offset-4" : ""
+            } font-medium`}
+          >
             {link.label}
           </Link>
         ))}
@@ -83,41 +91,73 @@ export default function Header({ navLinks = [] }: HeaderProps) {
         {/* Icons Section */}
         <div className="flex items-center space-x-6">
           {/* Dashboard Icon */}
-          <Link className={`flex flex-col items-center group ${pathname === "/dashboard" ? "text-white border-b-2" : "text-gray-500"}`}
-            href="/dashboard" >
-            <span className={`text-xs mt-1 group-hover:text-white ${pathname === "/dashboard" ? "text-white" : "text-gray-500"}`}>
+          <Link
+            className={`flex flex-col items-center group ${
+              pathname === "/dashboard"
+                ? "text-white border-b-2"
+                : "text-gray-500"
+            }`}
+            href="/dashboard"
+          >
+            <span
+              className={`text-xs mt-1 group-hover:text-white ${
+                pathname === "/dashboard" ? "text-white" : "text-gray-500"
+              }`}
+            >
               <DashboardIcon />
             </span>
-            <span className={`text-xs mt-1 group-hover:text-white ${pathname === "/dashboard" ? "text-white" : "text-gray-400"}`}>
+            <span
+              className={`text-xs mt-1 group-hover:text-white ${
+                pathname === "/dashboard" ? "text-white" : "text-gray-400"
+              }`}
+            >
               Dashboard
             </span>
           </Link>
 
           {/* Inventory Icon */}
-          <Link className={`flex flex-col items-center group ${pathname === "/inventory" ? "text-white border-b-2" : "text-gray-500"}`} href="/inventory">
-            <span className={`text-xs mt-1 group-hover:text-white ${pathname === "/inventory" ? "text-white" : "text-gray-500"}`}>
+          <Link
+            className={`flex flex-col items-center group ${
+              pathname === "/inventory"
+                ? "text-white border-b-2"
+                : "text-gray-500"
+            }`}
+            href="/inventory"
+          >
+            <span
+              className={`text-xs mt-1 group-hover:text-white ${
+                pathname === "/inventory" ? "text-white" : "text-gray-500"
+              }`}
+            >
               <InventoryIcon />
             </span>
-            <span className={`text-xs mt-1 group-hover:text-white ${pathname === "/inventory" ? "text-white" : "text-gray-400"}`}>
+            <span
+              className={`text-xs mt-1 group-hover:text-white ${
+                pathname === "/inventory" ? "text-white" : "text-gray-400"
+              }`}
+            >
               Inventory
             </span>
           </Link>
 
           {/* Profile Picture */}
-          <div ref={profilePicRef}
-            className="flex flex-col items-center relative group">
+          <div
+            ref={profilePicRef}
+            className="flex flex-col items-center relative group"
+          >
             <button
               type="button"
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="w-8 h-8 rounded-full border bg-gray-200 dark:bg-gray-800 flex items-center justify-center
-text-gray-500 dark:text-gray-400 cursor-pointer transition group-hover:ring-4 group-hover:ring-blue-700" >
+text-gray-500 dark:text-gray-400 cursor-pointer transition group-hover:ring-4 group-hover:ring-blue-700"
+            >
               <div className="w-9 h-9 flex items-center justify-center">
                 <ProfileIcon />
               </div>
             </button>
             <div className="flex items-center mt-1 space-x-1">
               <span className="text-gray-400 text-xs group-hover:text-white">
-                Company Name
+                {session?.user?.name || "Guest"}
               </span>
             </div>
           </div>
@@ -127,7 +167,8 @@ text-gray-500 dark:text-gray-400 cursor-pointer transition group-hover:ring-4 gr
         {dropdownOpen && (
           <div
             ref={dropdownRef}
-            className="absolute right-0 mt-[40%] w-48 bg-white shadow-lg rounded-md text-gray-800 z-50 dark:bg-gray-800 dark:text-white">
+            className="absolute right-0 mt-[40%] w-48 bg-white shadow-lg rounded-md text-gray-800 z-50 dark:bg-gray-800 dark:text-white"
+          >
             <ul className="py-2">
               <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <Link href="/profile">My Profile</Link>

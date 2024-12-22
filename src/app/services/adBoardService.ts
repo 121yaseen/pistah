@@ -2,7 +2,10 @@ import { AdBoard } from "@/types/ad";
 
 export const createAdBoard = async (
   adBoard: AdBoard | null
-): Promise<unknown> => {
+): Promise<AdBoard> => {
+  if (!adBoard) {
+    throw new Error("Ad board data is required");
+  }
   const response = await fetch("/api/adBoard", {
     method: "POST",
     headers: {
@@ -18,7 +21,7 @@ export const createAdBoard = async (
   return response.json();
 };
 
-export const fetchAdBoards = async () => {
+export const fetchAdBoards = async (): Promise<AdBoard[]> => {
   const response = await fetch("/api/adBoard");
   if (!response.ok) {
     throw new Error("Failed to fetch ad boards");
