@@ -6,6 +6,7 @@ import { AdWithBoard } from "@/types/ad";
 import { fetchAds } from "@/app/services/adService";
 import AdBoardList from "./AdBoardList";
 import DateRangePicker from "../shared/DateRangePicker";
+import Loader from "../shared/LoaderComponent";
 
 const Dashboard: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -42,7 +43,7 @@ const Dashboard: React.FC = () => {
         {error ? (
           <div className="text-red-500">Error loading ads.</div>
         ) : isValidating && !ads ? (
-          <div>Loading ads...</div>
+          <Loader isVisible={true} />
         ) : ads && ads.length > 0 ? (
           <AdBoardList ads={ads} />
         ) : (

@@ -1,4 +1,4 @@
-import PublisherInventoryPage from "../components/profile/publisherInventory";
+import PublisherInventoryPage from "../components/profile/publisherInventoryPage";
 import Header from "../components/shared/Header";
 
 export default function PublisherPage() {

@@ -5,6 +5,7 @@ import Link from "next/link";
 import DarkModeToggle from "../shared/DarkModeToggleButton";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import ProfileIcon from "@/icons/profileIcon";
 
 type HeaderProps = {
   navLinks?: { href: string; label: string }[];
@@ -65,10 +66,8 @@ export default function Header({ navLinks = [] }: HeaderProps) {
           <Link
             key={link.href}
             href={link.href}
-            className={`${
-              pathname === link.href ? "underline underline-offset-4" : ""
-            } font-medium`}
-          >
+            className={`${pathname === link.href ? "underline underline-offset-4" : ""
+              } font-medium`}>
             {link.label}
           </Link>
         ))}
@@ -76,21 +75,22 @@ export default function Header({ navLinks = [] }: HeaderProps) {
         {/* Profile Picture */}
         <div
           ref={profilePicRef}
-          className="relative"
-        >
-          <Image
-            src="/profile.jpg" // Replace with your actual profile picture URL
-            alt="Profile"
-            width={40}
-            height={40}
-            className="w-10 h-10 rounded-full border border-white object-cover cursor-pointer"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-          />
+          className="relative">
+          <div className="flex items-center space-x-4">
+            <div className="text-gray-100 text-2xl font-bold">&#123;Company Name&#125;</div>
+            <div className="relative w-10 h-10 rounded-full flex items-center justify-center hover:ring-4 hover:ring-blue-800 transition">
+              <button type="button" onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="w-10 h-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-800 flex items-center justify-center
+                 text-gray-500 dark:text-gray-400 cursor-pointer transition">
+                <ProfileIcon />
+              </button>
+            </div>
+          </div>
+
           {dropdownOpen && (
             <div
               ref={dropdownRef}
-              className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md text-gray-800 z-50 dark:bg-gray-800 dark:text-white"
-            >
+              className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md text-gray-800 z-50 dark:bg-gray-800 dark:text-white">
               <ul className="py-2">
                 <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
                   <Link href="/profile">My Profile</Link>

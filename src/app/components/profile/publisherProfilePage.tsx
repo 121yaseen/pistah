@@ -20,7 +20,9 @@ const PublisherProfilePage: React.FC = () => {
                  dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 cursor-pointer 
                  hover:bg-gray-300 dark:hover:bg-gray-700 transition" >
                 <ProfileIcon />
-                <span className="absolute bottom-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700 dark:bg-gray-500 dark:text-gray-100">
+                <span
+                  className="absolute bottom-1 right-1 w-8 h-8 p-2 border bg-blue-600 border-blue-600 rounded-full text-white transition flex items-center justify-center"
+                  style={{ width: "40px", height: "40px", }} >
                   <PencilIcon />
                 </span>
               </label>

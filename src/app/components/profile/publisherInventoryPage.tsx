@@ -8,6 +8,7 @@ import { createAdBoard, fetchAdBoards } from "@/app/services/adBoardService";
 import PencilIcon from "@/icons/pencilIcon";
 import DeleteIcon from "@/icons/deleteIcon";
 import AddIcon from "@/icons/addIcon";
+import Loader from "../shared/LoaderComponent";
 
 const PublisherInventoryPage: React.FC = () => {
   const [adBoards, setAdBoards] = useState<AdBoard[]>([]);
@@ -15,19 +16,24 @@ const PublisherInventoryPage: React.FC = () => {
   const [currentAdBoard, setCurrentAdBoard] = useState<AdBoard | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false); // Loader state
 
   useEffect(() => {
     const loadAdBoards = async () => {
+      setIsLoading(true);
       try {
         const data = await fetchAdBoards(); // Fetch data from the service
         setAdBoards(data); // Update state with fetched data
       } catch (error) {
         console.error("Error loading ad boards:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loadAdBoards();
   }, []);
+
   const openAddModal = () => {
     setIsEditing(false);
     setCurrentAdBoard({
@@ -110,15 +116,17 @@ const PublisherInventoryPage: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+      <Loader isVisible={isLoading} />
       <div className="container mx-auto py-10">
         <h1 className="text-3xl font-bold text-center mb-10">My Inventory</h1>
         <div className="flex justify-center">
           {/* Ad Boards Section */}
-          <div className="w-full max-w-4xl">
+          <div className="w-full max-w-6xl">
             <div className="flex justify-end items-center mb-6 space-x-2">
               <span className="text-gray-900 dark:text-gray-100 text-2xl font-bold">Add Inventory</span>
-              <button type="button" onClick={openAddModal} aria-label="Add">
-                <AddIcon />
+              <button type="button" onClick={openAddModal}
+                className="border-2 border-blue-500 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white transition">
+                <AddIcon/>
               </button>
             </div>
             <ul className="space-y-4">
@@ -145,16 +153,16 @@ const PublisherInventoryPage: React.FC = () => {
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <button
-                      type="button"
+                    <button type="button"
                       onClick={() => openEditModal(index)}
-                      className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                      className="p-2 border border-blue-500 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white transition flex items-center justify-center"
+                      style={{ width: "40px", height: "40px", }} >
                       <PencilIcon />
                     </button>
-                    <button
-                      type="button"
+                    <button type="button"
                       onClick={() => removeAdBoard(index)}
-                      className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                      className="p-2 border border-red-500 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition flex items-center justify-center"
+                      style={{ width: "40px", height: "40px", }} >
                       <DeleteIcon />
                     </button>
                   </div>
