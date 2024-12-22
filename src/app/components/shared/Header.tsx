@@ -7,6 +7,8 @@ import Image from "next/image";
 import ProfileIcon from "@/icons/profileIcon";
 import CreateAdModal from "../modals/CreateAdModal";
 import DarkModeToggle from "./DarkModeToggleButton";
+import InventoryIcon from "@/icons/inventoryIcon";
+import DashboardIcon from "@/icons/dashboardIcon";
 
 type HeaderProps = {
   navLinks?: { href: string; label: string }[];
@@ -25,6 +27,21 @@ export default function Header({ navLinks = [] }: HeaderProps) {
     if (savedTheme === "dark") {
       root.classList.add("dark");
     }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        profilePicRef.current &&
+        !profilePicRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
@@ -45,66 +62,83 @@ export default function Header({ navLinks = [] }: HeaderProps) {
 
       {/* Right Section: Nav Links & Profile */}
       <div className="flex items-center gap-6 relative">
+        {/* Create Ad Button */}
+        {pathname === "/dashboard" && (
+          <button onClick={() => setIsModalOpen(true)} // Open the modal on click
+            className="h-10 px-5 bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-200 font-semibold text-lg rounded-full shadow-md border border-gray-300 dark:border-gray-700 hover:shadow-lg transition flex items-center justify-center">
+            Create Ad
+          </button>
+        )}
+
         {/* Navigation Links */}
         {navLinks.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className={`${
-              pathname === link.href ? "underline underline-offset-4" : ""
-            } font-medium`}
-          >
+            className={`${pathname === link.href ? "underline underline-offset-4" : ""} font-medium`}>
             {link.label}
           </Link>
         ))}
 
-        {/* Create Ad Button */}
-        <button
-          onClick={() => setIsModalOpen(true)} // Open the modal on click
-          className="h-10 px-5 bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-200 font-semibold text-lg rounded-full shadow-md border border-gray-300 dark:border-gray-700 hover:shadow-lg transition flex items-center justify-center"
-        >
-          Create Ad
-        </button>
+        {/* Icons Section */}
+        <div className="flex items-center space-x-6">
+          {/* Dashboard Icon */}
+          <Link className={`flex flex-col items-center group ${pathname === "/dashboard" ? "text-white border-b-2" : "text-gray-500"}`}
+            href="/dashboard" >
+            <span className={`text-xs mt-1 group-hover:text-white ${pathname === "/dashboard" ? "text-white" : "text-gray-500"}`}>
+              <DashboardIcon />
+            </span>
+            <span className={`text-xs mt-1 group-hover:text-white ${pathname === "/dashboard" ? "text-white" : "text-gray-400"}`}>
+              Dashboard
+            </span>
+          </Link>
 
-        {/* Profile Picture & Dropdown */}
-        <div ref={profilePicRef} className="relative">
-          <div className="flex items-center space-x-4">
-            <div className="text-gray-100 text-2xl font-bold">{`{Company Name}`}</div>
-            <div className="relative w-10 h-10 rounded-full flex items-center justify-center hover:ring-4 hover:ring-blue-800 transition">
-              <button
-                type="button"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="w-10 h-10 rounded-full border border-gray-200 bg-gray-200 dark:bg-gray-800 flex items-center justify-center
-                text-gray-500 dark:text-gray-400 cursor-pointer transition"
-              >
+          {/* Inventory Icon */}
+          <Link className={`flex flex-col items-center group ${pathname === "/inventory" ? "text-white border-b-2" : "text-gray-500"}`} href="/inventory">
+            <span className={`text-xs mt-1 group-hover:text-white ${pathname === "/inventory" ? "text-white" : "text-gray-500"}`}>
+              <InventoryIcon />
+            </span>
+            <span className={`text-xs mt-1 group-hover:text-white ${pathname === "/inventory" ? "text-white" : "text-gray-400"}`}>
+              Inventory
+            </span>
+          </Link>
+
+          {/* Profile Picture */}
+          <div ref={profilePicRef}
+            className="flex flex-col items-center relative group">
+            <button
+              type="button"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="w-8 h-8 rounded-full border bg-gray-200 dark:bg-gray-800 flex items-center justify-center
+text-gray-500 dark:text-gray-400 cursor-pointer transition group-hover:ring-4 group-hover:ring-blue-700" >
+              <div className="w-9 h-9 flex items-center justify-center">
                 <ProfileIcon />
-              </button>
+              </div>
+            </button>
+            <div className="flex items-center mt-1 space-x-1">
+              <span className="text-gray-400 text-xs group-hover:text-white">
+                Company Name
+              </span>
             </div>
           </div>
-          {dropdownOpen && (
-            <div
-              ref={dropdownRef}
-              className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md text-gray-800 z-50 dark:bg-gray-800 dark:text-white"
-            >
-              <ul className="py-2">
-                <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                  <Link href="/profile">My Profile</Link>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                  <Link href="/dashboard">My Dashboard</Link>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                  <Link href="/inventory">My Inventory</Link>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                  <DarkModeToggle />
-                </li>
-              </ul>
-            </div>
-          )}
         </div>
-      </div>
 
+        {/* Dropdown Menu */}
+        {dropdownOpen && (
+          <div
+            ref={dropdownRef}
+            className="absolute right-0 mt-[40%] w-48 bg-white shadow-lg rounded-md text-gray-800 z-50 dark:bg-gray-800 dark:text-white">
+            <ul className="py-2">
+              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <Link href="/profile">My Profile</Link>
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <DarkModeToggle />
+              </li>
+            </ul>
+          </div>
+        )}
+      </div>
       {/* Create Ad Modal */}
       {isModalOpen && <CreateAdModal onClose={() => setIsModalOpen(false)} />}
     </header>
