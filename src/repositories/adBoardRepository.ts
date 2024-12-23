@@ -34,7 +34,7 @@ export const createAdAsync = async (ad: Ad) => {
     adDisplayStartDate,
     adDisplayEndDate,
     adDuration,
-    //thumbnailUrl,
+    thumbnailUrl,
   } = ad;
 
   return await prisma.ad.create({
@@ -45,7 +45,7 @@ export const createAdAsync = async (ad: Ad) => {
       adDisplayStartDate: new Date(adDisplayStartDate),
       adDisplayEndDate: new Date(adDisplayEndDate),
       adDuration,
-      //thumbnailUrl,
+      thumbnailUrl,
     },
   });
 };

@@ -15,6 +15,7 @@ model Ad {
   adDisplayStartDate DateTime
   adDisplayEndDate   DateTime
   adDuration         String
+  thumbnailUrl       String
   adBoard            AdBoard  @relation(fields: [adBoardId], references: [id])
 }
 

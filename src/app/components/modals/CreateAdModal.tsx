@@ -8,14 +8,14 @@ type CreateAdModalProps = {
 
 const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
   const [adData, setAdData] = useState({
-    id: Date.now(), // Auto-generate ID
+    id: Date.now(),
     title: "",
     downloadLink: "",
-    adBoardId: "", // Single selection for ad board ID
+    adBoardId: "",
     adDisplayStartDate: "",
     adDisplayEndDate: "",
     adDuration: "",
-    thumbnailUrl: "",
+    thumbnailFile: null as File | null,
   });
 
   const [adBoards, setAdBoards] = useState<{ id: number; name: string }[]>([]);
@@ -26,7 +26,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
     adDisplayStartDate: false,
     adDisplayEndDate: false,
     adDuration: false,
-    thumbnailUrl: false,
+    thumbnailFile: false,
   });
 
   useEffect(() => {
@@ -58,19 +58,28 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors((prevErrors) => ({ ...prevErrors, thumbnailFile: true }));
+      } else {
+        setAdData((prevData) => ({ ...prevData, thumbnailFile: file }));
+        setErrors((prevErrors) => ({ ...prevErrors, thumbnailFile: false }));
+      }
+    }
+  };
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     const { name, value } = e.target;
-
     setAdData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
-
-    // Clear error on input change
     setErrors((prevErrors) => ({
       ...prevErrors,
       [name]: false,
@@ -89,7 +98,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
       adDisplayEndDate: adData.adDisplayEndDate === "",
       adDuration:
         isNaN(Number(adData.adDuration)) || Number(adData.adDuration) <= 0,
-      thumbnailUrl: !validateURL(adData.thumbnailUrl),
+      thumbnailFile: !adData.thumbnailFile || errors.thumbnailFile,
     };
 
     setErrors(newErrors);
@@ -98,17 +107,25 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
       return;
     }
 
+    const formData = new FormData();
+    formData.append("title", adData.title);
+    formData.append("downloadLink", adData.downloadLink);
+    formData.append("adBoardId", adData.adBoardId);
+    formData.append("adDisplayStartDate", adData.adDisplayStartDate);
+    formData.append("adDisplayEndDate", adData.adDisplayEndDate);
+    formData.append("adDuration", adData.adDuration);
+    if (adData.thumbnailFile) {
+      formData.append("thumbnail", adData.thumbnailFile);
+    }
+
     try {
       const response = await fetch("/api/ads", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(adData),
+        body: formData,
       });
 
       if (response.ok) {
-        console.log("Ad successfully created:", adData);
+        console.log("Ad successfully created");
         onClose();
       } else {
         console.error("Failed to create ad.");
@@ -166,6 +183,28 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
             {errors.downloadLink && (
               <p className="text-red-500 text-sm mt-1">
                 Invalid download link URL
+              </p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label
+              className="block text-sm font-medium mb-1"
+              htmlFor="thumbnail"
+            >
+              Upload Thumbnail (Max 5MB)
+            </label>
+            <input
+              id="thumbnail"
+              name="thumbnail"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+            />
+            {errors.thumbnailFile && (
+              <p className="text-red-500 text-sm mt-1">
+                Please upload an image less than 5MB
               </p>
             )}
           </div>
@@ -274,30 +313,6 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
               <p className="text-red-500 text-sm mt-1">
                 Enter a positive number
               </p>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label
-              className="block text-sm font-medium mb-1"
-              htmlFor="thumbnailUrl"
-            >
-              Thumbnail URL
-            </label>
-            <input
-              id="thumbnailUrl"
-              name="thumbnailUrl"
-              type="url"
-              value={adData.thumbnailUrl}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${
-                errors.thumbnailUrl ? "border-red-500" : ""
-              }`}
-              placeholder="Enter thumbnail URL"
-              required
-            />
-            {errors.thumbnailUrl && (
-              <p className="text-red-500 text-sm mt-1">Invalid thumbnail URL</p>
             )}
           </div>
 

@@ -1,7 +1,7 @@
 import { AdBoardType } from "@/app/enums/AdBoardType";
 
 export interface Ad {
-  id: number;
+  id?: number;
   title: string;
   downloadLink: string;
   adBoardId: string;
