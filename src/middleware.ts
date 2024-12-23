@@ -18,6 +18,11 @@ export async function middleware(req: NextRequest) {
     req,
     secret: process.env.NEXTAUTH_SECRET,
   })) as CustomToken;
+  console.log("GetToken", {
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+  console.log("Token: ", token);
   // if (!token && req.nextUrl.pathname === "/dashboard") {
   //   return NextResponse.redirect(new URL("/login", req.url));
   // }
