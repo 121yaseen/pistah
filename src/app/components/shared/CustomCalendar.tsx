@@ -70,7 +70,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
     // Calculate padding for the first week to align the days correctly
     const startDayOfWeek = monthFirstDay.getDay();
-    const paddingDays = Array.from({ length: startDayOfWeek }, (_, i) => null); // Days before the start of the month
+    const paddingDays = Array.from({ length: startDayOfWeek }, () => null); // Days before the start of the month
 
     const days = [...paddingDays, ...daysInMonth]; // Combine padding and days in the month
 
