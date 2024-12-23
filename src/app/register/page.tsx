@@ -41,12 +41,18 @@ const Register = () => {
     }
 
     try {
+      const user = {
+        name: formData.firstName + " " + formData.lastName,
+        companyName: formData.companyName,
+        email: formData.email,
+        password: formData.password,
+      };
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(user),
       });
 
       if (response.ok) {

@@ -27,3 +27,15 @@ export interface AdBoard {
   size: string;
   more: string;
 }
+
+export interface Company {
+  id: string;
+  name: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  company: Company;
+}

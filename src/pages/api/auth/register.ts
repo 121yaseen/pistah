@@ -1,12 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { createUser } from "@/services/userService";
+import { createCompany } from "@/services/companyService";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const { name, email, password } = req.body;
+    const { name, email, password, companyName } = req.body;
 
     if (!email || !password || !name) {
       return res.status(400).json({ message: "Invalid input." });
@@ -14,9 +15,12 @@ export default async function handler(
 
     try {
       const newUser = await createUser(name, email, password);
-      res
-        .status(201)
-        .json({ message: "User created successfully.", user: newUser });
+      const newCompany = await createCompany(companyName, newUser.id);
+      res.status(201).json({
+        message: "User created successfully.",
+        user: newUser,
+        company: newCompany,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Failed to create user." });
