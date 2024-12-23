@@ -9,7 +9,7 @@ import CreateAdModal from "../modals/CreateAdModal";
 import DarkModeToggle from "./DarkModeToggleButton";
 import InventoryIcon from "@/icons/inventoryIcon";
 import DashboardIcon from "@/icons/dashboardIcon";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 type HeaderProps = {
   navLinks?: { href: string; label: string }[];
@@ -46,7 +46,11 @@ export default function Header({ navLinks = [] }: HeaderProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
+  const handleSignOut = () => {
+    signOut({
+      callbackUrl: "/login", // Redirect to login page after sign out
+    });
+  };
   return (
     <header className="flex justify-between items-center px-6 py-3 bg-[#001464] text-white shadow-md relative">
       {/* Left Section: Logo */}
@@ -175,6 +179,14 @@ text-gray-500 dark:text-gray-400 cursor-pointer transition group-hover:ring-4 gr
               </li>
               <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <DarkModeToggle />
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <button
+                  onClick={handleSignOut}
+                  className="w-full text-left text-gray-800 dark:text-gray-200 font-medium hover:text-gray-600 dark:hover:text-gray-400 transition"
+                >
+                  Sign Out
+                </button>
               </li>
             </ul>
           </div>
