@@ -26,17 +26,15 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-dashboardBg text-gray-700 dark:bg-gray-900 dark:text-gray-200 min-h-screen">
+    <div className="bg-dashboardBg text-gray-700 dark:bg-gray-900 dark:text-gray-200 min-h-screen">
       {/* Header */}
-      <div className="mb-6">
-        <DateRangePicker
-          startDate={startDate}
-          endDate={endDate}
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
-          onTodayClick={handleTodayClick}
-        />
-      </div>
+      <DateRangePicker
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        onTodayClick={handleTodayClick}
+      />
 
       {/* Content */}
       <div>

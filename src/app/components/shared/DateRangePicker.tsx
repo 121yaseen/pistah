@@ -1,7 +1,6 @@
-import React from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import React, { useState } from "react";
 import { BiSearch } from "react-icons/bi";
+import CustomCalendar from "./CustomCalendar"; // Assuming you have the CustomCalendar component imported
 
 interface DateRangePickerProps {
   startDate: Date | null;
@@ -18,66 +17,123 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   setEndDate,
   onTodayClick,
 }) => {
-  return (
-    <div className="flex flex-col sm:flex-row justify-center items-center gap-8 py-8">
-      {/* Today Button */}
-      <button
-        onClick={onTodayClick}
-        className="h-16 px-8 bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-200 font-semibold text-lg rounded-full shadow-md border border-gray-300 dark:border-gray-700 hover:shadow-lg transition flex items-center justify-center"
-      >
-        Today
-      </button>
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedRange, setSelectedRange] = useState<{ start: Date | null; end: Date | null }>({
+    start: startDate,
+    end: endDate,
+  });
 
-      {/* From-To Capsule */}
-      <div className="flex items-center bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-300 dark:border-gray-700 px-6 h-16 w-full max-w-5xl">
-        {/* From Date Picker */}
-        <div className="flex items-center gap-4 w-full">
-          <label className="font-semibold text-gray-700 dark:text-gray-200 text-base whitespace-nowrap">
-            From
-          </label>
-          <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            placeholderText="Select Date"
-            className="bg-transparent text-gray-600 dark:text-gray-300 outline-none text-base w-full"
-          />
-        </div>
+  const handleDateChange = (start: Date, end: Date | null) => {
+    setSelectedRange({ start, end });
+    setStartDate(start);
+    setEndDate(end);
+
+    // Close the calendar only if both dates are selected
+    if (start && end) {
+      setShowCalendar(false);
+    }
+  };
+
+  const handleFromClick = () => {
+    setShowCalendar(true);
+    setSelectedRange({ start: startDate, end: endDate });
+  };
+
+  const handleToClick = () => {
+    setShowCalendar(true);
+    setSelectedRange({ start: startDate, end: endDate });
+  };
+
+  // Function to format date as "12 Dec 2024"
+  const formatDate = (date: Date | null) => {
+    if (!date) return "Select Date";
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  return (
+    <div className="relative mx-auto max-w-2xl flex flex-col sm:flex-row justify-center items-center py-8">
+      <div className="flex items-center bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-300 dark:border-gray-700 overflow-hidden w-full">
+        {/* Today Button */}
+        <button
+          onClick={onTodayClick}
+          className="h-16 px-8 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 font-semibold text-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition w-full sm:w-auto rounded-l-full"
+          style={{
+            borderTopRightRadius: "0px",
+            borderBottomRightRadius: "0px",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderTopRightRadius = "1000000px"; // Adjust for hover
+            e.currentTarget.style.borderBottomRightRadius = "1000000px";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderTopRightRadius = "0px"; // Reset on hover out
+            e.currentTarget.style.borderBottomRightRadius = "0px";
+          }}
+        >
+          Today
+        </button>
 
         {/* Vertical Divider */}
-        <div className="border-l border-gray-300 dark:border-gray-600 h-8 mx-4"></div>
+        <div className="border-l border-gray-300 dark:border-gray-600 h-8"></div>
 
-        {/* To Date Picker */}
-        <div className="flex items-center gap-4 w-full">
-          <label className="font-semibold text-gray-700 dark:text-gray-200 text-base whitespace-nowrap">
-            To
-          </label>
-          <DatePicker
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
-            placeholderText="Select Date"
-            className="bg-transparent text-gray-600 dark:text-gray-300 outline-none text-base w-full"
-          />
-        </div>
+        {/* From-To Capsule */}
+        <div className="flex items-center w-full px-6">
+          {/* From Date Picker */}
+          <div className="flex items-center gap-4 w-full cursor-pointer" onClick={handleFromClick}>
+            <label className="font-semibold text-black dark:text-gray-200 text-base whitespace-nowrap cursor-pointer">
+              From
+            </label>
+            <div className="bg-transparent text-gray-500 dark:text-gray-300 outline-none text-base font-semibold">
+              {formatDate(startDate)}
+            </div>
+          </div>
 
-        {/* Search Button */}
-        <div
-          className="
-              p-2 
-              bg-secondaryBlue
-              hover:bg-secondaryBlue
-              dark:bg-white
-              dark:hover:bg-secondaryBlue
-              rounded-full 
-              text-white 
-              dark:text-secondaryBlue
-              dark:hover:text-white
-              shadow-md
-              cursor-pointer
-            "
-        >
-          <BiSearch size={30} />
+          {/* Vertical Divider */}
+          <div className="border-l border-gray-300 dark:border-gray-600 h-8 mx-4"></div>
+
+          {/* To Date Picker */}
+          <div className="flex items-center gap-4 w-full cursor-pointer" onClick={handleToClick}>
+            <label className="font-semibold text-black dark:text-gray-200 text-base whitespace-nowrap cursor-pointer">
+              To
+            </label>
+            <div className="bg-transparent text-gray-500 dark:text-gray-300 outline-none text-base font-semibold">
+              {formatDate(endDate)}
+            </div>
+          </div>
+
+          {/* Search Button */}
+          <div
+            className="p-2 
+            bg-secondaryBlue
+            hover:bg-secondaryBlue
+            dark:bg-white
+            dark:hover:bg-secondaryBlue
+            rounded-full 
+            text-white 
+            dark:text-secondaryBlue
+            dark:hover:text-white
+            shadow-md
+            cursor-pointer"
+          >
+            <BiSearch size={30} />
+          </div>
         </div>
       </div>
+
+      {/* Custom Calendar Popup */}
+      {showCalendar && (
+        <div className="absolute w-full max-w-2xl px-6 z-50" style={{ top: '80%' }}>
+          <CustomCalendar
+            startDate={selectedRange.start!}
+            endDate={selectedRange.end}
+            onDateChange={handleDateChange}
+          />
+        </div>
+      )}
     </div>
   );
 };
