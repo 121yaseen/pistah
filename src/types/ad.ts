@@ -38,4 +38,5 @@ export interface User {
   name: string;
   email: string;
   company: Company;
+  profilePicUrl: string;
 }
