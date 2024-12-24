@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { BiSearch } from "react-icons/bi";
 import CustomCalendar from "./CustomCalendar"; // Assuming you have the CustomCalendar component imported
 
@@ -23,13 +23,23 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
     end: endDate,
   });
 
+  const calendarRef = useRef<HTMLDivElement | null>(null);
+
+  // Set default date to today's date when component is mounted
+  useEffect(() => {
+    const today = new Date();
+    setStartDate(today);
+    setEndDate(today);
+    setSelectedRange({ start: today, end: today });
+  }, []); // Empty dependency array to run once on mount
+
   const handleDateChange = (start: Date, end: Date | null) => {
     setSelectedRange({ start, end });
     setStartDate(start);
     setEndDate(end);
 
-    // Close the calendar only if both dates are selected
-    if (start && end) {
+    // Close the calendar only if both dates are selected or no date is selected
+    if ((start && end) || (!start && !end)) {
       setShowCalendar(false);
     }
   };
@@ -54,12 +64,34 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
     });
   };
 
+  // Close the calendar when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+        if ((!startDate && !endDate) || (startDate && endDate)) {
+          setShowCalendar(false);
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [startDate, endDate]);
+
   return (
     <div className="relative mx-auto max-w-2xl flex flex-col sm:flex-row justify-center items-center py-8" style={{ transform: "scale(0.9)", transformOrigin: "center" }}>
       <div className="flex items-center bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-300 dark:border-gray-700 overflow-hidden w-full">
         {/* Today Button */}
         <button
-          onClick={onTodayClick}
+          onClick={() => {
+            const today = new Date();
+            setStartDate(today);
+            setEndDate(today);
+            setSelectedRange({ start: today, end: today });
+            onTodayClick(); // Call the onTodayClick function
+          }}
           className="h-16 px-8 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 font-semibold text-lg flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition w-full sm:w-auto rounded-l-full"
           style={{
             borderTopRightRadius: "0px",
@@ -126,7 +158,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
 
       {/* Custom Calendar Popup */}
       {showCalendar && (
-        <div className="absolute w-full max-w-2xl px-6 z-50" style={{ top: '80%' }}>
+        <div ref={calendarRef} className="absolute w-full max-w-2xl px-6 z-50" style={{ top: '80%' }}>
           <CustomCalendar
             startDate={selectedRange.start!}
             endDate={selectedRange.end}
