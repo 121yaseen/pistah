@@ -7,7 +7,7 @@ import { fetchFilteredAds } from "@/services/adService";
 
 export const config = {
   api: {
-    bodyParser: false, // Required for formidable to parse form-data
+    bodyParser: false,
   },
 };
 
@@ -18,7 +18,7 @@ export default async function handler(
   console.log("req.method", req.method);
 
   if (req.method === "POST") {
-    const form = formidable(); // Use formidable() instead of new formidable.IncomingForm()
+    const form = formidable();
     form.parse(req, async (err, fields, files) => {
       if (err) {
         console.error("Error parsing form:", err);

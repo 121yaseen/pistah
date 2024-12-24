@@ -8,14 +8,19 @@ import Image from "next/image";
 
 const PublisherProfilePage: React.FC = () => {
   const { data: session } = useSession();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [userProfile, setUserProfile] = useState(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    profilePicUrl: string | File;
+    name: string;
+    email: string;
+    companyName: string;
+  }>({
     profilePicUrl: "",
     name: "",
     email: "",
     companyName: "",
   });
+  const [preview, setPreview] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -29,7 +34,7 @@ const PublisherProfilePage: React.FC = () => {
               profilePicUrl: data.profilePicUrl || "",
               name: data.name || "",
               email: data.email || "",
-              companyName: data.Company?.[0]?.name || "",
+              companyName: data.Company?.name || "",
             });
           } else {
             console.error("Failed to fetch user profile");
@@ -50,35 +55,48 @@ const PublisherProfilePage: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const formData = new FormData();
-      formData.append("file", file);
+      const reader = new FileReader();
 
-      try {
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-        const data = await response.json();
-        setFormData((prev) => ({ ...prev, profilePicUrl: data.fileUrl }));
-      } catch (error) {
-        console.error("Error uploading file:", error);
-      }
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+
+      reader.readAsDataURL(file);
+      setFormData((prev) => ({ ...prev, profilePicUrl: file }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("companyName", formData.companyName);
+
+      if (formData.profilePicUrl instanceof File) {
+        formDataToSend.append("profilePic", formData.profilePicUrl);
+      }
+
       const response = await fetch(`/api/user/${session?.user?.email}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
+
       if (response.ok) {
         alert("Profile updated successfully!");
+        const updatedData = await response.json();
+        setFormData({
+          profilePicUrl: updatedData.profilePicUrl || "",
+          name: updatedData.name || "",
+          email: updatedData.email || "",
+          companyName: updatedData.companyName || "",
+        });
+        setPreview(null);
       } else {
         alert("Failed to update profile.");
       }
@@ -103,10 +121,18 @@ const PublisherProfilePage: React.FC = () => {
                 htmlFor="profile-photo"
                 className="relative w-32 h-32 rounded-full border border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 transition"
               >
-                {formData.profilePicUrl ? (
+                {preview ? (
+                  <Image
+                    src={preview}
+                    alt="Profile Preview"
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-full"
+                  />
+                ) : formData.profilePicUrl ? (
                   <Image
                     src={
-                      formData.profilePicUrl.startsWith("http")
+                      typeof formData.profilePicUrl === "string"
                         ? formData.profilePicUrl
                         : "/default-profile-pic.png"
                     }
@@ -156,7 +182,7 @@ const PublisherProfilePage: React.FC = () => {
                 onChange={handleInputChange}
                 required
                 disabled
-                className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
+                className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
               />
             </div>
 

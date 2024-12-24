@@ -180,17 +180,16 @@ export default function Header({ navLinks = [] }: HeaderProps) {
           {/* Profile Picture */}
           <div
             ref={profilePicRef}
-            className="flex flex-col items-center relative group mt-1"
+            className="flex flex-col items-center relative group"
           >
             <button
               type="button"
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="w-8 h-8 rounded-full border bg-white dark:bg-gray-800 flex items-center justify-center
-text-gray-500 dark:text-gray-400 cursor-pointer transition group-hover:ring-4 group-hover:ring-blue-700"
+              className="relative w-9 h-9 rounded-full border border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 transition"
             >
-              {user?.profilePicUrl && user.profilePicUrl !== '""' ? (
+              {user?.profilePicUrl ? (
                 <Image
-                  src={user?.profilePicUrl}
+                  src={user.profilePicUrl}
                   alt="Profile Picture"
                   layout="fill"
                   objectFit="cover"
@@ -202,7 +201,7 @@ text-gray-500 dark:text-gray-400 cursor-pointer transition group-hover:ring-4 gr
             </button>
             <div className="flex items-center mt-1 space-x-1">
               <span className="text-gray-400 text-xs group-hover:text-white">
-                {session?.user?.name || "Guest"}
+                {user?.name || "Guest"}
               </span>
             </div>
           </div>

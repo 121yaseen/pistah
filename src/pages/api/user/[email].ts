@@ -1,5 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/app/libs/prismadb";
+import formidable from "formidable";
+import fs from "fs";
+import { uploadToS3 } from "@/services/s3Service";
+import { updateUserProfile } from "@/services/userService";
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,39 +38,56 @@ export default async function handler(
       res.status(500).json({ error: "Internal Server Error" });
     }
   } else if (req.method === "PUT") {
-    const { name, email, company } = req.body;
-    const id = req.query.email as string;
-
-    if (!id || typeof id !== "string") {
-      return res.status(400).json({ error: "Invalid user ID" });
+    if (!email || typeof email !== "string") {
+      return res
+        .status(400)
+        .json({ error: "Email is required and must be a valid string" });
     }
 
-    if (!name || !email || !company?.name) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
+    const form = formidable({ multiples: false });
 
-    try {
-      const updatedUser = await prisma.user.update({
-        where: { id },
-        data: {
-          name,
-          email,
-          Company: {
-            update: {
-              where: { id: company.id },
-              data: {
-                name: company.name,
-              },
-            },
-          },
-        },
-      });
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        console.error("Error parsing form:", err);
+        return res.status(500).json({ error: "Failed to parse form data" });
+      }
 
-      res.status(200).json(updatedUser);
-    } catch (error) {
-      console.error("Error updating user profile:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
+      const { name, companyName } = fields;
+      let profilePicUrl = "";
+
+      if (files.profilePic) {
+        const file = Array.isArray(files.profilePic)
+          ? files.profilePic[0]
+          : files.profilePic;
+
+        try {
+          const fileBuffer = await fs.promises.readFile(file.filepath);
+          profilePicUrl = await uploadToS3(
+            fileBuffer,
+            file.originalFilename || `profile-pic-${email}`
+          );
+        } catch (uploadError) {
+          console.error("Error uploading file:", uploadError);
+          return res
+            .status(500)
+            .json({ error: "Failed to upload profile picture" });
+        }
+      }
+      try {
+        const updatedUser = await updateUserProfile(email, {
+          name: Array.isArray(name) ? name[0] : name,
+          companyName: Array.isArray(companyName)
+            ? companyName[0]
+            : companyName,
+          profilePicUrl,
+        });
+        console.log("Updated user:", updatedUser);
+        return res.status(200).json(updatedUser);
+      } catch (updateError) {
+        console.error("Error updating profile:", updateError);
+        return res.status(500).json({ error: "Failed to update profile" });
+      }
+    });
   } else {
     res.setHeader("Allow", ["GET"]);
     res.status(405).json({ error: `Method ${req.method} Not Allowed` });
