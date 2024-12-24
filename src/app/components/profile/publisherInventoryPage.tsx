@@ -9,6 +9,7 @@ import PencilIcon from "@/icons/pencilIcon";
 import DeleteIcon from "@/icons/deleteIcon";
 import AddIcon from "@/icons/addIcon";
 import Loader from "../shared/LoaderComponent";
+import { useToast } from "@/app/context/ToastContext";
 
 const PublisherInventoryPage: React.FC = () => {
   const [adBoards, setAdBoards] = useState<AdBoard[]>([]);
@@ -17,6 +18,7 @@ const PublisherInventoryPage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false); // Loader state
+  const { addToast } = useToast();
 
   useEffect(() => {
     const loadAdBoards = async () => {
@@ -76,10 +78,16 @@ const PublisherInventoryPage: React.FC = () => {
   };
 
   const handleAddAdBoard = async () => {
-    await createAdBoard(currentAdBoard);
-    if (currentAdBoard) {
-      setAdBoards([...adBoards, currentAdBoard]);
-      closeModal();
+    try {
+      await createAdBoard(currentAdBoard);
+      if (currentAdBoard) {
+        setAdBoards([...adBoards, currentAdBoard]);
+        addToast("Inventory added successfully!", "success");
+        closeModal();
+      }
+    } catch (error) {
+      addToast("Failed to add inventory.", "error");
+      console.log(error);
     }
   };
 
@@ -96,24 +104,6 @@ const PublisherInventoryPage: React.FC = () => {
     setAdBoards(adBoards.filter((_, i) => i !== index));
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await fetch("/api/adBoards", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ adBoards }),
-  //     });
-  //     if (response.ok) {
-  //       alert("Ad boards saved successfully!");
-  //     } else {
-  //       console.error("Failed to save ad boards");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error saving ad boards:", error);
-  //   }
-  // };
-
   return (
     <div className="min-h-screen w-full bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
       <Loader isVisible={isLoading} />
@@ -126,7 +116,7 @@ const PublisherInventoryPage: React.FC = () => {
               <span className="text-gray-900 dark:text-gray-100 text-2xl font-bold">Add Inventory</span>
               <button type="button" onClick={openAddModal}
                 className="border-2 border-blue-500 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white transition">
-                <AddIcon/>
+                <AddIcon />
               </button>
             </div>
             <ul className="space-y-4">

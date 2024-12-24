@@ -4,6 +4,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../styles/global.css";
 import SessionWrapper from "./components/SessionWrapper";
 import RequireAuth from "./components/RequireAuth";
+import { ToastProvider } from "./context/ToastContext";
+import Toast from "./components/shared/Toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,10 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning className={inter.className}>
-        <SessionWrapper>
-          <RequireAuth>{children}</RequireAuth>
-        </SessionWrapper>
-        <SpeedInsights />
+        <ToastProvider>
+          <SessionWrapper>
+            <RequireAuth>
+              {children}
+              <Toast />
+            </RequireAuth>
+          </SessionWrapper>
+          <SpeedInsights />
+        </ToastProvider>
       </body>
     </html>
   );
