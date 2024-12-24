@@ -55,7 +55,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   };
 
   return (
-    <div className="relative mx-auto max-w-2xl flex flex-col sm:flex-row justify-center items-center py-8">
+    <div className="relative mx-auto max-w-2xl flex flex-col sm:flex-row justify-center items-center py-8" style={{ transform: "scale(0.9)", transformOrigin: "center" }}>
       <div className="flex items-center bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-300 dark:border-gray-700 overflow-hidden w-full">
         {/* Today Button */}
         <button

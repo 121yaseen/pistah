@@ -10,6 +10,7 @@ import DarkModeToggle from "./DarkModeToggleButton";
 import InventoryIcon from "@/icons/inventoryIcon";
 import DashboardIcon from "@/icons/dashboardIcon";
 import { signOut, useSession } from "next-auth/react";
+import CreateAdIcon from "@/icons/createAdIcon";
 
 type HeaderProps = {
   navLinks?: { href: string; label: string }[];
@@ -72,9 +73,15 @@ export default function Header({ navLinks = [] }: HeaderProps) {
         {/* Create Ad Button */}
         <button
           onClick={() => setIsModalOpen(true)} // Open the modal on click
-          className="h-10 px-5 bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-200 font-semibold text-lg rounded-full shadow-md border border-gray-300 dark:border-gray-700 hover:shadow-lg transition flex items-center justify-center"
-        >
-          Create Ad
+          className="h-8 px-2 bg-white text-[#001464] dark:bg-gray-800 dark:text-gray-200 font-semibold text-lg rounded-full 
+          border border-gray-300 dark:border-gray-700 transition flex items-center justify-center gap-2
+          dark:hover:ring-2 hover:ring-4 hover:ring-blue-600">
+          <span className="flex items-center">
+            <CreateAdIcon />
+          </span>
+          <span className="flex items-center text-xs">
+            Add Creative
+          </span>
         </button>
 
         {/* Navigation Links */}
@@ -92,8 +99,8 @@ export default function Header({ navLinks = [] }: HeaderProps) {
           {/* Dashboard Icon */}
           <Link
             className={`flex flex-col items-center group ${pathname === "/dashboard"
-                ? "text-white border-b-2"
-                : "text-gray-500"
+              ? "text-white border-b-2"
+              : "text-gray-500"
               }`}
             href="/dashboard"
           >
@@ -114,8 +121,8 @@ export default function Header({ navLinks = [] }: HeaderProps) {
           {/* Inventory Icon */}
           <Link
             className={`flex flex-col items-center group ${pathname === "/inventory"
-                ? "text-white border-b-2"
-                : "text-gray-500"
+              ? "text-white border-b-2"
+              : "text-gray-500"
               }`}
             href="/inventory"
           >
@@ -158,28 +165,33 @@ text-gray-500 dark:text-gray-400 cursor-pointer transition group-hover:ring-4 gr
 
         {/* Dropdown Menu */}
         {dropdownOpen && (
-          <div
-            ref={dropdownRef}
-            className="absolute right-0 mt-[48%] w-48 bg-white shadow-lg rounded-md text-gray-800 z-50 dark:bg-gray-800 dark:text-white"
-          >
+          <div ref={dropdownRef} className="absolute right-0 mt-[60%] w-48 bg-white shadow-lg rounded-md text-gray-800 z-50 dark:bg-gray-800 dark:text-white">
             <ul className="py-2">
-              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <Link href="/profile">My Profile</Link>
+              {/* My Profile */}
+              <li>
+                <Link href="/profile" className="block px-4 py-2 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+                  My Profile
+                </Link>
               </li>
-              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <DarkModeToggle />
+
+              {/* Dark Mode Toggle */}
+              <li>
+                <div className="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <DarkModeToggle />
+                </div>
               </li>
-              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <button
-                  onClick={handleSignOut}
-                  className="w-full text-left text-gray-800 dark:text-gray-200 font-medium hover:text-gray-600 dark:hover:text-gray-400 transition"
-                >
-                  Sign Out
+
+              {/* Log Out */}
+              <li>
+                <button onClick={handleSignOut}
+                  className="block w-full px-4 py-2 text-left text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+                  Log Out
                 </button>
               </li>
             </ul>
           </div>
         )}
+
       </div>
       {/* Create Ad Modal */}
       {isModalOpen && <CreateAdModal onClose={() => setIsModalOpen(false)} />}
