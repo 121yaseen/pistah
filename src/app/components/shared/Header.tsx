@@ -123,7 +123,7 @@ export default function Header({ navLinks = [] }: HeaderProps) {
             <button
               type="button"
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="w-8 h-8 rounded-full border bg-gray-200 dark:bg-gray-800 flex items-center justify-center
+              className="w-8 h-8 rounded-full border bg-white dark:bg-gray-800 flex items-center justify-center
 text-gray-500 dark:text-gray-400 cursor-pointer transition group-hover:ring-4 group-hover:ring-blue-700"
             >
               <div className="w-9 h-9 flex items-center justify-center">

@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Loader from "./shared/LoaderComponent";
 
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   const { status } = useSession();
@@ -15,7 +16,7 @@ const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   }, [status, router]);
 
   if (status === "loading") {
-    return <div>Loading...</div>; // Optional: Add a spinner or placeholder
+    return <Loader isVisible={true} />;
   }
 
   return <>{children}</>;

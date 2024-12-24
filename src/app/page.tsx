@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import router from "next/router";
 import { useEffect } from "react";
+import Loader from "./components/shared/LoaderComponent";
 
 export default function AppHome() {
   const { data: session, status } = useSession();
@@ -16,9 +17,7 @@ export default function AppHome() {
   }, [status, router]);
 
   if (status === "loading") {
-    console.log("Loading...");
-    console.log(session);
-    return <div>Loading...</div>;
+    return <Loader isVisible={true} />;
   }
   if (status === "authenticated") {
     console.log("Authenticated");
