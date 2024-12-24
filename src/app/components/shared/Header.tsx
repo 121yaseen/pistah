@@ -97,54 +97,29 @@ export default function Header({ navLinks = [] }: HeaderProps) {
         {/* Icons Section */}
         <div className="flex items-center space-x-6">
           {/* Dashboard Icon */}
-          <Link
-            className={`flex flex-col items-center group ${pathname === "/dashboard"
-              ? "text-white border-b-2"
-              : "text-gray-500"
-              }`}
-            href="/dashboard"
-          >
-            <span
-              className={`text-xs mt-1 group-hover:text-white ${pathname === "/dashboard" ? "text-white" : "text-gray-500"
-                }`}
-            >
+          <Link className={`flex flex-col items-center group ${pathname === "/dashboard" ? "text-white border-b-2" : "text-gray-500" }`} href="/dashboard">
+            <span className={`text-xs mt-2 group-hover:text-white ${pathname === "/dashboard" ? "text-white" : "text-gray-500"}`} >
               <DashboardIcon />
             </span>
-            <span
-              className={`text-xs mt-1 group-hover:text-white ${pathname === "/dashboard" ? "text-white" : "text-gray-400"
-                }`}
-            >
+            <span className={`text-xs mt-1 group-hover:text-white ${pathname === "/dashboard" ? "text-white" : "text-gray-400"}`}>
               Dashboard
             </span>
           </Link>
 
           {/* Inventory Icon */}
           <Link
-            className={`flex flex-col items-center group ${pathname === "/inventory"
-              ? "text-white border-b-2"
-              : "text-gray-500"
-              }`}
-            href="/inventory"
-          >
-            <span
-              className={`text-xs mt-1 group-hover:text-white ${pathname === "/inventory" ? "text-white" : "text-gray-500"
-                }`}
-            >
+            className={`flex flex-col items-center group ${pathname === "/inventory" ? "text-white border-b-2" : "text-gray-500"}`} href="/inventory" >
+            <span className={`text-xs mt-1 group-hover:text-white ${pathname === "/inventory" ? "text-white" : "text-gray-500"}`}>
               <InventoryIcon />
             </span>
             <span
-              className={`text-xs mt-1 group-hover:text-white ${pathname === "/inventory" ? "text-white" : "text-gray-400"
-                }`}
-            >
+              className={`text-xs mt-1 group-hover:text-white ${pathname === "/inventory" ? "text-white" : "text-gray-400"}`}>
               Inventory
             </span>
           </Link>
 
           {/* Profile Picture */}
-          <div
-            ref={profilePicRef}
-            className="flex flex-col items-center relative group"
-          >
+          <div ref={profilePicRef} className="flex flex-col items-center relative group mt-1" >
             <button
               type="button"
               onClick={() => setDropdownOpen(!dropdownOpen)}
