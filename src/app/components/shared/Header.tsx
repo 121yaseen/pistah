@@ -11,6 +11,7 @@ import InventoryIcon from "@/icons/inventoryIcon";
 import DashboardIcon from "@/icons/dashboardIcon";
 import { signOut, useSession } from "next-auth/react";
 import CreateAdIcon from "@/icons/createAdIcon";
+import PistahIcon from "@/icons/pistahIcon";
 
 type HeaderProps = {
   navLinks?: { href: string; label: string }[];
@@ -86,14 +87,7 @@ export default function Header({ navLinks = [] }: HeaderProps) {
       {/* Left Section: Logo */}
       <div className="flex items-center">
         <Link href="/" className="flex items-center">
-          <Image
-            src="/icon.svg"
-            alt="Pistah Icon"
-            width={40}
-            height={40}
-            className="mr-2"
-          />
-          <span className="font-allerta text-xl font-bold">Pistah</span>
+        <PistahIcon/>
         </Link>
       </div>
 

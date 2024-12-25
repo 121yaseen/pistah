@@ -22,7 +22,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const addToast = (message: string, type: "success" | "error" | "info") => {
     const id = Math.random().toString(36).substr(2, 9);
     setToasts((prev) => [...prev, { id, message, type }]);
-    //setTimeout(() => removeToast(id), 3000); // Auto-remove after 3 seconds
+    setTimeout(() => removeToast(id), 5000); // Auto-remove after 3 seconds
   };
 
   const removeToast = (id: string) => {
@@ -32,6 +32,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   return (
     <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
       {children}
+      <style>{animationStyles}</style>
     </ToastContext.Provider>
   );
 };
@@ -43,3 +44,26 @@ export const useToast = (): ToastContextType => {
   }
   return context;
 };
+
+// Keyframe animations
+const animationStyles = `
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 0.9;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 0;
+  }
+}
+`;

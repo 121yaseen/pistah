@@ -17,12 +17,16 @@ const Toast: React.FC = () => {
               toast.type === "success"
                 ? "#10B981" /* Green */
                 : toast.type === "error"
-                ? "#EF4444" /* Red */
-                : "#3B82F6" /* Blue */,
+                  ? "#EF4444" /* Red */
+                  : "#3B82F6" /* Blue */,
             width: "300px", // Fixed width
             minHeight: "100px",
             wordWrap: "break-word", // Break long words
             whiteSpace: "normal", // Ensure text wraps
+            animation: "slideIn 0.3s, fadeOut 0.5s 2.5s",
+            animationTimingFunction: "ease-in-out",
+            animationFillMode: "forwards",
+            opacity: 0.9
           }}
         >
           {/* Icon */}
@@ -33,8 +37,8 @@ const Toast: React.FC = () => {
                 toast.type === "success"
                   ? "#16A34A" /* Dark Green */
                   : toast.type === "error"
-                  ? "#DC2626" /* Dark Red */
-                  : "#2563EB" /* Dark Blue */,
+                    ? "#DC2626" /* Dark Red */
+                    : "#2563EB" /* Dark Blue */,
             }}
           >
             {toast.type === "success" && "✔"}
