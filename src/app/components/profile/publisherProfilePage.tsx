@@ -5,9 +5,11 @@ import PencilIcon from "@/icons/pencilIcon";
 import ProfileIcon from "@/icons/profileIcon";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useToast } from "@/app/context/ToastContext";
 
 const PublisherProfilePage: React.FC = () => {
   const { data: session } = useSession();
+  const { addToast } = useToast();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [userProfile, setUserProfile] = useState(null);
@@ -39,9 +41,11 @@ const PublisherProfilePage: React.FC = () => {
               companyName: data.Company?.name || "",
             });
           } else {
+            addToast("Something went wrong!", "error");
             console.error("Failed to fetch user profile");
           }
         } catch (error) {
+          addToast("Something went wrong!", "error");
           console.error("Error fetching user profile:", error);
         }
       }
@@ -90,7 +94,7 @@ const PublisherProfilePage: React.FC = () => {
       });
 
       if (response.ok) {
-        alert("Profile updated successfully!");
+        addToast("Profile updated successfully!", "success");
         const updatedData = await response.json();
         setFormData({
           profilePicUrl: updatedData.profilePicUrl || "",
@@ -100,9 +104,10 @@ const PublisherProfilePage: React.FC = () => {
         });
         setPreview(null);
       } else {
-        alert("Failed to update profile.");
+        addToast("Failed to update profile.", "error");
       }
     } catch (error) {
+      addToast("Something went wrong!", "error");
       console.error("Error updating profile:", error);
     }
   };

@@ -28,6 +28,7 @@ const PublisherInventoryPage: React.FC = () => {
         setAdBoards(data); // Update state with fetched data
       } catch (error) {
         console.error("Error loading ad boards:", error);
+        addToast("Something went wrong!", "error");
       } finally {
         setIsLoading(false);
       }
@@ -86,7 +87,7 @@ const PublisherInventoryPage: React.FC = () => {
         closeModal();
       }
     } catch (error) {
-      addToast("Failed to add inventory.", "error");
+      addToast("Something went wrong!", "error");
       console.log(error);
     }
   };

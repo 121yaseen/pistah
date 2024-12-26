@@ -22,7 +22,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const addToast = (message: string, type: "success" | "error" | "info") => {
     const id = Math.random().toString(36).substr(2, 9);
     setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => removeToast(id), 5000); // Auto-remove after 3 seconds
+    setTimeout(() => removeToast(id), 5000);
   };
 
   const removeToast = (id: string) => {
@@ -54,16 +54,7 @@ const animationStyles = `
   }
   to {
     transform: translateX(0);
-    opacity: 0.9;
   }
 }
-
-@keyframes fadeOut {
-  from {
-    opacity: 0.9;
-  }
-  to {
-    opacity: 0;
-  }
 }
 `;

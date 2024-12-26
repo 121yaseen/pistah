@@ -15,7 +15,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  const handleDateClick = (date: Date) => {
+  const handleDateClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, date: Date) => {
+    e.preventDefault()
     if (!startDate || (startDate && endDate)) {
       // Select From date
       onDateChange(date, null);
@@ -40,7 +41,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     return (
       <button
         key={date.toDateString()}
-        onClick={() => !isDisabled && handleDateClick(date)}
+        onClick={(e) => !isDisabled && handleDateClick(e, date)}
         onMouseEnter={() => setHoveredDate(date)}
         className={`w-10 h-10 rounded-full ${
           isDisabled

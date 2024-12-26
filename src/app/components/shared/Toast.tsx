@@ -26,7 +26,6 @@ const Toast: React.FC = () => {
             animation: "slideIn 0.3s, fadeOut 0.5s 2.5s",
             animationTimingFunction: "ease-in-out",
             animationFillMode: "forwards",
-            opacity: 0.9
           }}
         >
           {/* Icon */}

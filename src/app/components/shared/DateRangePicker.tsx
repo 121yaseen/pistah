@@ -8,6 +8,7 @@ interface DateRangePickerProps {
   setStartDate: (date: Date | null) => void;
   setEndDate: (date: Date | null) => void;
   onTodayClick: () => void;
+  showSearchIcon?: boolean;
 }
 
 const DateRangePicker: React.FC<DateRangePickerProps> = ({
@@ -16,6 +17,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   setStartDate,
   setEndDate,
   onTodayClick,
+  showSearchIcon = true
 }) => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedRange, setSelectedRange] = useState<{ start: Date | null; end: Date | null }>({
@@ -81,11 +83,12 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   }, [startDate, endDate]);
 
   return (
-    <div className="relative mx-auto max-w-2xl flex flex-col sm:flex-row justify-center items-center py-8" style={{ transform: "scale(0.9)", transformOrigin: "center" }}>
+    <div className={"relative mx-auto max-w-2xl flex flex-col sm:flex-row justify-center items-center py-8"} style={{ transform: "scale(0.9)", transformOrigin: "center" }}>
       <div className="flex items-center bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-300 dark:border-gray-700 overflow-hidden w-full">
         {/* Today Button */}
         <button
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
             const today = new Date();
             setStartDate(today);
             setEndDate(today);
@@ -104,8 +107,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           onMouseLeave={(e) => {
             e.currentTarget.style.borderTopRightRadius = "0px"; // Reset on hover out
             e.currentTarget.style.borderBottomRightRadius = "0px";
-          }}
-        >
+          }}>
           Today
         </button>
 
@@ -138,21 +140,12 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           </div>
 
           {/* Search Button */}
-          <div
-            className="p-2 
-            bg-secondaryBlue
-            hover:bg-secondaryBlue
-            dark:bg-white
-            dark:hover:bg-secondaryBlue
-            rounded-full 
-            text-white 
-            dark:text-secondaryBlue
-            dark:hover:text-white
-            shadow-md
-            cursor-pointer"
-          >
-            <BiSearch size={30} />
-          </div>
+          {showSearchIcon && (
+            <div
+              className="p-2 bg-secondaryBlue hover:bg-secondaryBlue dark:bg-white dark:hover:bg-secondaryBlue rounded-full 
+            text-white dark:text-secondaryBlue dark:hover:text-white shadow-md cursor-pointer">
+              <BiSearch size={30} />
+            </div>)}
         </div>
       </div>
 
