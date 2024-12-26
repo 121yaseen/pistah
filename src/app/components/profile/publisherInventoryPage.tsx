@@ -17,15 +17,17 @@ const PublisherInventoryPage: React.FC = () => {
   const [currentAdBoard, setCurrentAdBoard] = useState<AdBoard | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // Loader state
+  const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useToast();
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const loadAdBoards = async () => {
       setIsLoading(true);
       try {
-        const data = await fetchAdBoards(); // Fetch data from the service
-        setAdBoards(data); // Update state with fetched data
+        const data = await fetchAdBoards();
+        setAdBoards(data);
       } catch (error) {
         console.error("Error loading ad boards:", error);
         addToast("Something went wrong!", "error");
@@ -45,7 +47,7 @@ const PublisherInventoryPage: React.FC = () => {
       boardType: AdBoardType.STATIC,
       boardName: "",
       location: "",
-      dailyRate: 1500, // Default daily rate in rupees
+      dailyRate: 1500,
       ownerContact: "",
       count: 1,
       size: "",
@@ -54,7 +56,6 @@ const PublisherInventoryPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  // Open modal for editing an existing ad space
   const openEditModal = (index: number) => {
     setIsEditing(true);
     setEditingIndex(index);
@@ -101,8 +102,18 @@ const PublisherInventoryPage: React.FC = () => {
     }
   };
 
-  const removeAdBoard = (index: number) => {
-    setAdBoards(adBoards.filter((_, i) => i !== index));
+  const openDeleteConfirmModal = (index: number) => {
+    setDeleteIndex(index);
+    setIsDeleteConfirmationOpen(true);
+  };
+
+  const handleDeleteConfirmation = (confirmed: boolean) => {
+    if (confirmed && deleteIndex !== null) {
+      setAdBoards(adBoards.filter((_, i) => i !== deleteIndex));
+      addToast("Ad Board deleted successfully!", "success");
+    }
+    setIsDeleteConfirmationOpen(false);
+    setDeleteIndex(null);
   };
 
   return (
@@ -111,12 +122,16 @@ const PublisherInventoryPage: React.FC = () => {
       <div className="container mx-auto py-10">
         <h1 className="text-3xl font-bold text-center mb-10">My Inventory</h1>
         <div className="flex justify-center">
-          {/* Ad Boards Section */}
           <div className="w-full max-w-6xl">
             <div className="flex justify-end items-center mb-6 space-x-2">
-              <span className="text-gray-900 dark:text-gray-100 text-2xl font-bold">Add Inventory</span>
-              <button type="button" onClick={openAddModal}
-                className="border-2 border-blue-500 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white transition">
+              <span className="text-gray-900 dark:text-gray-100 text-2xl font-bold">
+                Add Inventory
+              </span>
+              <button
+                type="button"
+                onClick={openAddModal}
+                className="border-2 border-blue-500 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white transition"
+              >
                 <AddIcon />
               </button>
             </div>
@@ -144,16 +159,20 @@ const PublisherInventoryPage: React.FC = () => {
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <button type="button"
+                    <button
+                      type="button"
                       onClick={() => openEditModal(index)}
                       className="p-2 border border-blue-500 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white transition flex items-center justify-center"
-                      style={{ width: "40px", height: "40px", }} >
+                      style={{ width: "40px", height: "40px" }}
+                    >
                       <PencilIcon />
                     </button>
-                    <button type="button"
-                      onClick={() => removeAdBoard(index)}
+                    <button
+                      type="button"
+                      onClick={() => openDeleteConfirmModal(index)}
                       className="p-2 border border-red-500 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition flex items-center justify-center"
-                      style={{ width: "40px", height: "40px", }} >
+                      style={{ width: "40px", height: "40px" }}
+                    >
                       <DeleteIcon />
                     </button>
                   </div>
@@ -163,39 +182,60 @@ const PublisherInventoryPage: React.FC = () => {
           </div>
         </div>
 
-
-        {/* Modal */}
-        {
-          isModalOpen && currentAdBoard && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md w-full max-w-2xl">
-                <h3 className="text-xl font-semibold mb-4">
-                  {isEditing ? "Edit Ad Space" : "Add Ad Space"}
-                </h3>
-                <AdBoardForm
-                  adBoard={currentAdBoard}
-                  onChange={handleAdBoardChange}
-                />
-                <div className="flex justify-end mt-4 space-x-2">
-                  <button
-                    onClick={closeModal}
-                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={isEditing ? handleEditAdBoard : handleAddAdBoard}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                  >
-                    Save
-                  </button>
-                </div>
+        {isModalOpen && currentAdBoard && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md w-full max-w-2xl">
+              <h3 className="text-xl font-semibold mb-4">
+                {isEditing ? "Edit Ad Space" : "Add Ad Space"}
+              </h3>
+              <AdBoardForm
+                adBoard={currentAdBoard}
+                onChange={handleAdBoardChange}
+              />
+              <div className="flex justify-end mt-4 space-x-2">
+                <button
+                  onClick={closeModal}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={isEditing ? handleEditAdBoard : handleAddAdBoard}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                >
+                  Save
+                </button>
               </div>
             </div>
-          )
-        }
-      </div >
-    </div >
+          </div>
+        )}
+
+        {isDeleteConfirmationOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md">
+              <h3 className="text-xl font-semibold mb-4">
+                Confirm Delete
+              </h3>
+              <p>Are you sure you want to delete this ad board?</p>
+              <div className="flex justify-end mt-4 space-x-2">
+                <button
+                  onClick={() => handleDeleteConfirmation(false)}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDeleteConfirmation(true)}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
