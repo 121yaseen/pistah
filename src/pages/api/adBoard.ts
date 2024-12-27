@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { createAdBoard } from "@/services/adBoardService";
+import { createAdBoard, deleteAdBoard } from "@/services/adBoardService";
 import { AdBoard } from "@/types/ad";
 import { getAdBoards } from "@/repositories/adBoardRepository";
 
@@ -30,6 +30,20 @@ export default async function handler(
     } catch (error) {
       console.error("Error fetching ad boards:", error);
       return res.status(500).json({ error: "Failed to fetch ad boards" });
+    }
+  }
+
+  if (req.method === "PUT") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
+  if (req.method === "DELETE") {
+    try {
+      const response = await deleteAdBoard(req.query.id as string);
+      return res.status(204).json(response);
+    } catch (error) {
+      console.error("Error deleting ad board:", error);
+      return res.status(500).json({ error: "Failed to delete ad board" });
     }
   }
 

@@ -4,7 +4,11 @@ import React, { useEffect, useState } from "react";
 import AdBoardForm from "./publisherForm";
 import { AdBoard } from "@/types/ad";
 import { AdBoardType } from "../../enums/AdBoardType";
-import { createAdBoard, fetchAdBoards } from "@/app/services/adBoardService";
+import {
+  createAdBoard,
+  deleteAdBoard,
+  fetchAdBoards,
+} from "@/app/services/adBoardService";
 import PencilIcon from "@/icons/pencilIcon";
 import DeleteIcon from "@/icons/deleteIcon";
 import AddIcon from "@/icons/addIcon";
@@ -20,23 +24,23 @@ const PublisherInventoryPage: React.FC = () => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useToast();
-  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
+    useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
+  const loadAdBoards = async () => {
+    setIsLoading(true);
+    try {
+      const data = await fetchAdBoards();
+      setAdBoards(data);
+    } catch (error) {
+      console.error("Error loading ad boards:", error);
+      addToast("Something went wrong!", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   useEffect(() => {
-    const loadAdBoards = async () => {
-      setIsLoading(true);
-      try {
-        const data = await fetchAdBoards();
-        setAdBoards(data);
-      } catch (error) {
-        console.error("Error loading ad boards:", error);
-        addToast("Something went wrong!", "error");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadAdBoards();
   }, []);
 
@@ -117,10 +121,27 @@ const PublisherInventoryPage: React.FC = () => {
     setIsDeleteConfirmationOpen(true);
   };
 
-  const handleDeleteConfirmation = (confirmed: boolean) => {
+  const handleDeleteConfirmation = async (confirmed: boolean) => {
     if (confirmed && deleteIndex !== null) {
-      setAdBoards(adBoards.filter((_, i) => i !== deleteIndex));
-      addToast("Ad Board deleted successfully!", "success");
+      setIsLoading(true);
+      const adBoardId = adBoards[deleteIndex]?.id;
+      if (adBoardId) {
+        deleteAdBoard(adBoardId)
+          .then(
+            () => {
+              addToast("Ad Board deleted successfully!", "success");
+              loadAdBoards();
+            },
+            () => {
+              addToast("Failed to delete Ad Board!", "error");
+            }
+          )
+          .finally(() => {
+            setIsLoading(false);
+          });
+      } else {
+        addToast("Ad Board ID is undefined!", "error");
+      }
     }
     setIsDeleteConfirmationOpen(false);
     setDeleteIndex(null);
@@ -130,10 +151,10 @@ const PublisherInventoryPage: React.FC = () => {
   const validateForm = () => {
     return currentAdBoard
       ? currentAdBoard.boardName !== "" &&
-      currentAdBoard.location !== "" &&
-      currentAdBoard.dailyRate > 0 &&
-      currentAdBoard.ownerContact &&
-      /^\d{10}$/.test(currentAdBoard.ownerContact)
+          currentAdBoard.location !== "" &&
+          currentAdBoard.dailyRate > 0 &&
+          currentAdBoard.ownerContact &&
+          /^\d{10}$/.test(currentAdBoard.ownerContact)
       : false;
   };
 
@@ -230,7 +251,10 @@ const PublisherInventoryPage: React.FC = () => {
 
               {/* Form Content */}
               <div className="mt-16 mb-16">
-                <AdBoardForm adBoard={currentAdBoard} onChange={handleAdBoardChange} />
+                <AdBoardForm
+                  adBoard={currentAdBoard}
+                  onChange={handleAdBoardChange}
+                />
               </div>
 
               {/* Footer */}
@@ -252,13 +276,10 @@ const PublisherInventoryPage: React.FC = () => {
           </div>
         )}
 
-
         {isDeleteConfirmationOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md">
-              <h3 className="text-xl font-semibold mb-4">
-                Confirm Delete
-              </h3>
+              <h3 className="text-xl font-semibold mb-4">Confirm Delete</h3>
               <p>Are you sure you want to delete this ad board?</p>
               <div className="flex justify-end mt-4 space-x-2">
                 <button

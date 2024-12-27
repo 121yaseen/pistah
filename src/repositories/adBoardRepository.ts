@@ -58,3 +58,12 @@ export const getAds = async () => {
     },
   });
 };
+
+// Delete an Ad board and all its Ads
+export const deleteAdBoardAsync = async (id: string) => {
+  return await prisma.adBoard.delete({
+    where: {
+      id,
+    },
+  });
+};
