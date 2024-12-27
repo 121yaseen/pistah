@@ -2,8 +2,8 @@ import { getAds } from "@/repositories/adRepository";
 import { createAdAsync, getAdBoards } from "@/repositories/adBoardRepository";
 import { Ad } from "@/types/ad";
 
-export const fetchFilteredAds = async () => {
-  const ads = await getAds();
+export const fetchFilteredAds = async (startDate: string, endDate: string) => {
+  const ads = await getAds(startDate, endDate);
   const adBoards = await getAdBoards();
 
   const filteredAds = ads.map((ad) => {

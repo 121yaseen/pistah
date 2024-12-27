@@ -106,7 +106,8 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
       adBoardId: adData.adBoardId === "",
       adDisplayStartDate: startDate === null,
       adDisplayEndDate: endDate === null,
-      adDuration: isNaN(Number(adData.adDuration)) || Number(adData.adDuration) <= 0,
+      adDuration:
+        isNaN(Number(adData.adDuration)) || Number(adData.adDuration) <= 0,
       thumbnailFile: !adData.thumbnailFile || errors.thumbnailFile,
     };
 
@@ -130,7 +131,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
     try {
       setIsLoading(true);
-      const response = await fetch("/api/ads", {
+      const response = await fetch("/api/creatives", {
         method: "POST",
         body: formData,
       });
@@ -169,7 +170,10 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
         <div className="flex-1 overflow-y-auto px-6 py-4">
           <form onSubmit={handleSubmit} id="createAdForm">
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1 text-black dark:text-white" htmlFor="title">
+              <label
+                className="block text-sm font-medium mb-1 text-black dark:text-white"
+                htmlFor="title"
+              >
                 Title
               </label>
               <input
@@ -178,8 +182,9 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 type="text"
                 value={adData.title}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 dark:border-gray-600 border-gray-300 text-black dark:text-gray-200 ${errors.title ? "border-red-500" : ""
-                  }`}
+                className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 dark:border-gray-600 border-gray-300 text-black dark:text-gray-200 ${
+                  errors.title ? "border-red-500" : ""
+                }`}
                 placeholder="Title"
                 required
               />
@@ -203,12 +208,14 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                   setEndDate(today);
                 }}
                 showSearchIcon={false}
+                onSearch={() => {}}
               />
-              {errors.adDisplayStartDate || errors.adDisplayEndDate && (
-                <p className="text-red-500 text-sm mt-1">
-                  Please select valid dates
-                </p>
-              )}
+              {errors.adDisplayStartDate ||
+                (errors.adDisplayEndDate && (
+                  <p className="text-red-500 text-sm mt-1">
+                    Please select valid dates
+                  </p>
+                ))}
             </div>
 
             <div className="mb-4">
@@ -224,8 +231,9 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 type="url"
                 value={adData.downloadLink}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${errors.downloadLink ? "border-red-500" : ""
-                  }`}
+                className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${
+                  errors.downloadLink ? "border-red-500" : ""
+                }`}
                 placeholder="Link to download"
                 required
               />
@@ -270,8 +278,9 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 name="adBoardId"
                 value={adData.adBoardId}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded bg-gray-100 border-gray-300 text-black dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${errors.adBoardId ? "border-red-500" : ""
-                  }`}
+                className={`w-full px-3 py-2 border rounded bg-gray-100 border-gray-300 text-black dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${
+                  errors.adBoardId ? "border-red-500" : ""
+                }`}
                 required
               >
                 <option value="" disabled>
@@ -303,8 +312,9 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 type="number"
                 value={adData.adDuration}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 bg-gray-100 border-gray-300 text-black border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${errors.adDuration ? "border-red-500" : ""
-                  }`}
+                className={`w-full px-3 py-2 bg-gray-100 border-gray-300 text-black border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${
+                  errors.adDuration ? "border-red-500" : ""
+                }`}
                 placeholder="Enter duration in seconds"
                 required
               />

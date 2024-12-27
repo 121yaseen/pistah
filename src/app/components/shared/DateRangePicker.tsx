@@ -9,6 +9,7 @@ interface DateRangePickerProps {
   setEndDate: (date: Date | null) => void;
   onTodayClick: () => void;
   showSearchIcon?: boolean;
+  onSearch: () => void; // Add onSearch prop
 }
 
 const DateRangePicker: React.FC<DateRangePickerProps> = ({
@@ -17,10 +18,14 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   setStartDate,
   setEndDate,
   onTodayClick,
-  showSearchIcon = true
+  showSearchIcon = true,
+  onSearch,
 }) => {
   const [showCalendar, setShowCalendar] = useState(false);
-  const [selectedRange, setSelectedRange] = useState<{ start: Date | null; end: Date | null }>({
+  const [selectedRange, setSelectedRange] = useState<{
+    start: Date | null;
+    end: Date | null;
+  }>({
     start: startDate,
     end: endDate,
   });
@@ -69,7 +74,10 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
   // Close the calendar when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
         if ((!startDate && !endDate) || (startDate && endDate)) {
           setShowCalendar(false);
         }
@@ -82,8 +90,17 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
     };
   }, [startDate, endDate]);
 
+  const handleSearch = () => {
+    onSearch(); // Trigger the search with the configured dates
+  };
+
   return (
-    <div className={"relative mx-auto max-w-2xl flex flex-col sm:flex-row justify-center items-center py-8"} style={{ transform: "scale(0.9)", transformOrigin: "center" }}>
+    <div
+      className={
+        "relative mx-auto max-w-2xl flex flex-col sm:flex-row justify-center items-center py-8"
+      }
+      style={{ transform: "scale(0.9)", transformOrigin: "center" }}
+    >
       <div className="flex items-center bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-300 dark:border-gray-700 overflow-hidden w-full">
         {/* Today Button */}
         <button
@@ -107,7 +124,8 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           onMouseLeave={(e) => {
             e.currentTarget.style.borderTopRightRadius = "0px"; // Reset on hover out
             e.currentTarget.style.borderBottomRightRadius = "0px";
-          }}>
+          }}
+        >
           Today
         </button>
 
@@ -117,7 +135,10 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
         {/* From-To Capsule */}
         <div className="flex items-center w-full px-6">
           {/* From Date Picker */}
-          <div className="flex items-center gap-4 w-full cursor-pointer" onClick={handleFromClick}>
+          <div
+            className="flex items-center gap-4 w-full cursor-pointer"
+            onClick={handleFromClick}
+          >
             <label className="font-semibold text-black dark:text-gray-200 text-base whitespace-nowrap cursor-pointer">
               From
             </label>
@@ -130,7 +151,10 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           <div className="border-l border-gray-300 dark:border-gray-600 h-8 mx-4"></div>
 
           {/* To Date Picker */}
-          <div className="flex items-center gap-4 w-full cursor-pointer" onClick={handleToClick}>
+          <div
+            className="flex items-center gap-4 w-full cursor-pointer"
+            onClick={handleToClick}
+          >
             <label className="font-semibold text-black dark:text-gray-200 text-base whitespace-nowrap cursor-pointer">
               To
             </label>
@@ -143,15 +167,22 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           {showSearchIcon && (
             <div
               className="p-2 bg-secondaryBlue hover:bg-secondaryBlue dark:bg-white dark:hover:bg-secondaryBlue rounded-full 
-            text-white dark:text-secondaryBlue dark:hover:text-white shadow-md cursor-pointer">
+            text-white dark:text-secondaryBlue dark:hover:text-white shadow-md cursor-pointer"
+              onClick={handleSearch} // Add onClick handler for search button
+            >
               <BiSearch size={30} />
-            </div>)}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Custom Calendar Popup */}
       {showCalendar && (
-        <div ref={calendarRef} className="absolute w-full max-w-2xl px-6 z-50" style={{ top: '80%' }}>
+        <div
+          ref={calendarRef}
+          className="absolute w-full max-w-2xl px-6 z-50"
+          style={{ top: "80%" }}
+        >
           <CustomCalendar
             startDate={selectedRange.start!}
             endDate={selectedRange.end}

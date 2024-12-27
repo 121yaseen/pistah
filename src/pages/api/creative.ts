@@ -74,7 +74,9 @@ export default async function handler(
 
       try {
         const ROOT_DIR = "/safe/upload/directory";
-        const resolvedPath = fs.realpathSync(path.resolve(ROOT_DIR, thumbnailFile.filepath));
+        const resolvedPath = fs.realpathSync(
+          path.resolve(ROOT_DIR, thumbnailFile.filepath)
+        );
         if (!resolvedPath.startsWith(ROOT_DIR)) {
           return res.status(400).json({ error: "Invalid file path" });
         }
@@ -101,8 +103,18 @@ export default async function handler(
       }
     });
   } else if (req.method === "GET") {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+      return res
+        .status(400)
+        .json({ error: "Start date and end date are required" });
+    }
     try {
-      const ads = await fetchFilteredAds();
+      const ads = await fetchFilteredAds(
+        startDate as string,
+        endDate as string
+      );
       return res.status(200).json(ads);
     } catch (error) {
       console.error("Error fetching ads:", error);
