@@ -6,7 +6,6 @@ import ProfileIcon from "@/icons/profileIcon";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Loader from "../shared/LoaderComponent";
-import { add, set } from "date-fns";
 import { useToast } from "@/app/context/ToastContext";
 
 const PublisherProfilePage: React.FC = () => {
