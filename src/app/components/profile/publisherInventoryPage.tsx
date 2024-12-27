@@ -184,15 +184,21 @@ const PublisherInventoryPage: React.FC = () => {
 
         {isModalOpen && currentAdBoard && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md w-full max-w-2xl">
-              <h3 className="text-xl font-semibold mb-4">
-                {isEditing ? "Edit Ad Space" : "Add Ad Space"}
-              </h3>
-              <AdBoardForm
-                adBoard={currentAdBoard}
-                onChange={handleAdBoardChange}
-              />
-              <div className="flex justify-end mt-4 space-x-2">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-2xl relative">
+              {/* Header */}
+              <div className="absolute top-0 left-0 w-full p-4 bg-[#001464] dark:bg-gray-800 rounded-t-lg border-b border-gray-300 dark:border-gray-600">
+                <h2 className="text-xl font-semibold text-white">
+                  {isEditing ? "Edit Inventory" : "Add Inventory"}
+                </h2>
+              </div>
+
+              {/* Form Content */}
+              <div className="mt-16 mb-16">
+                <AdBoardForm adBoard={currentAdBoard} onChange={handleAdBoardChange} />
+              </div>
+
+              {/* Footer */}
+              <div className="absolute bottom-0 left-0 w-full p-4 rounded-b-lg flex justify-end space-x-2 border-t border-gray-300 dark:border-gray-600">
                 <button
                   onClick={closeModal}
                   className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
@@ -209,6 +215,7 @@ const PublisherInventoryPage: React.FC = () => {
             </div>
           </div>
         )}
+
 
         {isDeleteConfirmationOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

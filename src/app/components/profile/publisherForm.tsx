@@ -14,39 +14,41 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
     <div className="space-y-4">
       {/* Board Name */}
       <div>
-        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-          Board Name
+        <label className="block text-sm font-medium mb-1 text-black dark:text-white">
+        Inventory Name
         </label>
         <input
           type="text"
+          placeholder="Inventory Name"
           value={adBoard.boardName}
           onChange={(e) => onChange("boardName", e.target.value)}
-          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
+          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
         />
       </div>
 
       {/* Location */}
       <div>
-        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+        <label className="block text-sm font-medium mb-1 text-black dark:text-white">
           Location
         </label>
         <input
           type="text"
+          placeholder="Location"
           value={adBoard.location}
           onChange={(e) => onChange("location", e.target.value)}
-          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
+          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
         />
       </div>
 
       {/* Board Type */}
       <div>
-        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+        <label className="block text-sm font-medium mb-1 text-black dark:text-white">
           Board Type
         </label>
         <select
           value={adBoard.boardType}
           onChange={(e) => onChange("boardType", e.target.value)}
-          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
+          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
         >
           <option value="Static">Static</option>
           <option value="Digital">Digital</option>
@@ -56,16 +58,16 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
 
       {/* Daily Rate */}
       <div>
-        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+        <label className="block text-sm font-medium mb-1 text-black dark:text-white">
           Daily Rate (₹)
         </label>
         <div className="flex items-center">
-          <span className="mr-2 text-gray-700 dark:text-gray-300">₹</span>
+          <span className="mr-2 text-black dark:text-white">₹</span>
           <input
             type="number"
             value={adBoard.dailyRate}
             onChange={(e) => onChange("dailyRate", parseFloat(e.target.value))}
-            className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
+            className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
             placeholder="1500"
           />
         </div>
@@ -73,14 +75,15 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
 
       {/* Owner Contact */}
       <div>
-        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-          Owner Contact
+        <label className="block text-sm font-medium mb-1 text-black dark:text-white">
+          Contact (+91)
         </label>
         <input
           type="text"
           value={adBoard.ownerContact}
+          placeholder="Contact"
           onChange={(e) => onChange("ownerContact", e.target.value)}
-          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"
+          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
         />
       </div>
     </div>
