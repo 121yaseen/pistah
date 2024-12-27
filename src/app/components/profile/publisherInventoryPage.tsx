@@ -8,13 +8,15 @@ import {
   createAdBoard,
   deleteAdBoard,
   fetchAdBoards,
+  updateAdBoard,
 } from "@/app/services/adBoardService";
 import PencilIcon from "@/icons/pencilIcon";
 import DeleteIcon from "@/icons/deleteIcon";
 import AddIcon from "@/icons/addIcon";
 import Loader from "../shared/LoaderComponent";
 import { useToast } from "@/app/context/ToastContext";
-import Image from 'next/image';
+import Image from "next/image";
+import { set } from "date-fns";
 
 const PublisherInventoryPage: React.FC = () => {
   const [adBoards, setAdBoards] = useState<AdBoard[]>([]);
@@ -90,24 +92,42 @@ const PublisherInventoryPage: React.FC = () => {
       return;
     }
     try {
-      await createAdBoard(currentAdBoard);
-      if (currentAdBoard) {
-        setAdBoards([...adBoards, currentAdBoard]);
+      setIsLoading(true);
+      const response = await createAdBoard(currentAdBoard);
+
+      if (response) {
         addToast("Inventory added successfully!", "success");
+        loadAdBoards();
         closeModal();
+      } else {
+        addToast("Failed to add Inventory!", "error");
       }
+      setIsLoading(false);
     } catch (error) {
       addToast("Something went wrong!", "error");
       console.log(error);
+      setIsLoading(false);
     }
   };
 
-  const handleEditAdBoard = () => {
+  const handleEditAdBoard = async () => {
     if (currentAdBoard !== null && editingIndex !== null) {
       if (!validateForm()) {
         addToast("Invalid input fields.", "error");
         return;
       }
+
+      setIsLoading(true);
+      try {
+        await updateAdBoard(currentAdBoard);
+      } catch (error) {
+        addToast("Failed to edit Inventory!", "error");
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+        loadAdBoards();
+      }
+
       const updatedAdBoards = [...adBoards];
       updatedAdBoards[editingIndex] = currentAdBoard;
       setAdBoards(updatedAdBoards);
@@ -184,7 +204,7 @@ const PublisherInventoryPage: React.FC = () => {
                   className="p-4 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow flex items-center space-x-4" // Added space-x-4 for horizontal spacing
                 >
                   {/* Image on the left */}
-                  <div className="relative w-24 h-24"> 
+                  <div className="relative w-24 h-24">
                     <Image
                       src="https://150763658.v2.pressablecdn.com/wp-content/uploads/2023/02/image-1.webp"
                       alt="Ad Thumbnail"
@@ -195,7 +215,9 @@ const PublisherInventoryPage: React.FC = () => {
                   </div>
 
                   {/* Ad Board Details on the right */}
-                  <div className="flex-1"> {/* Allows the content to take the remaining space */}
+                  <div className="flex-1">
+                    {" "}
+                    {/* Allows the content to take the remaining space */}
                     <p>
                       <strong>Title:</strong> {adBoard.boardName}
                     </p>
@@ -235,7 +257,6 @@ const PublisherInventoryPage: React.FC = () => {
                 </li>
               ))}
             </ul>
-
           </div>
         </div>
 

@@ -24,31 +24,7 @@ const Dashboard: React.FC = () => {
   const formattedStartDate = formatDate(startDate || new Date());
   const formattedEndDate = formatDate(endDate || new Date());
 
-  useEffect(() => {
-    if (startDate && endDate) {
-      setLoading(true);
-      fetchAds(formattedStartDate, formattedEndDate).then(
-        (data) => {
-          setAds(data);
-          setError(false);
-          setLoading(false);
-        },
-        (err) => {
-          setError(true);
-          console.error(err);
-          setLoading(false);
-        }
-      );
-    }
-  }, []);
-
-  const handleTodayClick = () => {
-    const today = new Date();
-    setStartDate(today);
-    setEndDate(today);
-  };
-
-  const handleSearch = () => {
+  const reloadAds = () => {
     setLoading(true);
     fetchAds(formattedStartDate, formattedEndDate).then(
       (data) => {
@@ -62,6 +38,22 @@ const Dashboard: React.FC = () => {
         setLoading(false);
       }
     );
+  };
+
+  useEffect(() => {
+    if (startDate && endDate) {
+      reloadAds();
+    }
+  }, []);
+
+  const handleTodayClick = () => {
+    const today = new Date();
+    setStartDate(today);
+    setEndDate(today);
+  };
+
+  const handleSearch = () => {
+    reloadAds();
   };
 
   return (

@@ -16,7 +16,7 @@ model Ad {
   adDisplayEndDate   DateTime
   adDuration         String
   thumbnailUrl       String
-  adBoard            AdBoard  @relation(fields: [adBoardId], references: [id])
+  adBoard            AdBoard  @relation("AdToAdBoard", fields: [adBoardId], references: [id], onDelete: Cascade)
 }
 
 model AdBoard {
@@ -30,7 +30,7 @@ model AdBoard {
   operationalHours    String
   ownerContact        String
   lastMaintenanceDate DateTime
-  ads                 Ad[]
+  ads                 Ad[]     @relation("AdToAdBoard")
 }
 
 model User {

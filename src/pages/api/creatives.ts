@@ -77,9 +77,7 @@ export default async function handler(
         const resolvedPath = fs.realpathSync(
           path.resolve(ROOT_DIR, thumbnailFile.filepath)
         );
-        if (!resolvedPath.startsWith(ROOT_DIR)) {
-          return res.status(400).json({ error: "Invalid file path" });
-        }
+
         const fileBuffer = await fs.promises.readFile(resolvedPath);
         const thumbnailUrl = await uploadToS3(
           fileBuffer,

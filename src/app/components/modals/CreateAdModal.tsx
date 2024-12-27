@@ -139,6 +139,9 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
       if (response.ok) {
         addToast("Creative added successfully in Dashboard!", "success");
         onClose();
+
+        // Reload Page
+        window.location.reload();
       } else {
         addToast("Something went wrong!", "error");
       }

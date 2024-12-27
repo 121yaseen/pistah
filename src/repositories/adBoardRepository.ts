@@ -61,9 +61,29 @@ export const getAds = async () => {
 
 // Delete an Ad board and all its Ads
 export const deleteAdBoardAsync = async (id: string) => {
+  console.log("Deleting Ad Board with ID:", id);
   return await prisma.adBoard.delete({
     where: {
       id,
+    },
+  });
+};
+
+// Update an Ad Board
+export const updateAdBoardAsync = async (adBoard: AdBoard) => {
+  const { id, boardName, location, boardType, dailyRate, ownerContact } =
+    adBoard;
+
+  return await prisma.adBoard.update({
+    where: {
+      id,
+    },
+    data: {
+      boardName,
+      location,
+      boardType,
+      dailyRate,
+      ownerContact,
     },
   });
 };
