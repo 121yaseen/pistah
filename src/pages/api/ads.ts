@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import formidable from "formidable";
 import fs from "fs";
+import path from "path";
 import { createAdAsync } from "../../repositories/adBoardRepository";
 import { uploadToS3 } from "@/services/s3Service";
 import { fetchFilteredAds } from "@/services/adService";
@@ -72,7 +73,12 @@ export default async function handler(
       }
 
       try {
-        const fileBuffer = await fs.promises.readFile(thumbnailFile.filepath);
+        const ROOT_DIR = "/safe/upload/directory";
+        const resolvedPath = fs.realpathSync(path.resolve(ROOT_DIR, thumbnailFile.filepath));
+        if (!resolvedPath.startsWith(ROOT_DIR)) {
+          return res.status(400).json({ error: "Invalid file path" });
+        }
+        const fileBuffer = await fs.promises.readFile(resolvedPath);
         const thumbnailUrl = await uploadToS3(
           fileBuffer,
           thumbnailFile.originalFilename || "default-filename"
