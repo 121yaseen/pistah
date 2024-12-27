@@ -80,6 +80,10 @@ const PublisherInventoryPage: React.FC = () => {
   };
 
   const handleAddAdBoard = async () => {
+    if (!validateForm()) {
+      addToast("Invalid input fields.", "error");
+      return;
+    }
     try {
       await createAdBoard(currentAdBoard);
       if (currentAdBoard) {
@@ -95,9 +99,14 @@ const PublisherInventoryPage: React.FC = () => {
 
   const handleEditAdBoard = () => {
     if (currentAdBoard !== null && editingIndex !== null) {
+      if (!validateForm()) {
+        addToast("Invalid input fields.", "error");
+        return;
+      }
       const updatedAdBoards = [...adBoards];
       updatedAdBoards[editingIndex] = currentAdBoard;
       setAdBoards(updatedAdBoards);
+      addToast("Inventory edited successfully!", "success");
       closeModal();
     }
   };
@@ -114,6 +123,17 @@ const PublisherInventoryPage: React.FC = () => {
     }
     setIsDeleteConfirmationOpen(false);
     setDeleteIndex(null);
+  };
+
+  // Validate the form when any field is updated
+  const validateForm = () => {
+    return currentAdBoard
+      ? currentAdBoard.boardName !== "" &&
+      currentAdBoard.location !== "" &&
+      currentAdBoard.dailyRate > 0 &&
+      currentAdBoard.ownerContact &&
+      /^\d{10}$/.test(currentAdBoard.ownerContact)
+      : false;
   };
 
   return (
