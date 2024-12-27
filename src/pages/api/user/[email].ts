@@ -2,6 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/app/libs/prismadb";
 import formidable from "formidable";
 import fs from "fs";
+import path from "path";
+
+const SAFE_ROOT_DIR = "/var/www/uploads";
 import { uploadToS3 } from "@/services/s3Service";
 import { updateUserProfile } from "@/services/userService";
 
@@ -61,7 +64,11 @@ export default async function handler(
           : files.profilePic;
 
         try {
-          const fileBuffer = await fs.promises.readFile(file.filepath);
+          const normalizedFilePath = path.resolve(SAFE_ROOT_DIR, file.filepath);
+          if (!normalizedFilePath.startsWith(SAFE_ROOT_DIR)) {
+            throw new Error("Invalid file path");
+          }
+          const fileBuffer = await fs.promises.readFile(normalizedFilePath);
           profilePicUrl = await uploadToS3(
             fileBuffer,
             file.originalFilename || `profile-pic-${email}`
