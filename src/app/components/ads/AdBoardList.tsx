@@ -16,7 +16,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads }) => {
   }, {} as Record<string, AdWithBoard[]>);
 
   return (
-    <div className="space-y-8 flex flex-col items-center">
+    <div className="space-y-8 flex flex-col items-center pb-12">
       {Object.entries(groupedAds).map(([boardName, boardAds]) => {
         const location = boardAds[0].adBoard.location; // Get the location from the first ad in the group
         return (

@@ -17,7 +17,7 @@ export interface AdWithBoard extends Ad {
 
 export interface AdBoard {
   id?: string;
-  pic: File | null;
+  image: File | null;
   boardType?: AdBoardType;
   boardName: string;
   location: string;

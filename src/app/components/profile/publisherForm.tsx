@@ -5,7 +5,7 @@ interface AdBoardFormProps {
   adBoard: AdBoard;
   onChange: (
     field: keyof AdBoard,
-    value: string | number | boolean | null
+    value: string | number | boolean | File | null
   ) => void;
 }
 
@@ -43,12 +43,33 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
       delete newErrors.ownerContact;
     }
 
+    // Image validation
+    if (field === "image" && !value) {
+      newErrors.image = "Please upload an image less than 5MB.";
+    } else {
+      delete newErrors.image;
+    }
+
     setErrors(newErrors);
   };
 
   const handleChange = (field: keyof AdBoard, value: string | number | boolean) => {
     onChange(field, value);
     validateField(field, value); // Validate field when it changes
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        validateField("image", false);
+      } else {
+        validateField("image", true);
+      }
+    } else {
+      validateField("image", false);
+    }
+    onChange("image", file);
   };
 
   return (
@@ -60,12 +81,27 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
         </label>
         <input
           type="text"
-          placeholder="Inventory Name"
+          placeholder="inventory name"
           value={adBoard.boardName}
           onChange={(e) => handleChange("boardName", e.target.value)}
           className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
         />
         {errors.boardName && <p className="text-red-500 text-sm">{errors.boardName}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1 text-black dark:text-white" >
+          Inventory Image (Max 5MB)
+        </label>
+        <input
+          id="invImage"
+          name="invImage"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="w-full p-3 border rounded-lg dark:bg-gray-700 bg-gray-100 border-gray-300 dark:border-gray-700 dark:text-gray-100"
+        />
+        {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
       </div>
 
       {/* Location */}
@@ -75,7 +111,7 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
         </label>
         <input
           type="text"
-          placeholder="Location"
+          placeholder="location"
           value={adBoard.location}
           onChange={(e) => handleChange("location", e.target.value)}
           className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
@@ -121,15 +157,18 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
       {/* Owner Contact */}
       <div>
         <label className="block text-sm font-medium mb-1 text-black dark:text-white">
-          Contact (+91)
+          Contact
         </label>
-        <input
-          type="text"
-          value={adBoard.ownerContact}
-          placeholder="Contact"
-          onChange={(e) => handleChange("ownerContact", e.target.value)}
-          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
-        />
+        <div className="flex items-center">
+          <span className="mr-2 text-black dark:text-white">+91</span>
+          <input
+            type="text"
+            value={adBoard.ownerContact}
+            placeholder="mobile number"
+            onChange={(e) => handleChange("ownerContact", e.target.value)}
+            className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
+          />
+        </div>
         {errors.ownerContact && <p className="text-red-500 text-sm">{errors.ownerContact}</p>}
       </div>
     </div>
