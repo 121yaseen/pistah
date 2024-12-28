@@ -178,6 +178,19 @@ const PublisherInventoryPage: React.FC = () => {
       : false;
   };
 
+  useEffect(() => {
+    if (isModalOpen || isDeleteConfirmationOpen) {
+        document.body.style.overflow = "hidden";
+    } else {
+        document.body.style.overflow = "";
+    }
+
+    // Cleanup when the component is unmounted
+    return () => {
+        document.body.style.overflow = "";
+    };
+}, [isModalOpen, isDeleteConfirmationOpen]);
+
   return (
     <div className="min-h-screen w-full bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
       <Loader isVisible={isLoading} />
@@ -275,7 +288,7 @@ const PublisherInventoryPage: React.FC = () => {
               {/* Form Content */}
               <div
                 className="mt-16 mb-16 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300"
-                style={{ maxHeight: "65vh", marginRight: "-1rem", paddingRight: "1rem" }} // Adjust margin and padding
+                style={{ maxHeight: "65vh", marginRight: "-1.5rem", paddingRight: "1rem", paddingLeft: "1rem", paddingBottom: "1rem" }} // Adjust margin and padding
               >
                 <AdBoardForm adBoard={currentAdBoard} onChange={handleAdBoardChange} />
               </div>

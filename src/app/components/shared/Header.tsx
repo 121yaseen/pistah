@@ -82,6 +82,19 @@ export default function Header({ navLinks = [] }: HeaderProps) {
     });
   };
 
+  useEffect(() => {
+      if (isModalOpen) {
+          document.body.style.overflow = "hidden";
+      } else {
+          document.body.style.overflow = "";
+      }
+  
+      // Cleanup when the component is unmounted
+      return () => {
+          document.body.style.overflow = "";
+      };
+  }, [isModalOpen]);
+
   return (
     <header className="flex justify-between items-center px-6 py-3 bg-[#001464] text-white shadow-md relative">
       {/* Left Section: Logo */}
