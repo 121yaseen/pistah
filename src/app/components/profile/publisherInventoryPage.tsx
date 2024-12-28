@@ -15,7 +15,7 @@ import DeleteIcon from "@/icons/deleteIcon";
 import AddIcon from "@/icons/addIcon";
 import Loader from "../shared/LoaderComponent";
 import { useToast } from "@/app/context/ToastContext";
-import Image from 'next/image';
+import Image from "next/image";
 
 const PublisherInventoryPage: React.FC = () => {
   const [adBoards, setAdBoards] = useState<AdBoard[]>([]);
@@ -170,26 +170,27 @@ const PublisherInventoryPage: React.FC = () => {
   const validateForm = () => {
     return currentAdBoard
       ? currentAdBoard.boardName !== "" &&
-      currentAdBoard.location !== "" &&
-      currentAdBoard.dailyRate > 0 &&
-      currentAdBoard.ownerContact &&
-      /^\d{10}$/.test(currentAdBoard.ownerContact) &&
-      currentAdBoard.image && currentAdBoard.image.size < 5 * 1024 * 1024
+          currentAdBoard.location !== "" &&
+          currentAdBoard.dailyRate > 0 &&
+          currentAdBoard.ownerContact &&
+          /^\d{10}$/.test(currentAdBoard.ownerContact) &&
+          currentAdBoard.image &&
+          currentAdBoard.image.size < 5 * 1024 * 1024
       : false;
   };
 
   useEffect(() => {
     if (isModalOpen || isDeleteConfirmationOpen) {
-        document.body.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
     } else {
-        document.body.style.overflow = "";
+      document.body.style.overflow = "";
     }
 
     // Cleanup when the component is unmounted
     return () => {
-        document.body.style.overflow = "";
+      document.body.style.overflow = "";
     };
-}, [isModalOpen, isDeleteConfirmationOpen]);
+  }, [isModalOpen, isDeleteConfirmationOpen]);
 
   return (
     <div className="min-h-screen w-full bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
@@ -216,9 +217,12 @@ const PublisherInventoryPage: React.FC = () => {
                   className="p-4 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow flex items-center space-x-4" // Added space-x-4 for horizontal spacing
                 >
                   {/* Image on the left */}
-                  <div className="relative w-24 h-24"> 
+                  <div className="relative w-24 h-24">
                     <Image
-                      src="https://150763658.v2.pressablecdn.com/wp-content/uploads/2023/02/image-1.webp"
+                      src={
+                        adBoard.imageUrl ||
+                        "https://150763658.v2.pressablecdn.com/wp-content/uploads/2023/02/image-1.webp"
+                      }
                       alt="Ad Thumbnail"
                       layout="fill" // Makes the image fill the container
                       objectFit="cover" // Ensures the image scales correctly
@@ -227,7 +231,9 @@ const PublisherInventoryPage: React.FC = () => {
                   </div>
 
                   {/* Ad Board Details on the right */}
-                  <div className="flex-1"> {/* Allows the content to take the remaining space */}
+                  <div className="flex-1">
+                    {" "}
+                    {/* Allows the content to take the remaining space */}
                     <p>
                       <strong>Title:</strong> {adBoard.boardName}
                     </p>
@@ -267,7 +273,6 @@ const PublisherInventoryPage: React.FC = () => {
                 </li>
               ))}
             </ul>
-
           </div>
         </div>
 
@@ -287,9 +292,19 @@ const PublisherInventoryPage: React.FC = () => {
               {/* Form Content */}
               <div
                 className="mt-[5%] mb-12 overflow-y-auto scrollable-content"
-                style={{ maxHeight: "70vh", marginRight: "-1.5rem", paddingRight: "1rem", paddingLeft: "1rem", paddingBottom: "2rem", paddingTop: "1rem" }} // Adjust margin and padding
+                style={{
+                  maxHeight: "70vh",
+                  marginRight: "-1.5rem",
+                  paddingRight: "1rem",
+                  paddingLeft: "1rem",
+                  paddingBottom: "2rem",
+                  paddingTop: "1rem",
+                }} // Adjust margin and padding
               >
-                <AdBoardForm adBoard={currentAdBoard} onChange={handleAdBoardChange} />
+                <AdBoardForm
+                  adBoard={currentAdBoard}
+                  onChange={handleAdBoardChange}
+                />
               </div>
 
               {/* Footer */}
@@ -310,7 +325,6 @@ const PublisherInventoryPage: React.FC = () => {
             </div>
           </div>
         )}
-
 
         {isDeleteConfirmationOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

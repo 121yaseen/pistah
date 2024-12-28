@@ -16,6 +16,8 @@ model Ad {
   adDisplayEndDate   DateTime
   adDuration         String
   thumbnailUrl       String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
   adBoard            AdBoard  @relation("AdToAdBoard", fields: [adBoardId], references: [id], onDelete: Cascade)
 }
 
@@ -30,6 +32,9 @@ model AdBoard {
   operationalHours    String
   ownerContact        String
   lastMaintenanceDate DateTime
+  imageUrl            String   @default("")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
   ads                 Ad[]     @relation("AdToAdBoard")
 }
 

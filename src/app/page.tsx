@@ -20,13 +20,9 @@ export default function AppHome() {
     return <Loader isVisible={true} />;
   }
   if (status === "authenticated") {
-    console.log("Authenticated");
-    console.log(session);
     redirect("/dashboard");
   }
   if (status === "unauthenticated") {
-    console.log("Unauthenticated");
-    console.log(session);
     redirect("/login");
   }
   return null;

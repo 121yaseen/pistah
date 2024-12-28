@@ -88,7 +88,6 @@ export default async function handler(
             : companyName,
           profilePicUrl,
         });
-        console.log("Updated user:", updatedUser);
         return res.status(200).json(updatedUser);
       } catch (updateError) {
         console.error("Error updating profile:", updateError);

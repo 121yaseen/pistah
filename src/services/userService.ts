@@ -44,16 +44,7 @@ export async function updateUserProfile(
     if (!existingUser) {
       throw new Error("User not found");
     }
-    console.log({
-      name: data.name || existingUser.name,
-      email: email || existingUser.email,
-      Company: {
-        update: {
-          name: data.companyName || existingUser.Company?.name || "",
-        },
-      },
-      profilePicUrl: data.profilePicUrl || existingUser.profilePicUrl,
-    });
+
     // Update the user's profile
     const updatedUser = await prisma.user.update({
       where: { email },

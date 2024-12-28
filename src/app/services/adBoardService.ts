@@ -6,12 +6,20 @@ export const createAdBoard = async (
   if (!adBoard) {
     throw new Error("Ad board data is required");
   }
+  const formData = new FormData();
+
+  if (adBoard.image) {
+    formData.append("image", adBoard?.image as File);
+  }
+  formData.append("boardName", adBoard?.boardName ?? "");
+  formData.append("location", adBoard?.location ?? "");
+  formData.append("dailyRate", adBoard?.dailyRate.toString() ?? "");
+  formData.append("ownerContact", adBoard?.ownerContact ?? "");
+  formData.append("boardType", adBoard?.boardType ?? "");
+
   const response = await fetch("/api/adBoard", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ adBoard }),
+    body: formData,
   });
 
   if (!response.ok) {

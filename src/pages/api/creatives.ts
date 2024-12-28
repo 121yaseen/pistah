@@ -16,8 +16,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("req.method", req.method);
-
   if (req.method === "POST") {
     const form = formidable();
     form.parse(req, async (err, fields, files) => {
@@ -25,7 +23,6 @@ export default async function handler(
         console.error("Error parsing form:", err);
         return res.status(500).json({ error: "Error parsing form data" });
       }
-
       const {
         title,
         downloadLink,

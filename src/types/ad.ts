@@ -17,15 +17,16 @@ export interface AdWithBoard extends Ad {
 
 export interface AdBoard {
   id?: string;
-  image: File | null;
-  boardType?: AdBoardType;
+  image?: File | null;
+  boardType: AdBoardType;
   boardName: string;
   location: string;
   dailyRate: number;
   ownerContact: string;
-  count: number;
-  size: string;
-  more: string;
+  count?: number;
+  size?: string;
+  more?: string;
+  imageUrl?: string;
 }
 
 export interface Company {

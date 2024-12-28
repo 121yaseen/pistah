@@ -18,6 +18,7 @@ export const createAdBoardAsync = async (adBoard: AdBoard) => {
       operationalHours: "9 AM - 6 PM",
       ownerContact,
       lastMaintenanceDate: new Date().toISOString(),
+      imageUrl: adBoard.imageUrl ?? "",
     },
   });
 };
@@ -74,7 +75,6 @@ export const getAds = async () => {
 
 // Delete an Ad board and all its Ads
 export const deleteAdBoardAsync = async (id: string) => {
-  console.log("Deleting Ad Board with ID:", id);
   return await prisma.adBoard.delete({
     where: {
       id,
