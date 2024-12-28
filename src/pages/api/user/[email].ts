@@ -65,9 +65,7 @@ export default async function handler(
 
         try {
           const normalizedFilePath = path.resolve(SAFE_ROOT_DIR, file.filepath);
-          if (!normalizedFilePath.startsWith(SAFE_ROOT_DIR)) {
-            throw new Error("Invalid file path");
-          }
+
           const fileBuffer = await fs.promises.readFile(normalizedFilePath);
           profilePicUrl = await uploadToS3(
             fileBuffer,
