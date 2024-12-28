@@ -1,5 +1,7 @@
 import prisma from "@/app/libs/prismadb";
 import { Ad, AdBoard } from "@/types/ad";
+import { parse } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 
 // Create a new Ad Board
 export const createAdBoardAsync = async (adBoard: AdBoard) => {
@@ -37,13 +39,24 @@ export const createAdAsync = async (ad: Ad) => {
     thumbnailUrl,
   } = ad;
 
+  const parsedStartDate = parse(
+    adDisplayStartDate,
+    "EEE MMM dd yyyy",
+    new Date()
+  );
+  const parsedEndDate = parse(adDisplayEndDate, "EEE MMM dd yyyy", new Date());
+
+  // Convert to UTC using date-fns-tz
+  const utcStartDate = zonedTimeToUtc(parsedStartDate, "UTC");
+  const utcEndDate = zonedTimeToUtc(parsedEndDate, "UTC");
+
   return await prisma.ad.create({
     data: {
       title,
       downloadLink,
-      adBoardId, // No need to convert as Prisma handles ObjectId automatically
-      adDisplayStartDate: new Date(adDisplayStartDate),
-      adDisplayEndDate: new Date(adDisplayEndDate),
+      adBoardId,
+      adDisplayStartDate: utcStartDate,
+      adDisplayEndDate: utcEndDate,
       adDuration,
       thumbnailUrl,
     },
