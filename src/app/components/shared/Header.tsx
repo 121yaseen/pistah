@@ -208,7 +208,7 @@ export default function Header({ navLinks = [] }: HeaderProps) {
             </button>
             <div className="flex items-center mt-1 space-x-1">
               <span className="text-gray-400 text-xs group-hover:text-white">
-                {user?.name || "Guest"}
+                {user?.name || "\u00A0"}
               </span>
             </div>
           </div>

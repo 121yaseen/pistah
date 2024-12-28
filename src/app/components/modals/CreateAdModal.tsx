@@ -170,7 +170,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto px-6 py-4">
+        <div className="flex-1 overflow-y-auto px-6 py-4 scrollable-content">
           <form onSubmit={handleSubmit} id="createAdForm">
             <div className="mb-4">
               <label

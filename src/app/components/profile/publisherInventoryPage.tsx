@@ -195,7 +195,6 @@ const PublisherInventoryPage: React.FC = () => {
     <div className="min-h-screen w-full bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
       <Loader isVisible={isLoading} />
       <div className="container mx-auto py-10">
-        <h1 className="text-3xl font-bold text-center mb-10">My Inventory</h1>
         <div className="flex justify-center">
           <div className="w-full max-w-6xl">
             <div className="flex justify-end items-center mb-6 space-x-2">
@@ -280,15 +279,15 @@ const PublisherInventoryPage: React.FC = () => {
             >
               {/* Header */}
               <div className="absolute top-0 left-0 w-full p-4 bg-[#001464] dark:bg-gray-800 rounded-t-lg border-b border-gray-300 dark:border-gray-600">
-                <h2 className="text-xl font-semibold text-white">
+                <h2 className="text-2xl font-bold text-white">
                   {isEditing ? "Edit Inventory" : "Add Inventory"}
                 </h2>
               </div>
 
               {/* Form Content */}
               <div
-                className="mt-16 mb-16 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300"
-                style={{ maxHeight: "65vh", marginRight: "-1.5rem", paddingRight: "1rem", paddingLeft: "1rem", paddingBottom: "1rem" }} // Adjust margin and padding
+                className="mt-[5%] mb-12 overflow-y-auto scrollable-content"
+                style={{ maxHeight: "70vh", marginRight: "-1.5rem", paddingRight: "1rem", paddingLeft: "1rem", paddingBottom: "2rem", paddingTop: "1rem" }} // Adjust margin and padding
               >
                 <AdBoardForm adBoard={currentAdBoard} onChange={handleAdBoardChange} />
               </div>
