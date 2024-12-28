@@ -95,7 +95,7 @@ export default async function handler(
       }
     });
   } else {
-    res.setHeader("Allow", ["GET"]);
+    res.setHeader("Allow", ["GET", "PUT"]);
     res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
 }

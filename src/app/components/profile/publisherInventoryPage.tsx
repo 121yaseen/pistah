@@ -96,15 +96,15 @@ const PublisherInventoryPage: React.FC = () => {
 
       if (response) {
         addToast("Inventory added successfully!", "success");
-        loadAdBoards();
+        await loadAdBoards();
         closeModal();
       } else {
         addToast("Failed to add Inventory!", "error");
       }
-      setIsLoading(false);
     } catch (error) {
       addToast("Something went wrong!", "error");
       console.log(error);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -119,18 +119,19 @@ const PublisherInventoryPage: React.FC = () => {
       setIsLoading(true);
       try {
         await updateAdBoard(currentAdBoard);
+        addToast("Inventory edited successfully!", "success");
       } catch (error) {
         addToast("Failed to edit Inventory!", "error");
         console.log(error);
       } finally {
+        await loadAdBoards();
         setIsLoading(false);
-        loadAdBoards();
       }
 
-      const updatedAdBoards = [...adBoards];
-      updatedAdBoards[editingIndex] = currentAdBoard;
-      setAdBoards(updatedAdBoards);
-      addToast("Inventory edited successfully!", "success");
+      // const updatedAdBoards = [...adBoards];
+      // updatedAdBoards[editingIndex] = currentAdBoard;
+      // setAdBoards(updatedAdBoards);
+      // addToast("Inventory edited successfully!", "success");
       closeModal();
     }
   };
@@ -149,13 +150,13 @@ const PublisherInventoryPage: React.FC = () => {
           .then(
             () => {
               addToast("Ad Board deleted successfully!", "success");
-              loadAdBoards();
             },
             () => {
               addToast("Failed to delete Ad Board!", "error");
             }
           )
-          .finally(() => {
+          .finally(async () => {
+            await loadAdBoards();
             setIsLoading(false);
           });
       } else {
@@ -173,10 +174,11 @@ const PublisherInventoryPage: React.FC = () => {
           currentAdBoard.location !== "" &&
           currentAdBoard.dailyRate > 0 &&
           currentAdBoard.ownerContact &&
-          /^\d{10}$/.test(currentAdBoard.ownerContact) &&
-          currentAdBoard.image &&
-          currentAdBoard.image.size < 5 * 1024 * 1024
-      : false;
+          /^\d{10}$/.test(currentAdBoard.ownerContact)
+      : // &&
+        // currentAdBoard.image &&
+        // currentAdBoard.image.size < 5 * 1024 * 1024
+        false;
   };
 
   useEffect(() => {
@@ -220,13 +222,16 @@ const PublisherInventoryPage: React.FC = () => {
                   <div className="relative w-24 h-24">
                     <Image
                       src={
-                        adBoard.imageUrl ||
-                        "https://150763658.v2.pressablecdn.com/wp-content/uploads/2023/02/image-1.webp"
+                        adBoard.imageUrl
+                          ? `${
+                              adBoard.imageUrl
+                            }?timestamp=${new Date().getTime()}`
+                          : "https://150763658.v2.pressablecdn.com/wp-content/uploads/2023/02/image-1.webp"
                       }
                       alt="Ad Thumbnail"
-                      layout="fill" // Makes the image fill the container
-                      objectFit="cover" // Ensures the image scales correctly
-                      priority={true} // Ensures the image loads eagerly for LCP improvement
+                      layout="fill"
+                      objectFit="cover"
+                      priority={true}
                     />
                   </div>
 

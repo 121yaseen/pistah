@@ -1,6 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
-import { createAdBoard, deleteAdBoard } from "@/services/adBoardService";
+import {
+  createAdBoard,
+  deleteAdBoard,
+  updateAdBoard,
+} from "@/services/adBoardService";
 import { AdBoard } from "@/types/ad";
 import { getAdBoards } from "@/repositories/adBoardRepository";
 import formidable from "formidable";
@@ -88,7 +92,69 @@ export default async function handler(
       return res.status(500).json({ error: "Failed to fetch ad boards" });
     }
   } else if (req.method === "PUT") {
-    return res.status(405).json({ error: "Method Not Allowed" });
+    // Update ad board
+    const form = formidable();
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        console.error("Error parsing form:", err);
+        return res.status(500).json({ error: "Error parsing form data" });
+      }
+      const { id, boardName, location, dailyRate, ownerContact, boardType } =
+        fields as { [key: string]: string | string[] };
+
+      const adBoard: AdBoard = {
+        id: Array.isArray(id) ? id[0] : id,
+        boardName: Array.isArray(boardName) ? boardName[0] : boardName,
+        location: Array.isArray(location) ? location[0] : location,
+        dailyRate: Number(Array.isArray(dailyRate) ? dailyRate[0] : dailyRate),
+        ownerContact: Array.isArray(ownerContact)
+          ? ownerContact[0]
+          : ownerContact,
+        boardType: Array.isArray(boardType)
+          ? (boardType[0] as AdBoardType)
+          : (boardType as AdBoardType),
+      };
+
+      if (
+        !adBoard.id ||
+        !adBoard.boardName ||
+        !adBoard.location ||
+        !adBoard.dailyRate ||
+        !adBoard.ownerContact ||
+        !adBoard.boardType
+      ) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      if (files.image) {
+        const file = Array.isArray(files.image) ? files.image[0] : files.image;
+        if (file.size > 5 * 1024 * 1024) {
+          return res
+            .status(400)
+            .json({ error: "Inventory Image must be less than 5MB" });
+        }
+
+        try {
+          const fileBuffer = await fs.promises.readFile(file.filepath);
+          const imageUrl = await uploadToS3(
+            fileBuffer,
+            file.originalFilename || "default-filename"
+          );
+          adBoard.imageUrl = imageUrl;
+        } catch (error) {
+          console.error("Error uploading image to S3:", error);
+          return res.status(500).json({ error: "Failed to upload image" });
+        }
+      }
+
+      try {
+        const response = await updateAdBoard(adBoard);
+        return res.status(200).json(response);
+      } catch (error) {
+        console.error("Error creating ad board:", error);
+        return res.status(500).json({ error: "Failed to create ad board" });
+      }
+    });
   } else if (req.method === "DELETE") {
     try {
       const response = await deleteAdBoard(req.query.id as string);
