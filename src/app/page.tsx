@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import Loader from "./components/shared/LoaderComponent";
 
 export default function AppHome() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login"); // Redirect to login if not authenticated
