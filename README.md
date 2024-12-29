@@ -36,7 +36,7 @@ Follow these steps to set up the project locally:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/121yaseen/pistah.git
+git clone https://github.com/pistah-ad/pistah-ssp.git
 cd pistah
 ```
 
