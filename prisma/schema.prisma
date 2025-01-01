@@ -16,8 +16,11 @@ model Ad {
   adDisplayEndDate   DateTime
   adDuration         String
   thumbnailUrl       String
+  createdById        String   @db.ObjectId
+  createdUser        User     @relation(fields: [createdById], references: [id])
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+  // This need to be updated on enable features centered on ads such as ad editing, ad deletion, ad display status
   adBoard            AdBoard  @relation("AdToAdBoard", fields: [adBoardId], references: [id], onDelete: Cascade)
 }
 
@@ -32,6 +35,8 @@ model AdBoard {
   operationalHours    String
   ownerContact        String
   lastMaintenanceDate DateTime
+  createdById         String   @db.ObjectId
+  createdUser         User     @relation(fields: [createdById], references: [id])
   imageUrl            String   @default("")
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
@@ -48,6 +53,8 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   Company       Company?
+  Ad            Ad[]
+  AdBoard       AdBoard[]
 }
 
 model Account {

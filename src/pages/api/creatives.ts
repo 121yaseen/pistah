@@ -2,9 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import formidable from "formidable";
 import fs from "fs";
 import path from "path";
-import { createAdAsync } from "../../repositories/adBoardRepository";
 import { uploadToS3 } from "@/services/s3Service";
-import { fetchFilteredAds } from "@/services/adService";
+import { createAd, fetchFilteredAds } from "@/services/adService";
+import { getLoggedInUser } from "@/services/userService";
 
 export const config = {
   api: {
@@ -16,6 +16,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const user = await getLoggedInUser(req);
+
   if (req.method === "POST") {
     const form = formidable();
     form.parse(req, async (err, fields, files) => {
@@ -81,15 +83,18 @@ export default async function handler(
           thumbnailFile.originalFilename || "default-filename"
         );
 
-        const newAd = await createAdAsync({
-          title: adTitle,
-          downloadLink: adDownloadLink,
-          adBoardId: adAdBoardId,
-          adDisplayStartDate: adAdDisplayStartDate,
-          adDisplayEndDate: adAdDisplayEndDate,
-          adDuration: adAdDuration,
-          thumbnailUrl,
-        });
+        const newAd = await createAd(
+          {
+            title: adTitle,
+            downloadLink: adDownloadLink,
+            adBoardId: adAdBoardId,
+            adDisplayStartDate: adAdDisplayStartDate,
+            adDisplayEndDate: adAdDisplayEndDate,
+            adDuration: adAdDuration,
+            thumbnailUrl,
+          },
+          user
+        );
 
         return res.status(201).json(newAd);
       } catch (error) {
@@ -112,7 +117,8 @@ export default async function handler(
     try {
       const ads = await fetchFilteredAds(
         startDate as string,
-        endDate as string
+        endDate as string,
+        user
       );
       return res.status(200).json(ads);
     } catch (error) {

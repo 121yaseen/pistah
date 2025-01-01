@@ -1,10 +1,11 @@
 import prisma from "@/app/libs/prismadb";
-import { Ad, AdBoard } from "@/types/ad";
-import { parse } from "date-fns";
-import { zonedTimeToUtc } from "date-fns-tz";
+import { AdBoard, User } from "@/types/ad";
 
 // Create a new Ad Board
-export const createAdBoardAsync = async (adBoard: AdBoard) => {
+export const createAdBoardAsync = async (
+  adBoard: AdBoard,
+  createdUser: User
+) => {
   const { boardName, location, boardType, dailyRate, ownerContact } = adBoard;
 
   return await prisma.adBoard.create({
@@ -19,47 +20,16 @@ export const createAdBoardAsync = async (adBoard: AdBoard) => {
       ownerContact,
       lastMaintenanceDate: new Date().toISOString(),
       imageUrl: adBoard.imageUrl ?? "",
+      createdById: createdUser.id,
     },
   });
 };
 
 // Fetch all Ad Boards
-export const getAdBoards = async () => {
-  return await prisma.adBoard.findMany();
-};
-
-// Create a new Ad
-export const createAdAsync = async (ad: Ad) => {
-  const {
-    title,
-    downloadLink,
-    adBoardId,
-    adDisplayStartDate,
-    adDisplayEndDate,
-    adDuration,
-    thumbnailUrl,
-  } = ad;
-
-  const parsedStartDate = parse(
-    adDisplayStartDate,
-    "EEE MMM dd yyyy",
-    new Date()
-  );
-  const parsedEndDate = parse(adDisplayEndDate, "EEE MMM dd yyyy", new Date());
-
-  // Convert to UTC using date-fns-tz
-  const utcStartDate = zonedTimeToUtc(parsedStartDate, "UTC");
-  const utcEndDate = zonedTimeToUtc(parsedEndDate, "UTC");
-
-  return await prisma.ad.create({
-    data: {
-      title,
-      downloadLink,
-      adBoardId,
-      adDisplayStartDate: utcStartDate,
-      adDisplayEndDate: utcEndDate,
-      adDuration,
-      thumbnailUrl,
+export const getAdBoards = async (createdBy: User) => {
+  return await prisma.adBoard.findMany({
+    where: {
+      createdById: createdBy.id,
     },
   });
 };
@@ -74,16 +44,17 @@ export const getAds = async () => {
 };
 
 // Delete an Ad board and all its Ads
-export const deleteAdBoardAsync = async (id: string) => {
+export const deleteAdBoardAsync = async (id: string, user: User) => {
   return await prisma.adBoard.delete({
     where: {
       id,
+      createdById: user.id,
     },
   });
 };
 
 // Update an Ad Board
-export const updateAdBoardAsync = async (adBoard: AdBoard) => {
+export const updateAdBoardAsync = async (adBoard: AdBoard, user: User) => {
   const {
     id,
     boardName,
@@ -97,6 +68,7 @@ export const updateAdBoardAsync = async (adBoard: AdBoard) => {
   const existingAdBoard = await prisma.adBoard.findUnique({
     where: {
       id,
+      createdById: user.id,
     },
   });
 

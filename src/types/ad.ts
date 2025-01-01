@@ -41,3 +41,10 @@ export interface User {
   company: Company;
   profilePicUrl: string;
 }
+
+export interface CustomToken {
+  user?: {
+    name?: string;
+    email?: string;
+  };
+}

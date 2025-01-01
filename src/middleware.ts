@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-
-interface CustomToken {
-  user?: {
-    name?: string;
-    email?: string;
-  };
-}
+import { CustomToken } from "./types/ad";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

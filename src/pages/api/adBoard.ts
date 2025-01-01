@@ -10,6 +10,7 @@ import { getAdBoards } from "@/repositories/adBoardRepository";
 import formidable from "formidable";
 import { AdBoardType } from "@/app/enums/AdBoardType";
 import { uploadToS3 } from "@/services/s3Service";
+import { getLoggedInUser } from "@/services/userService";
 
 export const config = {
   api: {
@@ -21,6 +22,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const user = await getLoggedInUser(req);
   if (req.method === "POST") {
     const form = formidable();
     form.parse(req, async (err, fields, files) => {
@@ -76,7 +78,7 @@ export default async function handler(
       }
 
       try {
-        const response = await createAdBoard(adBoard);
+        const response = await createAdBoard(adBoard, user);
         return res.status(201).json(response);
       } catch (error) {
         console.error("Error creating ad board:", error);
@@ -85,7 +87,7 @@ export default async function handler(
     });
   } else if (req.method === "GET") {
     try {
-      const adBoards = await getAdBoards();
+      const adBoards = await getAdBoards(user);
       return res.status(200).json(adBoards);
     } catch (error) {
       console.error("Error fetching ad boards:", error);
@@ -148,7 +150,7 @@ export default async function handler(
       }
 
       try {
-        const response = await updateAdBoard(adBoard);
+        const response = await updateAdBoard(adBoard, user);
         return res.status(200).json(response);
       } catch (error) {
         console.error("Error creating ad board:", error);
@@ -157,7 +159,7 @@ export default async function handler(
     });
   } else if (req.method === "DELETE") {
     try {
-      const response = await deleteAdBoard(req.query.id as string);
+      const response = await deleteAdBoard(req.query.id as string, user);
       return res.status(204).json(response);
     } catch (error) {
       console.error("Error deleting ad board:", error);

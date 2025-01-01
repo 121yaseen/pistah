@@ -1,5 +1,8 @@
 import prisma from "@/app/libs/prismadb";
+import { CustomToken, User } from "@/types/ad";
 import bcrypt from "bcryptjs";
+import { NextApiRequest } from "next";
+import { getToken } from "next-auth/jwt";
 
 export const findUserByEmail = async (email: string) => {
   return await prisma.user.findUnique({
@@ -69,4 +72,24 @@ export async function updateUserProfile(
     console.error("Error updating user profile:", error);
     throw new Error("Failed to update user profile");
   }
+}
+
+export async function getLoggedInUser(req: NextApiRequest) {
+  const token = (await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  })) as CustomToken;
+
+  const user = await findUserByEmail(token.user?.email ?? "");
+  const loggedInUser: User = {
+    id: user?.id ?? "",
+    name: user?.name ?? "",
+    email: user?.email ?? "",
+    profilePicUrl: user?.profilePicUrl ?? "",
+    company: {
+      id: user?.Company?.id ?? "",
+      name: user?.Company?.name ?? "",
+    },
+  };
+  return loggedInUser;
 }
