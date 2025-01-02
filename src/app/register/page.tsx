@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import PistahIcon from "@/icons/pistahIcon";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -68,25 +69,19 @@ const Register = () => {
 
   return (
     <div>
-      <header className="flex justify-between items-center px-6 py-4 bg-white text-[#001464] shadow-md">
+      <header className="flex justify-between items-center px-6 py-4 bg-[#001464] text-[#001464] shadow-md">
         <div className="flex items-center gap-4">
-          <Image
-            src="/icon-small.png"
-            alt="Pistah Logo"
-            width={40}
-            height={40}
-          />
-          <span className="text-xl font-semibold">Pistah</span>
+          <PistahIcon />
         </div>
         <button
           onClick={() => router.push("/login")}
-          className="px-4 py-2 bg-[#001464] text-white font-medium rounded-full hover:bg-[#002080]"
+          className="rounded-md px-4 py-2 bg-[#1A73E8] text-white font-medium hover:bg-[#314dbb] hover:text-white"
         >
-          Log in
+          Sign in
         </button>
       </header>
 
-      <div className="min-h-screen bg-[#001464] flex flex-col justify-center items-center px-4">
+      <div className="min-h-screen bg-[#001464] flex flex-col justify-center items-center">
         <div className="bg-white rounded-lg shadow-lg w-full max-w-7xl overflow-hidden flex flex-col md:flex-row">
           {/* Left Section */}
           <div className="bg-[#001464] text-white p-8 md:w-1/2 flex flex-col justify-center items-center text-center ">
@@ -110,7 +105,7 @@ const Register = () => {
           {/* Right Section */}
           <div className="p-8 md:w-1/2 flex flex-col justify-center">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-              Sign up now
+              Create an account now
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex gap-4">
@@ -222,32 +217,15 @@ const Register = () => {
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="terms"
-                  required
-                  className="w-4 h-4"
-                />
-                <label htmlFor="terms" className="text-sm text-gray-600">
-                  By creating an account, I agree to the{" "}
-                  <a href="/terms" className="text-blue-500 hover:underline">
-                    Terms of use
-                  </a>{" "}
-                  and{" "}
-                  <a href="/privacy" className="text-blue-500 hover:underline">
-                    Privacy Policy
-                  </a>
-                  .
-                </label>
+              <div className="flex justify-center">
+                <button
+                  type="submit"
+                  className="rounded-md px-10 py-2 bg-[#1A73E8] text-white font-medium hover:bg-[#314dbb] hover:text-white"
+                >
+                  Register
+                </button>
               </div>
 
-              <button
-                type="submit"
-                className="w-full px-4 py-2 bg-blue-500 text-white font-medium rounded hover:bg-blue-600"
-              >
-                Sign up
-              </button>
             </form>
 
             <p className="mt-6 text-center text-sm text-gray-600">
@@ -256,7 +234,7 @@ const Register = () => {
                 onClick={() => router.push("/login")}
                 className="text-blue-500 hover:underline"
               >
-                Log in
+                Sign in
               </button>
             </p>
           </div>
