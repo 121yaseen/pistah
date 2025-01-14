@@ -49,7 +49,7 @@ const PublisherInventoryPage: React.FC = () => {
     setIsEditing(false);
     setCurrentAdBoard({
       id: undefined,
-      image: null,
+      imageUrls: [],
       boardType: AdBoardType.STATIC,
       boardName: "",
       location: "",
@@ -78,7 +78,7 @@ const PublisherInventoryPage: React.FC = () => {
 
   const handleAdBoardChange = (
     field: keyof AdBoard,
-    value: string | number | boolean | null | File
+    value: string | number | boolean | File[] | null | string[]
   ) => {
     if (currentAdBoard) {
       setCurrentAdBoard({ ...currentAdBoard, [field]: value });
@@ -178,7 +178,7 @@ const PublisherInventoryPage: React.FC = () => {
       : // &&
         // currentAdBoard.image &&
         // currentAdBoard.image.size < 5 * 1024 * 1024
-        false;
+        false;  
   };
 
   useEffect(() => {
@@ -212,22 +212,16 @@ const PublisherInventoryPage: React.FC = () => {
                 <AddIcon />
               </button>
             </div>
-            <ul className="space-y-4">
+            <div className="grid grid-cols-3 gap-4">
               {adBoards.map((adBoard, index) => (
-                <li
+                <div
                   key={index}
-                  className="p-4 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow flex items-center space-x-4" // Added space-x-4 for horizontal spacing
+                  className="p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow flex flex-col"
                 >
-                  {/* Image on the left */}
-                  <div className="relative w-24 h-24">
+                  {/* Image at the top */}
+                  <div className="relative w-full" style={{ height: "250px" }}>
                     <Image
-                      src={
-                        adBoard.imageUrl
-                          ? `${
-                              adBoard.imageUrl
-                            }?timestamp=${new Date().getTime()}`
-                          : "https://150763658.v2.pressablecdn.com/wp-content/uploads/2023/02/image-1.webp"
-                      }
+                      src={adBoard.imageUrls?.[0] || ""}
                       alt="Ad Thumbnail"
                       layout="fill"
                       objectFit="cover"
@@ -235,12 +229,13 @@ const PublisherInventoryPage: React.FC = () => {
                     />
                   </div>
 
-                  {/* Ad Board Details on the right */}
-                  <div className="flex-1">
-                    {" "}
-                    {/* Allows the content to take the remaining space */}
+                  {/* Content pushed to bottom with flex-grow */}
+                  <div className="flex-grow"></div>
+
+                  {/* Ad Board Details at bottom */}
+                  <div className="mt-4">
                     <p>
-                      <strong>Title:</strong> {adBoard.boardName}
+                      <strong>Name:</strong> {adBoard.boardName}
                     </p>
                     <p>
                       <strong>Type:</strong> {adBoard.boardType}
@@ -257,7 +252,7 @@ const PublisherInventoryPage: React.FC = () => {
                   </div>
 
                   {/* Action buttons */}
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 mt-4 justify-end">
                     <button
                       type="button"
                       onClick={() => openEditModal(index)}
@@ -275,9 +270,9 @@ const PublisherInventoryPage: React.FC = () => {
                       <DeleteIcon />
                     </button>
                   </div>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
 

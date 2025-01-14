@@ -1,11 +1,13 @@
 import { AdBoard } from "@/types/ad";
 import React, { useState } from "react";
+import Image from "next/image";
+import UploadIcon from "@/icons/uploadIcon";
 
 interface AdBoardFormProps {
   adBoard: AdBoard;
   onChange: (
     field: keyof AdBoard,
-    value: string | number | boolean | File | null
+    value: string | number | boolean | File[] | null | string[]
   ) => void;
 }
 
@@ -44,7 +46,7 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
     }
 
     // Image validation
-    if (field === "image" && !value) {
+    if (field === "images" && !value) {
       newErrors.image = "Please upload an image less than 5MB.";
     } else {
       delete newErrors.image;
@@ -59,17 +61,27 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        validateField("image", false);
-      } else {
-        validateField("image", true);
-      }
+    const files = Array.from(e.target.files || []);
+    const validFiles = files.filter(file => file.size <= 5 * 1024 * 1024);
+
+    if (validFiles.length < files.length) {
+      setErrors(prev => ({
+        ...prev,
+        image: "Some files were skipped because they exceed 5MB"
+      }));
     } else {
-      validateField("image", false);
+      delete errors.image;
     }
-    onChange("image", file);
+
+    // Combine existing files with new ones
+    const newFiles = [...(adBoard.images || []), ...validFiles];
+    onChange("images", newFiles);
+  };
+
+  const removeImage = (index: number) => {
+    const newImages = [...(adBoard.images || [])];
+    newImages.splice(index, 1);
+    onChange("images", newImages);
   };
 
   return (
@@ -90,18 +102,72 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1 text-black dark:text-white" >
-          Inventory Image (Max 5MB)
+        <label className="block text-sm font-medium mb-1 text-black dark:text-white">
+          Inventory Images (Max 5MB each)
+        </label>
+        <label className="block p-3 border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700" htmlFor="invImage" 
+        style={{width: '145px'}}>
+          <div className="flex items-center"><UploadIcon /> Add Images </div>
         </label>
         <input
           id="invImage"
           name="invImage"
           type="file"
           accept="image/*"
-          onChange={handleFileChange}
-          className="w-full p-3 border rounded-lg dark:bg-gray-700 bg-gray-100 border-gray-300 dark:border-gray-700 dark:text-gray-100"
+          onChange={(e) => {
+            handleFileChange(e);
+            e.target.value = ''; // Clear the input after files are selected
+          }}
+          multiple
+          placeholder="Add images"
+          className="hidden"
         />
         {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
+
+        <div className="mt-2 grid grid-cols-4 gap-2">
+          {/* Show existing images from imageUrls */}
+          {adBoard.imageUrls?.map((url, index) => (
+            <div key={`existing-${index}`} className="relative">
+              <div className="relative w-32 h-32 rounded-lg overflow-hidden">
+                <Image
+                  src={url}
+                  alt={`Inventory image ${index + 1}`}
+                  layout="fill"
+                  objectFit="cover"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  const newUrls = [...(adBoard.imageUrls || [])];
+                  newUrls.splice(index, 1);
+                  onChange("imageUrls", newUrls);
+                }}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+
+          {/* Show newly added images */}
+          {adBoard.images?.map((file, index) => (
+            <div key={`new-${index}`} className="relative w-34">
+              <div className="relative w-34 h-32 rounded-lg overflow-hidden">
+                <Image
+                  src={URL.createObjectURL(file)}
+                  alt={`New inventory image ${index + 1}`}
+                  layout="fill"
+                  objectFit="cover"
+                />
+              </div>
+              <button
+                onClick={() => removeImage(index)}
+                className="absolute -top-2 -right-2 bg-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center text-2xl">
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Location */}
