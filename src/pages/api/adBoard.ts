@@ -9,7 +9,7 @@ import { AdBoard } from "@/types/ad";
 import { getAdBoards } from "@/repositories/adBoardRepository";
 import formidable from "formidable";
 import { AdBoardType } from "@/app/enums/AdBoardType";
-import { uploadToS3 } from "@/services/s3Service";
+//import { uploadToS3 } from "@/services/s3Service";
 import { getLoggedInUser } from "@/services/userService";
 
 export const config = {
@@ -65,7 +65,7 @@ export default async function handler(
         }
 
         try {
-          const fileBuffer = await fs.promises.readFile(file.filepath);
+          //const fileBuffer = await fs.promises.readFile(file.filepath);
           //const imageUrl = await uploadToS3(
           //  fileBuffer,
           //  file.originalFilename || "default-filename"
@@ -137,7 +137,7 @@ export default async function handler(
         }
 
         try {
-          const fileBuffer = await fs.promises.readFile(file.filepath);
+          //const fileBuffer = await fs.promises.readFile(file.filepath);
           //const imageUrl = await uploadToS3(
           //  fileBuffer,
           //  file.originalFilename || "default-filename"
