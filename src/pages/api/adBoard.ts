@@ -66,10 +66,10 @@ export default async function handler(
 
         try {
           const fileBuffer = await fs.promises.readFile(file.filepath);
-          const imageUrl = await uploadToS3(
-            fileBuffer,
-            file.originalFilename || "default-filename"
-          );
+          //const imageUrl = await uploadToS3(
+          //  fileBuffer,
+          //  file.originalFilename || "default-filename"
+          //);
           //adBoard.imageUrls = [imageUrl];
         } catch (error) {
           console.error("Error uploading image to S3:", error);
@@ -138,10 +138,10 @@ export default async function handler(
 
         try {
           const fileBuffer = await fs.promises.readFile(file.filepath);
-          const imageUrl = await uploadToS3(
-            fileBuffer,
-            file.originalFilename || "default-filename"
-          );
+          //const imageUrl = await uploadToS3(
+          //  fileBuffer,
+          //  file.originalFilename || "default-filename"
+          //);
           //adBoard.imageUrls = [imageUrl];
         } catch (error) {
           console.error("Error uploading image to S3:", error);
