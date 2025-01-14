@@ -70,7 +70,7 @@ export default async function handler(
             fileBuffer,
             file.originalFilename || "default-filename"
           );
-          adBoard.imageUrl = imageUrl;
+          //adBoard.imageUrls = [imageUrl];
         } catch (error) {
           console.error("Error uploading image to S3:", error);
           return res.status(500).json({ error: "Failed to upload image" });
@@ -142,7 +142,7 @@ export default async function handler(
             fileBuffer,
             file.originalFilename || "default-filename"
           );
-          adBoard.imageUrl = imageUrl;
+          //adBoard.imageUrls = [imageUrl];
         } catch (error) {
           console.error("Error uploading image to S3:", error);
           return res.status(500).json({ error: "Failed to upload image" });
