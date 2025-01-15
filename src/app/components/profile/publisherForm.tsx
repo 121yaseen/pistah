@@ -105,8 +105,8 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
         <label className="block text-sm font-medium mb-1 text-black dark:text-white">
           Inventory Images (Max 5MB each)
         </label>
-        <label className="block p-3 border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700" htmlFor="invImage" 
-        style={{width: '145px'}}>
+        <label className="cursor-pointer block p-3 border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700" htmlFor="invImage"
+          style={{ width: '145px' }}>
           <div className="flex items-center"><UploadIcon /> Add Images </div>
         </label>
         <input

@@ -171,14 +171,14 @@ const PublisherInventoryPage: React.FC = () => {
   const validateForm = () => {
     return currentAdBoard
       ? currentAdBoard.boardName !== "" &&
-          currentAdBoard.location !== "" &&
-          currentAdBoard.dailyRate > 0 &&
-          currentAdBoard.ownerContact &&
-          /^\d{10}$/.test(currentAdBoard.ownerContact)
+      currentAdBoard.location !== "" &&
+      currentAdBoard.dailyRate > 0 &&
+      currentAdBoard.ownerContact &&
+      /^\d{10}$/.test(currentAdBoard.ownerContact)
       : // &&
-        // currentAdBoard.image &&
-        // currentAdBoard.image.size < 5 * 1024 * 1024
-        false;  
+      // currentAdBoard.image &&
+      // currentAdBoard.image.size < 5 * 1024 * 1024
+      false;
   };
 
   useEffect(() => {
@@ -212,67 +212,73 @@ const PublisherInventoryPage: React.FC = () => {
                 <AddIcon />
               </button>
             </div>
-            <div className="grid grid-cols-3 gap-4">
-              {adBoards.map((adBoard, index) => (
-                <div
-                  key={index}
-                  className="p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow flex flex-col"
-                >
-                  {/* Image at the top */}
-                  <div className="relative w-full" style={{ height: "250px" }}>
-                    <Image
-                      src={adBoard.imageUrls?.[0] || ""}
-                      alt="Ad Thumbnail"
-                      layout="fill"
-                      objectFit="cover"
-                      priority={true}
-                    />
-                  </div>
+            {adBoards && adBoards.length > 0 ? (
+              <div className="grid grid-cols-3 gap-4">
+                {adBoards.map((adBoard, index) => (
+                  <div
+                    key={index}
+                    className="p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow flex flex-col"
+                  >
+                    {/* Image at the top */}
+                    <div className="relative w-full" style={{ height: "250px" }}>
+                      <Image
+                        src={adBoard.imageUrls?.[0] || ""}
+                        alt="Ad Thumbnail"
+                        layout="fill"
+                        objectFit="cover"
+                        priority={true}
+                      />
+                    </div>
 
-                  {/* Content pushed to bottom with flex-grow */}
-                  <div className="flex-grow"></div>
+                    {/* Content pushed to bottom with flex-grow */}
+                    <div className="flex-grow"></div>
 
-                  {/* Ad Board Details at bottom */}
-                  <div className="mt-4">
-                    <p>
-                      <strong>Name:</strong> {adBoard.boardName}
-                    </p>
-                    <p>
-                      <strong>Type:</strong> {adBoard.boardType}
-                    </p>
-                    <p>
-                      <strong>Count:</strong> {adBoard.count}
-                    </p>
-                    <p>
-                      <strong>Location:</strong> {adBoard.location}
-                    </p>
-                    <p>
-                      <strong>Daily Rate:</strong> {adBoard.dailyRate}
-                    </p>
-                  </div>
+                    {/* Ad Board Details at bottom */}
+                    <div className="mt-4">
+                      <p>
+                        <strong>Name:</strong> {adBoard.boardName}
+                      </p>
+                      <p>
+                        <strong>Type:</strong> {adBoard.boardType}
+                      </p>
+                      <p>
+                        <strong>Count:</strong> {adBoard.count}
+                      </p>
+                      <p>
+                        <strong>Location:</strong> {adBoard.location}
+                      </p>
+                      <p>
+                        <strong>Daily Rate:</strong> {adBoard.dailyRate}
+                      </p>
+                    </div>
 
-                  {/* Action buttons */}
-                  <div className="flex gap-2 mt-4 justify-end">
-                    <button
-                      type="button"
-                      onClick={() => openEditModal(index)}
-                      className="p-2 border border-blue-500 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white transition flex items-center justify-center"
-                      style={{ width: "40px", height: "40px" }}
-                    >
-                      <PencilIcon />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => openDeleteConfirmModal(index)}
-                      className="p-2 border border-red-500 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition flex items-center justify-center"
-                      style={{ width: "40px", height: "40px" }}
-                    >
-                      <DeleteIcon />
-                    </button>
+                    {/* Action buttons */}
+                    <div className="flex gap-2 mt-4 justify-end">
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(index)}
+                        className="p-2 border border-blue-500 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white transition flex items-center justify-center"
+                        style={{ width: "40px", height: "40px" }}
+                      >
+                        <PencilIcon />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openDeleteConfirmModal(index)}
+                        className="p-2 border border-red-500 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition flex items-center justify-center"
+                        style={{ width: "40px", height: "40px" }}
+                      >
+                        <DeleteIcon />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-gray-700 dark:text-gray-300">
+                No available inventory. Add one now!
+              </p>
+            )}
           </div>
         </div>
 
