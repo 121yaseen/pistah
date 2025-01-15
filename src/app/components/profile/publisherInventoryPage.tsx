@@ -15,7 +15,6 @@ import DeleteIcon from "@/icons/deleteIcon";
 import AddIcon from "@/icons/addIcon";
 import Loader from "../shared/LoaderComponent";
 import { useToast } from "@/app/context/ToastContext";
-import Image from "next/image";
 import ImageCarousel from "../shared/ImageCarousel";
 
 const PublisherInventoryPage: React.FC = () => {
