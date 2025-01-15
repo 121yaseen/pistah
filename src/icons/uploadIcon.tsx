@@ -1,8 +1,15 @@
 export default function UploadIcon() {
     return (
-        <svg fill="currentColor" width="25px" height="25px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15.73,14.34l-3-3.05A1.05,1.05,0,0,0,12,11a1,1,0,0,0-.71.29L8.09,14.48a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l1.5-1.5v6.79a1,1,0,0,0,2,0V14.44l1.31,1.31a1,1,0,0,0,1.42,0A1,1,0,0,0,15.73,14.34Z"></path>
-            <path d="M22,12a5,5,0,0,1-5,5H15.42a2,2,0,0,0,1-.54,2,2,0,0,0,0-2.83l-3.05-3a2,2,0,0,0-2.83,0L7.38,13.77a2,2,0,0,0,0,2.83l.17.14a7.5,7.5,0,1,1,9-9.7c.14,0,.28,0,.42,0A5,5,0,0,1,22,12Z"></path>
+        <svg width="25px" height="25px" viewBox="0 0 48 48" version="1" xmlns="http://www.w3.org/2000/svg" enableBackground="new 0 0 48 48">
+            <path fill="#8CBCD6" d="M40,41H8c-2.2,0-4-1.8-4-4V11c0-2.2,1.8-4,4-4h32c2.2,0,4,1.8,4,4v26C44,39.2,42.2,41,40,41z" />
+            <circle cx="35" cy="16" r="3" />
+            <polygon fill="#001464" points="20,16 9,32 31,32" />
+            <polygon fill="#B3DDF5" points="31,22 23,32 39,32" />
+            <circle fill="#43A047" cx="38" cy="38" r="10" />
+            <g fill="#ffffff">
+                <rect x="36" y="32" width="4" height="12" />
+                <rect x="32" y="36" width="12" height="4" />
+            </g>
         </svg>
     );
 }

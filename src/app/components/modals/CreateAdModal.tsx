@@ -5,12 +5,17 @@ import { useToast } from "@/app/context/ToastContext";
 import Loader from "../shared/LoaderComponent";
 import DateRangePicker from "../shared/DateRangePicker";
 import axios from "axios";
+import UploadIcon from "@/icons/uploadIcon";
+import Image from "next/image";
+import VideoUploadIcon from "@/icons/videoUploadIcon";
+import VideoIcon from "@/icons/videoIcon";
 
 type CreateAdModalProps = {
   onClose: () => void;
 };
 
 const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
+  const [activeTab, setActiveTab] = useState<'download' | 'video'>('download');
   const { addToast } = useToast();
   const [isLoading, setIsLoading] = useState(false); // Loader state
   const [uploadProgress, setUploadProgress] = useState<number | null>(null); // Progress state
@@ -88,6 +93,13 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
     }
   };
 
+  const handleRemoveFile = (
+    type: "thumbnail" | "video"
+  ) => {
+    setAdData((prevData) => ({ ...prevData, [`${type}File`]: null }));
+    setErrors((prevErrors) => ({ ...prevErrors, [`${type}File`]: true }));
+  };
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -153,14 +165,14 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
     // Validate fields
     const newErrors = {
       title: adData.title.trim() === "",
-      downloadLink: !validateURL(adData.downloadLink),
+      downloadLink: activeTab === 'download' && !validateURL(adData.downloadLink),
       adBoardId: adData.adBoardId === "",
       adDisplayStartDate: startDate === null,
       adDisplayEndDate: endDate === null,
       adDuration:
         isNaN(Number(adData.adDuration)) || Number(adData.adDuration) <= 0,
       thumbnailFile: !adData.thumbnailFile || errors.thumbnailFile,
-      videoFile: !adData.videoFile || errors.videoFile,
+      videoFile: activeTab === 'video' && (!adData.videoFile || errors.videoFile),
     };
 
     setErrors(newErrors);
@@ -226,7 +238,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
       <div
         className="bg-white dark:bg-gray-800 dark:text-gray-200 rounded-lg shadow-lg flex flex-col"
         style={{
-          width: "60%",
+          width: "50%",
           maxHeight: "90%",
           overflow: "hidden",
         }}
@@ -242,7 +254,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
             {/* Title Input */}
             <div className="mb-4">
               <label
-                className="block text-sm font-medium mb-1 text-black dark:text-white"
+                className="block font-medium mb-1 dark:text-white text-black"
                 htmlFor="title"
               >
                 Title
@@ -253,9 +265,8 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 type="text"
                 value={adData.title}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 dark:border-gray-600 border-gray-300 text-black dark:text-gray-200 ${
-                  errors.title ? "border-red-500" : ""
-                }`}
+                className={` w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 dark:border-gray-600 border-gray-300 text-black dark:text-gray-200 ${errors.title ? "border-red-500" : ""
+                  }`}
                 placeholder="Title"
                 required
               />
@@ -264,8 +275,90 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
               )}
             </div>
 
+            {/* Add tabs */}
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1 text-black dark:text-white">
+              <div className="flex font-medium">
+                <button
+                  type="button"
+                  className={`py-2 px-4 ${activeTab === 'download'
+                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    : 'text-gray-500'
+                    }`}
+                  onClick={() => setActiveTab('download')}
+                >
+                  Video Link
+                </button>
+                <button
+                  type="button"
+                  className={`py-2 px-4 ${activeTab === 'video'
+                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    : 'text-gray-500'
+                    }`}
+                  onClick={() => setActiveTab('video')}
+                >
+                  Video Upload
+                </button>
+              </div>
+
+              {/* Conditional rendering based on active tab */}
+              {activeTab === 'download' ? (
+                <div className="mt-4">
+                  <input
+                    id="downloadLink"
+                    name="downloadLink"
+                    type="url"
+                    value={adData.downloadLink}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${errors.downloadLink ? "border-red-500" : ""
+                      }`}
+                    placeholder="Link to download"
+                    required={activeTab === 'download'}
+                  />
+                  {errors.downloadLink && (
+                    <p className="text-red-500 text-sm mt-1">
+                      Invalid download link URL
+                    </p>
+                  )}
+                </div>
+              ) : (<div className="mt-4">
+                <label className="cursor-pointer block border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700" htmlFor="video"
+                  style={{ width: '145px' }}>
+                  <div className="flex items-center"><VideoUploadIcon />&nbsp;Add Video </div>
+                </label>
+                <input
+                  id="video"
+                  name="video"
+                  type="file"
+                  accept="video/*"
+                  onChange={(e) => {
+                    handleFileChange(e, "video");
+                    e.target.value = ''; // Clear the input after files are selected
+                  }}
+                  className="hidden"
+                />
+                {errors.videoFile && (
+                  <p className="text-red-500 text-sm mt-1">
+                    Please upload a valid video file
+                  </p>
+                )}
+                {adData.videoFile && (
+                  <div className="relative mt-2" style={{ width: '200px' }}>
+                    <div className="relative w-34 h-30 rounded-lg overflow-hidden border border-blue-300 text-blue-500 bg-blue-50">
+                      <VideoIcon />
+                    </div>
+                    <button
+                      onClick={() => { handleRemoveFile("video") }}
+                      className="absolute -top-2 -right-2 bg-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center text-2xl">
+                      ×
+                    </button>
+                  </div>
+                )}
+              </div>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <label className="block font-medium mb-1 text-black dark:text-white">
                 Display Dates
               </label>
               <DateRangePicker
@@ -279,7 +372,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                   setEndDate(today);
                 }}
                 showSearchIcon={false}
-                onSearch={() => {}}
+                onSearch={() => { }}
               />
               {errors.adDisplayStartDate ||
                 (errors.adDisplayEndDate && (
@@ -291,55 +384,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
             <div className="mb-4">
               <label
-                className="block text-sm font-medium mb-1 text-black dark:text-white"
-                htmlFor="downloadLink"
-              >
-                Download Link
-              </label>
-              <input
-                id="downloadLink"
-                name="downloadLink"
-                type="url"
-                value={adData.downloadLink}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${
-                  errors.downloadLink ? "border-red-500" : ""
-                }`}
-                placeholder="Link to download"
-                required
-              />
-              {errors.downloadLink && (
-                <p className="text-red-500 text-sm mt-1">
-                  Invalid download link URL
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label
-                className="block text-sm font-medium mb-1 text-black dark:text-white"
-                htmlFor="thumbnail"
-              >
-                Thumbnail (Max 5MB)
-              </label>
-              <input
-                id="thumbnail"
-                name="thumbnail"
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileChange(e, "thumbnail")}
-                className="w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 dark:border-gray-600 dark:text-gray-200"
-              />
-              {errors.thumbnailFile && (
-                <p className="text-red-500 text-sm mt-1">
-                  Please upload an image less than 5MB
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label
-                className="block text-sm font-medium mb-1 text-black dark:text-white"
+                className="block font-medium mb-1 text-black dark:text-white"
                 htmlFor="adBoardId"
               >
                 Display on Ad Board
@@ -349,12 +394,11 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 name="adBoardId"
                 value={adData.adBoardId}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded bg-gray-100 border-gray-300 text-black dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${
-                  errors.adBoardId ? "border-red-500" : ""
-                }`}
+                className={`w-full px-3 py-2 border rounded bg-gray-100 border-gray-300 text-black dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${errors.adBoardId ? "border-red-500" : ""
+                  }`}
                 required
               >
-                <option value="" disabled>
+                <option value="" disabled className="border-b border-gray-300">
                   Select an ad board
                 </option>
                 {adBoards.map((board) => (
@@ -372,7 +416,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
             <div className="mb-4">
               <label
-                className="block text-sm font-medium mb-1 text-black dark:text-white"
+                className="block font-medium mb-1 text-black dark:text-white"
                 htmlFor="adDuration"
               >
                 Duration (seconds)
@@ -383,36 +427,14 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 type="number"
                 value={adData.adDuration}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 bg-gray-100 border-gray-300 text-black border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${
-                  errors.adDuration ? "border-red-500" : ""
-                }`}
+                className={`w-full px-3 py-2 bg-gray-100 border-gray-300 text-black border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${errors.adDuration ? "border-red-500" : ""
+                  }`}
                 placeholder="Enter duration in seconds"
                 required
               />
               {errors.adDuration && (
                 <p className="text-red-500 text-sm mt-1">
                   Enter a positive number
-                </p>
-              )}
-            </div>
-            <div className="mb-4">
-              <label
-                className="block text-sm font-medium mb-1 text-black dark:text-white"
-                htmlFor="video"
-              >
-                Video (Max 100MB)
-              </label>
-              <input
-                id="video"
-                name="video"
-                type="file"
-                accept="video/*"
-                onChange={(e) => handleFileChange(e, "video")}
-                className="w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 dark:border-gray-600 dark:text-gray-200"
-              />
-              {errors.videoFile && (
-                <p className="text-red-500 text-sm mt-1">
-                  Please upload a valid video file
                 </p>
               )}
             </div>
@@ -427,6 +449,53 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 </div>
               </div>
             )}
+
+            <div className="mb-4">
+              <label
+                className="block font-medium mb-1 text-black dark:text-white"
+                htmlFor="thumbnail"
+              >
+                Thumbnail (Max 5MB)
+              </label>
+              <label className="cursor-pointer block border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700" htmlFor="thumbnail"
+                style={{ width: '145px' }}>
+                <div className="flex items-center"><UploadIcon />&nbsp;Add Image </div>
+              </label>
+              <input
+                id="thumbnail"
+                name="thumbnail"
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  handleFileChange(e, "thumbnail");
+                  e.target.value = ''; // Clear the input after files are selected
+                }}
+                className="hidden"
+                placeholder="Add image"
+              />
+              {errors.thumbnailFile && (
+                <p className="text-red-500 text-sm mt-1">
+                  Please upload an image less than 5MB
+                </p>
+              )}
+              {adData.thumbnailFile && (
+                <div className="relative mt-2" style={{ width: '200px' }}>
+                  <div className="relative w-34 h-32 rounded-lg overflow-hidden">
+                    <Image
+                      src={URL.createObjectURL(adData.thumbnailFile)}
+                      alt="Thumbnail"
+                      layout="fill"
+                      objectFit="cover"
+                    />
+                  </div>
+                  <button
+                    onClick={() => { handleRemoveFile("thumbnail") }}
+                    className="absolute -top-2 -right-2 bg-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center text-2xl">
+                    ×
+                  </button>
+                </div>
+              )}
+            </div>
           </form>
         </div>
 
