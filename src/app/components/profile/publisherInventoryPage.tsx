@@ -221,13 +221,6 @@ const PublisherInventoryPage: React.FC = () => {
                   >
                     {/* Image at the top */}
                     <div className="relative w-full" style={{ height: "250px" }}>
-                      {/* <Image
-                        src={adBoard.imageUrls?.[0] || ""}
-                        alt="Ad Thumbnail"
-                        layout="fill"
-                        objectFit="cover"
-                        priority={true}
-                      /> */}
                       <ImageCarousel images={adBoard.imageUrls || []} />
                     </div>
 
