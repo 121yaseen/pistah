@@ -32,6 +32,7 @@ export default async function handler(
         adDisplayStartDate,
         adDisplayEndDate,
         adDuration,
+        videoUrl,
       } = fields as { [key: string]: string | string[] };
 
       const adTitle = Array.isArray(title) ? title[0] : title;
@@ -48,6 +49,7 @@ export default async function handler(
       const adAdDuration = Array.isArray(adDuration)
         ? adDuration[0]
         : adDuration;
+      const adVideoUrl = Array.isArray(videoUrl) ? videoUrl[0] : videoUrl;
 
       if (
         !adTitle ||
@@ -92,6 +94,7 @@ export default async function handler(
             adDisplayEndDate: adAdDisplayEndDate,
             adDuration: adAdDuration,
             thumbnailUrl,
+            videoUrl: adVideoUrl,
           },
           user
         );

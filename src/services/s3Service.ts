@@ -27,3 +27,22 @@ export const uploadToS3 = async (file: Buffer, fileName: string) => {
       throw error;
     });
 };
+
+export const getPresignedUploadUrl = async (
+  fileName: string,
+  contentType: string = "video/mp4"
+) => {
+  if (!process.env.AWS_S3_BUCKET_NAME) {
+    throw new Error("AWS_S3_BUCKET_NAME is not defined");
+  }
+
+  const params = {
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Key: fileName, // e.g. "videos/myCoolVideo.mp4"
+    ContentType: contentType,
+    Expires: 60, // URL expiration in seconds (e.g., 1 min)
+  };
+
+  // Returns a promise that resolves to a pre-signed URL
+  return s3.getSignedUrlPromise("putObject", params);
+};

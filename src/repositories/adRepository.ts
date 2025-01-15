@@ -27,19 +27,45 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
     adDisplayEndDate,
     adDuration,
     thumbnailUrl,
+    videoUrl,
   } = ad;
 
   const parsedStartDate = parse(
     adDisplayStartDate,
-    "EEE MMM dd yyyy",
+    "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
     new Date()
   );
-  const parsedEndDate = parse(adDisplayEndDate, "EEE MMM dd yyyy", new Date());
+  const parsedEndDate = parse(
+    adDisplayEndDate,
+    "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+    new Date()
+  );
 
-  // Convert to UTC using date-fns-tz
-  const utcStartDate = zonedTimeToUtc(parsedStartDate, "UTC");
-  const utcEndDate = zonedTimeToUtc(parsedEndDate, "UTC");
+  const startOfDayStartDate = new Date(
+    parsedStartDate.getFullYear(),
+    parsedStartDate.getMonth(),
+    parsedStartDate.getDate()
+  );
+  const startOfDayEndDate = new Date(
+    parsedEndDate.getFullYear(),
+    parsedEndDate.getMonth(),
+    parsedEndDate.getDate()
+  );
 
+  const utcStartDate = zonedTimeToUtc(startOfDayStartDate, "UTC").toISOString();
+  const utcEndDate = zonedTimeToUtc(startOfDayEndDate, "UTC").toISOString();
+
+  console.log(
+    title,
+    downloadLink,
+    adBoardId,
+    adDisplayStartDate,
+    adDisplayEndDate,
+    adDuration,
+    thumbnailUrl,
+    createdUser.id,
+    videoUrl
+  );
   return await prisma.ad.create({
     data: {
       title,
@@ -50,6 +76,7 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
       adDuration,
       thumbnailUrl,
       createdById: createdUser.id,
+      videoUrl,
     },
   });
 };

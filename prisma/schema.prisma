@@ -16,6 +16,7 @@ model Ad {
   adDisplayEndDate   DateTime
   adDuration         String
   thumbnailUrl       String
+  videoUrl           String?
   createdById        String   @db.ObjectId
   createdUser        User     @relation(fields: [createdById], references: [id])
   createdAt          DateTime @default(now())

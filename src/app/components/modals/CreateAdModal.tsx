@@ -12,6 +12,7 @@ type CreateAdModalProps = {
 const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
   const { addToast } = useToast();
   const [isLoading, setIsLoading] = useState(false); // Loader state
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null); // Progress state
 
   const [adData, setAdData] = useState({
     id: Date.now(),
@@ -22,6 +23,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
     adDisplayEndDate: "",
     adDuration: "",
     thumbnailFile: null as File | null,
+    videoFile: null as File | null,
   });
 
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -36,6 +38,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
     adDisplayEndDate: false,
     adDuration: false,
     thumbnailFile: false,
+    videoFile: false,
   });
 
   useEffect(() => {
@@ -68,14 +71,18 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "thumbnail" | "video"
+  ) => {
     const file = e.target.files?.[0];
+
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
+      if (type === "thumbnail" && file.size > 5 * 1024 * 1024) {
         setErrors((prevErrors) => ({ ...prevErrors, thumbnailFile: true }));
       } else {
-        setAdData((prevData) => ({ ...prevData, thumbnailFile: file }));
-        setErrors((prevErrors) => ({ ...prevErrors, thumbnailFile: false }));
+        setAdData((prevData) => ({ ...prevData, [`${type}File`]: file }));
+        setErrors((prevErrors) => ({ ...prevErrors, [`${type}File`]: false }));
       }
     }
   };
@@ -96,6 +103,43 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
     }));
   };
 
+  const uploadVideoToS3 = async (file: File): Promise<string | null> => {
+    try {
+      // Step 1: Get pre-signed URL
+      const presignedResponse = await fetch("/api/video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileName: file.name }),
+      });
+
+      if (!presignedResponse.ok) {
+        throw new Error("Failed to get pre-signed URL");
+      }
+
+      const { url: presignedUrl } = await presignedResponse.json();
+
+      // Step 2: Upload file to S3
+      const uploadResponse = await fetch(presignedUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload video to S3");
+      }
+
+      // Extract the URL from the pre-signed URL
+      return presignedUrl.split("?")[0]; // Removes query parameters to get the raw URL
+    } catch (error) {
+      console.error("Error uploading video to S3:", error);
+      addToast("Error uploading video", "error");
+      return null;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -109,6 +153,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
       adDuration:
         isNaN(Number(adData.adDuration)) || Number(adData.adDuration) <= 0,
       thumbnailFile: !adData.thumbnailFile || errors.thumbnailFile,
+      videoFile: !adData.videoFile || errors.videoFile,
     };
 
     setErrors(newErrors);
@@ -118,19 +163,33 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
       return;
     }
 
+    let videoUrl = null;
+    if (adData.videoFile) {
+      setIsLoading(true);
+      setUploadProgress(0);
+      videoUrl = await uploadVideoToS3(adData.videoFile);
+
+      if (!videoUrl) {
+        setIsLoading(false);
+        return; // Abort submission if the video upload fails
+      }
+    }
+
     const formData = new FormData();
     formData.append("title", adData.title);
     formData.append("downloadLink", adData.downloadLink);
     formData.append("adBoardId", adData.adBoardId);
-    formData.append("adDisplayStartDate", startDate?.toDateString() ?? "");
-    formData.append("adDisplayEndDate", endDate?.toDateString() ?? "");
+    formData.append("adDisplayStartDate", startDate?.toISOString() ?? "");
+    formData.append("adDisplayEndDate", endDate?.toISOString() ?? "");
     formData.append("adDuration", adData.adDuration);
     if (adData.thumbnailFile) {
       formData.append("thumbnail", adData.thumbnailFile);
     }
+    if (videoUrl) {
+      formData.append("videoUrl", videoUrl); // Pass the uploaded video's URL
+    }
 
     try {
-      setIsLoading(true);
       const response = await fetch("/api/creatives", {
         method: "POST",
         body: formData,
@@ -150,6 +209,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
       console.error("Error creating ad:", error);
     } finally {
       setIsLoading(false);
+      setUploadProgress(null);
     }
   };
 
@@ -172,6 +232,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto px-6 py-4 scrollable-content">
           <form onSubmit={handleSubmit} id="createAdForm">
+            {/* Title Input */}
             <div className="mb-4">
               <label
                 className="block text-sm font-medium mb-1 text-black dark:text-white"
@@ -259,7 +320,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 name="thumbnail"
                 type="file"
                 accept="image/*"
-                onChange={handleFileChange}
+                onChange={(e) => handleFileChange(e, "thumbnail")}
                 className="w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 dark:border-gray-600 dark:text-gray-200"
               />
               {errors.thumbnailFile && (
@@ -327,6 +388,38 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 </p>
               )}
             </div>
+            <div className="mb-4">
+              <label
+                className="block text-sm font-medium mb-1 text-black dark:text-white"
+                htmlFor="video"
+              >
+                Video (Max 100MB)
+              </label>
+              <input
+                id="video"
+                name="video"
+                type="file"
+                accept="video/*"
+                onChange={(e) => handleFileChange(e, "video")}
+                className="w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 dark:border-gray-600 dark:text-gray-200"
+              />
+              {errors.videoFile && (
+                <p className="text-red-500 text-sm mt-1">
+                  Please upload a valid video file
+                </p>
+              )}
+            </div>
+
+            {uploadProgress !== null && (
+              <div className="w-full bg-gray-300 rounded-full h-4 mt-4">
+                <div
+                  className="bg-blue-600 h-4 rounded-full text-center text-white"
+                  style={{ width: `${uploadProgress}%` }}
+                >
+                  {uploadProgress}%
+                </div>
+              </div>
+            )}
           </form>
         </div>
 
