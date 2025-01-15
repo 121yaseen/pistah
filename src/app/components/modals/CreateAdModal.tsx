@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useToast } from "@/app/context/ToastContext";
 import Loader from "../shared/LoaderComponent";
 import DateRangePicker from "../shared/DateRangePicker";
+import axios from "axios";
 
 type CreateAdModalProps = {
   onClose: () => void;
@@ -118,16 +119,22 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
       const { url: presignedUrl } = await presignedResponse.json();
 
-      // Step 2: Upload file to S3
-      const uploadResponse = await fetch(presignedUrl, {
-        method: "PUT",
+      // Step 2: Upload file to S3 using Axios
+      const uploadResponse = await axios.put(presignedUrl, file, {
         headers: {
           "Content-Type": file.type,
         },
-        body: file,
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const progress = Math.round(
+              (progressEvent.loaded / progressEvent.total) * 100
+            );
+            setUploadProgress(progress);
+          }
+        },
       });
 
-      if (!uploadResponse.ok) {
+      if (uploadResponse.status !== 200) {
         throw new Error("Failed to upload video to S3");
       }
 
