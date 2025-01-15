@@ -4,8 +4,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import PistahIcon from "@/icons/pistahIcon";
+import Loader from "../components/shared/LoaderComponent";
+import { useToast } from "../context/ToastContext";
 
 const Register = () => {
+  const { addToast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -42,6 +46,7 @@ const Register = () => {
     }
 
     try {
+      setIsLoading(true);
       const user = {
         name: formData.firstName + " " + formData.lastName,
         companyName: formData.companyName,
@@ -57,18 +62,22 @@ const Register = () => {
       });
 
       if (response.ok) {
+        addToast("Registration successful. Please login.", "success");
         router.push("/login");
       } else {
-        alert("Failed to register. Please try again.");
+        addToast("Failed to register. Please try again.", "error");
       }
     } catch (error) {
       console.error("Error registering:", error);
-      alert("An error occurred. Please try again.");
+      addToast("An error occurred. Please try again.", "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div>
+      <Loader isVisible={isLoading} />
       <header className="flex justify-between items-center px-6 py-4 bg-[#001464] text-[#001464] shadow-md">
         <div className="flex items-center gap-4">
           <PistahIcon />
