@@ -16,6 +16,7 @@ import AddIcon from "@/icons/addIcon";
 import Loader from "../shared/LoaderComponent";
 import { useToast } from "@/app/context/ToastContext";
 import Image from "next/image";
+import ImageCarousel from "../shared/ImageCarousel";
 
 const PublisherInventoryPage: React.FC = () => {
   const [adBoards, setAdBoards] = useState<AdBoard[]>([]);
@@ -149,10 +150,10 @@ const PublisherInventoryPage: React.FC = () => {
         deleteAdBoard(adBoardId)
           .then(
             () => {
-              addToast("Ad Board deleted successfully!", "success");
+              addToast("Inventory deleted successfully!", "success");
             },
             () => {
-              addToast("Failed to delete Ad Board!", "error");
+              addToast("Failed to delete Inventory!", "error");
             }
           )
           .finally(async () => {
@@ -160,7 +161,7 @@ const PublisherInventoryPage: React.FC = () => {
             setIsLoading(false);
           });
       } else {
-        addToast("Ad Board ID is undefined!", "error");
+        addToast("Inventory Id is undefined!", "error");
       }
     }
     setIsDeleteConfirmationOpen(false);
@@ -174,11 +175,10 @@ const PublisherInventoryPage: React.FC = () => {
       currentAdBoard.location !== "" &&
       currentAdBoard.dailyRate > 0 &&
       currentAdBoard.ownerContact &&
-      /^\d{10}$/.test(currentAdBoard.ownerContact)
-      : // &&
-      // currentAdBoard.image &&
-      // currentAdBoard.image.size < 5 * 1024 * 1024
-      false;
+      /^\d{10}$/.test(currentAdBoard.ownerContact) &&
+      currentAdBoard.images &&
+      currentAdBoard.images.every(image => image.size < 5 * 1024 * 1024) :
+      false
   };
 
   useEffect(() => {
@@ -221,13 +221,14 @@ const PublisherInventoryPage: React.FC = () => {
                   >
                     {/* Image at the top */}
                     <div className="relative w-full" style={{ height: "250px" }}>
-                      <Image
+                      {/* <Image
                         src={adBoard.imageUrls?.[0] || ""}
                         alt="Ad Thumbnail"
                         layout="fill"
                         objectFit="cover"
                         priority={true}
-                      />
+                      /> */}
+                      <ImageCarousel images={adBoard.imageUrls || []} />
                     </div>
 
                     {/* Content pushed to bottom with flex-grow */}
