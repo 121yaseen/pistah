@@ -37,44 +37,44 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads }) => {
               {boardAds.map((ad) => (
                 <li
                   key={ad.id}
-                  className="flex items-center justify-between border-b last:border-none pb-4"
+                  className="grid grid-cols-12 gap-4 items-center border-b dark:border-gray-700 last:border-none pb-2"
                 >
-                  {/* Thumbnail and Ad Info */}
-                  <div className="flex items-center gap-6 w-1/3">
-                    {/* Circular Thumbnail */}
-                    <div className="relative w-16 h-16">
+                  {/* Column 1: Thumbnail and Ad Info (25%) */}
+                  <div className="col-span-4 flex items-center gap-4">
+                    <div className="relative" style={{ width: "180px", height: "140px" }}>
                       <Image
-                        src={
-                          ad.thumbnailUrl ||
-                          "https://150763658.v2.pressablecdn.com/wp-content/uploads/2023/02/image-1.webp"
-                        }
+                        src={ad.thumbnailUrl || ""}                        
                         alt="Ad Thumbnail"
-                        className="rounded-full"
-                        layout="fill" // Makes the image fill the container
-                        objectFit="cover" // Ensures the image scales correctly
-                        priority={true} // Ensures the image loads eagerly for LCP improvement
+                        className="rounded-sm"
+                        layout="fill"
+                        objectFit="cover"
+                        priority={true}
                       />
                     </div>
-
-                    {/* Ad Title and Location */}
-                    <div className="font-semibold text-xl text-gray-800 dark:text-gray-100">
-                      {ad.title}
+                    <div className="flex flex-col min-w-0">
+                      <div className="font-semibold text-2xl text-gray-800 dark:text-gray-100 truncate">
+                        {ad.title}
+                      </div>
+                      <div className="text-sm text-gray-700 dark:text-gray-300">
+                        Duration: {ad.adDuration}
+                      </div>
                     </div>
                   </div>
-                  {/* Ad Duration */}
-                  <div className="text-lg text-gray-600 dark:text-gray-300 text-center w-1/3">
-                    {ad.adDuration} seconds
+
+                  {/* Column 2: Remarks (50%) */}
+                  <div className="col-span-5 px-4">
+                    <p className="text-md text-gray-800 dark:text-gray-300 whitespace-pre-line line-clamp-5">
+                      {ad.remarks}
+                    </p>
                   </div>
-                  {/* Download Button */}
-                  <div className="w-1/3 flex justify-end">
+
+                  {/* Column 3: Download Button (25%) */}
+                  <div className="col-span-3 flex justify-center">
                     <a
                       href={ad.downloadLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-5 py-2 border border-blue-500 text-blue-500 rounded-full text-sm hover:bg-blue-500 hover:text-white transition text-center"
-                      style={{
-                        maxWidth: "120px",
-                      }}
+                      className="px-5 py-2 border border-blue-500 text-blue-500 rounded-full text-sm hover:bg-blue-500 hover:text-white transition text-center whitespace-nowrap"
                     >
                       Download
                     </a>
