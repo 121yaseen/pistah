@@ -28,6 +28,7 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
     adDuration,
     thumbnailUrl,
     videoUrl,
+    remarks,
   } = ad;
 
   const parsedStartDate = parse(
@@ -55,17 +56,6 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
   const utcStartDate = zonedTimeToUtc(startOfDayStartDate, "UTC").toISOString();
   const utcEndDate = zonedTimeToUtc(startOfDayEndDate, "UTC").toISOString();
 
-  console.log(
-    title,
-    downloadLink,
-    adBoardId,
-    adDisplayStartDate,
-    adDisplayEndDate,
-    adDuration,
-    thumbnailUrl,
-    createdUser.id,
-    videoUrl
-  );
   return await prisma.ad.create({
     data: {
       title,
@@ -76,7 +66,8 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
       adDuration,
       thumbnailUrl,
       createdById: createdUser.id,
-      videoUrl,
+      videoUrl: videoUrl || "",
+      remarks,
     },
   });
 };

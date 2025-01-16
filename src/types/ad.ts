@@ -10,6 +10,7 @@ export interface Ad {
   adDuration: string;
   thumbnailUrl: string;
   videoUrl?: string;
+  remarks: string;
 }
 
 export interface AdWithBoard extends Ad {

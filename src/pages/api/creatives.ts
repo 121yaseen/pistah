@@ -33,6 +33,7 @@ export default async function handler(
         adDisplayEndDate,
         adDuration,
         videoUrl,
+        remarks,
       } = fields as { [key: string]: string | string[] };
 
       const adTitle = Array.isArray(title) ? title[0] : title;
@@ -50,6 +51,7 @@ export default async function handler(
         ? adDuration[0]
         : adDuration;
       const adVideoUrl = Array.isArray(videoUrl) ? videoUrl[0] : videoUrl;
+      const adRemarks = Array.isArray(remarks) ? remarks[0] : remarks;
 
       if (
         !adTitle ||
@@ -84,7 +86,6 @@ export default async function handler(
           fileBuffer,
           thumbnailFile.originalFilename || "default-filename"
         );
-
         const newAd = await createAd(
           {
             title: adTitle,
@@ -95,6 +96,7 @@ export default async function handler(
             adDuration: adAdDuration,
             thumbnailUrl,
             videoUrl: adVideoUrl,
+            remarks: adRemarks,
           },
           user
         );
