@@ -97,7 +97,7 @@ const PublisherInventoryPage: React.FC = () => {
       if (response) {
         addToast("Inventory added successfully!", "success");
         await loadAdBoards();
-        //closeModal();
+        closeModal();
       } else {
         addToast("Failed to add Inventory!", "error");
       }
