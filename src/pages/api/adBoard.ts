@@ -88,7 +88,12 @@ export default async function handler(
   } else if (req.method === "GET") {
     try {
       const adBoards = await getAdBoards(user);
-      return res.status(200).json(adBoards);
+      return res.status(200).json(
+        adBoards.map((adBoard) => ({
+          ...adBoard,
+          imageUrls: [adBoard.imageUrl],
+        }))
+      );
     } catch (error) {
       console.error("Error fetching ad boards:", error);
       return res.status(500).json({ error: "Failed to fetch ad boards" });
