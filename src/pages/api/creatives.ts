@@ -55,7 +55,6 @@ export default async function handler(
 
       if (
         !adTitle ||
-        !adDownloadLink ||
         !adAdBoardId ||
         !adAdDisplayStartDate ||
         !adAdDisplayEndDate ||
@@ -74,7 +73,7 @@ export default async function handler(
           .status(400)
           .json({ error: "Thumbnail must be less than 5MB" });
       }
-
+      let thumbnailUrl = "";
       try {
         const ROOT_DIR = "/safe/upload/directory";
         const resolvedPath = fs.realpathSync(
@@ -82,30 +81,51 @@ export default async function handler(
         );
 
         const fileBuffer = await fs.promises.readFile(resolvedPath);
-        const thumbnailUrl = await uploadToS3(
+        thumbnailUrl = await uploadToS3(
           fileBuffer,
           thumbnailFile.originalFilename || "default-filename"
         );
+      } catch (error) {
+        console.error("Error creating ad:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      if (
+        adVideoUrl !== null &&
+        adVideoUrl !== "" &&
+        typeof adVideoUrl == "string"
+      ) {
+        console.log("adVideoUrl: ", adVideoUrl);
         const newAd = await createAd(
           {
             title: adTitle,
-            downloadLink: adDownloadLink,
+            downloadLink: adVideoUrl,
             adBoardId: adAdBoardId,
             adDisplayStartDate: adAdDisplayStartDate,
             adDisplayEndDate: adAdDisplayEndDate,
             adDuration: adAdDuration,
             thumbnailUrl,
-            videoUrl: adVideoUrl,
             remarks: adRemarks,
           },
           user
         );
-
         return res.status(201).json(newAd);
-      } catch (error) {
-        console.error("Error creating ad:", error);
-        return res.status(500).json({ error: "Internal Server Error" });
       }
+      const newAd = await createAd(
+        {
+          title: adTitle,
+          downloadLink: adDownloadLink,
+          adBoardId: adAdBoardId,
+          adDisplayStartDate: adAdDisplayStartDate,
+          adDisplayEndDate: adAdDisplayEndDate,
+          adDuration: adAdDuration,
+          thumbnailUrl,
+          remarks: adRemarks,
+        },
+        user
+      );
+
+      return res.status(201).json(newAd);
     });
   } else if (req.method === "GET") {
     // Get the start and end date from the query params

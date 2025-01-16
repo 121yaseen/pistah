@@ -16,7 +16,6 @@ model Ad {
   adDisplayEndDate   DateTime
   adDuration         String
   thumbnailUrl       String
-  videoUrl           String
   remarks            String
   createdById        String   @db.ObjectId
   createdUser        User     @relation(fields: [createdById], references: [id])

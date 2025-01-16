@@ -9,7 +9,6 @@ export interface Ad {
   adDisplayEndDate: string;
   adDuration: string;
   thumbnailUrl: string;
-  videoUrl?: string;
   remarks: string;
 }
 
