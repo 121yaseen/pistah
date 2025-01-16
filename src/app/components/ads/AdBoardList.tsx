@@ -37,10 +37,10 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads }) => {
               {boardAds.map((ad) => (
                 <li
                   key={ad.id}
-                  className="flex justify-between items-center border-b last:border-none pb-4"
+                  className="flex items-center justify-between border-b last:border-none pb-4"
                 >
                   {/* Thumbnail and Ad Info */}
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-6 w-1/3">
                     {/* Circular Thumbnail */}
                     <div className="relative w-16 h-16">
                       <Image
@@ -62,21 +62,23 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads }) => {
                     </div>
                   </div>
                   {/* Ad Duration */}
-                  <div className="text-lg text-gray-600 dark:text-gray-300">
-                    {ad.adDuration}
+                  <div className="text-lg text-gray-600 dark:text-gray-300 text-center w-1/3">
+                    {ad.adDuration} seconds
                   </div>
                   {/* Download Button */}
-                  <a
-                    href={ad.downloadLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-5 py-2 border border-blue-500 text-blue-500 rounded-full text-sm hover:bg-blue-500 hover:text-white transition text-center"
-                    style={{
-                      maxWidth: "120px",
-                    }}
-                  >
-                    Download
-                  </a>
+                  <div className="w-1/3 flex justify-end">
+                    <a
+                      href={ad.downloadLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-5 py-2 border border-blue-500 text-blue-500 rounded-full text-sm hover:bg-blue-500 hover:text-white transition text-center"
+                      style={{
+                        maxWidth: "120px",
+                      }}
+                    >
+                      Download
+                    </a>
+                  </div>
                 </li>
               ))}
             </ul>
