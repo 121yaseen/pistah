@@ -9,7 +9,9 @@ export const createAdBoard = async (
   const formData = new FormData();
 
   if (adBoard.images) {
-    //formData.append("images", adBoard?.images as File);
+    adBoard.images.forEach((image) => {
+      formData.append(`image`, image);
+    });
   }
   formData.append("boardName", adBoard?.boardName ?? "");
   formData.append("location", adBoard?.location ?? "");

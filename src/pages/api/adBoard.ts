@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-//import fs from "fs";
+import fs from "fs";
 import {
   createAdBoard,
   deleteAdBoard,
@@ -9,8 +9,8 @@ import { AdBoard } from "@/types/ad";
 import { getAdBoards } from "@/repositories/adBoardRepository";
 import formidable from "formidable";
 import { AdBoardType } from "@/app/enums/AdBoardType";
-//import { uploadToS3 } from "@/services/s3Service";
 import { getLoggedInUser } from "@/services/userService";
+import { uploadToS3 } from "@/services/s3Service";
 
 export const config = {
   api: {
@@ -18,6 +18,16 @@ export const config = {
   },
 };
 
+function parseAsArray(str: string) {
+  // Remove leading '[' and trailing ']'
+  const withoutBrackets = str.slice(1, -1);
+
+  // Split on commas
+  const arr = withoutBrackets.split(",");
+
+  // Trim each entry (in case of whitespace)
+  return arr.map((item) => item.trim());
+}
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -57,26 +67,31 @@ export default async function handler(
       }
 
       if (files.image) {
-        const file = Array.isArray(files.image) ? files.image[0] : files.image;
-        if (file.size > 5 * 1024 * 1024) {
-          return res
-            .status(400)
-            .json({ error: "Inventory Image must be less than 5MB" });
+        const images = Array.isArray(files.image) ? files.image : [files.image];
+        const imageUrls: string[] = [];
+
+        for (const image of images) {
+          if (image.size > 5 * 1024 * 1024) {
+            return res
+              .status(400)
+              .json({ error: "Each inventory image must be less than 5MB" });
+          }
+
+          try {
+            const fileBuffer = await fs.promises.readFile(image.filepath);
+            const imageUrl = await uploadToS3(
+              fileBuffer,
+              image.originalFilename || "default-filename"
+            );
+            imageUrls.push(imageUrl);
+          } catch (error) {
+            console.error("Error uploading image to S3:", error);
+            return res.status(500).json({ error: "Failed to upload image" });
+          }
         }
 
-        try {
-          //const fileBuffer = await fs.promises.readFile(file.filepath);
-          //const imageUrl = await uploadToS3(
-          //  fileBuffer,
-          //  file.originalFilename || "default-filename"
-          //);
-          //adBoard.imageUrls = [imageUrl];
-        } catch (error) {
-          console.error("Error uploading image to S3:", error);
-          return res.status(500).json({ error: "Failed to upload image" });
-        }
+        adBoard.imageUrls = imageUrls;
       }
-
       try {
         const response = await createAdBoard(adBoard, user);
         return res.status(201).json(response);
@@ -91,7 +106,7 @@ export default async function handler(
       return res.status(200).json(
         adBoards.map((adBoard) => ({
           ...adBoard,
-          imageUrls: [adBoard.imageUrl],
+          imageUrls: parseAsArray(adBoard.imageUrl),
         }))
       );
     } catch (error) {

@@ -97,7 +97,7 @@ const PublisherInventoryPage: React.FC = () => {
       if (response) {
         addToast("Inventory added successfully!", "success");
         await loadAdBoards();
-        closeModal();
+        //closeModal();
       } else {
         addToast("Failed to add Inventory!", "error");
       }
@@ -171,13 +171,13 @@ const PublisherInventoryPage: React.FC = () => {
   const validateForm = () => {
     return currentAdBoard
       ? currentAdBoard.boardName !== "" &&
-      currentAdBoard.location !== "" &&
-      currentAdBoard.dailyRate > 0 &&
-      currentAdBoard.ownerContact &&
-      /^\d{10}$/.test(currentAdBoard.ownerContact) &&
-      currentAdBoard.images &&
-      currentAdBoard.images.every(image => image.size < 5 * 1024 * 1024) :
-      false
+          currentAdBoard.location !== "" &&
+          currentAdBoard.dailyRate > 0 &&
+          currentAdBoard.ownerContact &&
+          /^\d{10}$/.test(currentAdBoard.ownerContact) &&
+          currentAdBoard.images &&
+          currentAdBoard.images.every((image) => image.size < 5 * 1024 * 1024)
+      : false;
   };
 
   useEffect(() => {
@@ -219,7 +219,10 @@ const PublisherInventoryPage: React.FC = () => {
                     className="p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow flex flex-col"
                   >
                     {/* Image at the top */}
-                    <div className="relative w-full" style={{ height: "250px" }}>
+                    <div
+                      className="relative w-full"
+                      style={{ height: "250px" }}
+                    >
                       <ImageCarousel images={adBoard.imageUrls || []} />
                     </div>
 

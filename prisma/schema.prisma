@@ -39,7 +39,7 @@ model AdBoard {
   lastMaintenanceDate DateTime
   createdById         String   @db.ObjectId
   createdUser         User     @relation(fields: [createdById], references: [id])
-  imageUrl            String   @default("")
+  imageUrl            String   @default("[]")
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
   ads                 Ad[]     @relation("AdToAdBoard")

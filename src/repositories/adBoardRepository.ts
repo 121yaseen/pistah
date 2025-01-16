@@ -8,6 +8,7 @@ export const createAdBoardAsync = async (
 ) => {
   const { boardName, location, boardType, dailyRate, ownerContact } = adBoard;
 
+  console.log(adBoard);
   return await prisma.adBoard.create({
     data: {
       boardName,
@@ -16,10 +17,10 @@ export const createAdBoardAsync = async (
       boardType: boardType ?? "Static",
       isAvailable: true,
       dailyRate,
-      operationalHours: "9 AM - 6 PM",
+      operationalHours: "9 AM - 5 PM",
       ownerContact,
       lastMaintenanceDate: new Date().toISOString(),
-      //imageUrl: adBoard.imageUrl ?? "",
+      imageUrl: "[" + adBoard.imageUrls?.toString() + "]",
       createdById: createdUser.id,
     },
   });
