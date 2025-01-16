@@ -169,6 +169,10 @@ const PublisherInventoryPage: React.FC = () => {
 
   // Validate the form when any field is updated
   const validateForm = () => {
+    if(currentAdBoard && currentAdBoard.images && currentAdBoard.imageUrls && (currentAdBoard.imageUrls.length + currentAdBoard.images.length > 7)){
+      addToast("Maximum 7 images allowed!", "error");
+      return false;
+    }
     return currentAdBoard
       ? currentAdBoard.boardName !== "" &&
           currentAdBoard.location !== "" &&

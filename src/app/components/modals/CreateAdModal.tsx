@@ -112,7 +112,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
     }));
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: false,
+      [name]: value.trim() === "",
     }));
   };
 
@@ -176,13 +176,14 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
       thumbnailFile: !adData.thumbnailFile || errors.thumbnailFile,
       videoFile:
         activeTab === "video" && (!adData.videoFile || errors.videoFile),
-      remarks: false,
+      remarks: adData.remarks.trim() === "",
     };
 
     setErrors(newErrors);
 
     if (Object.values(newErrors).some((error) => error)) {
-      addToast("Please check the entered fields", "error");
+      addToast("You might have missed some fields", "error");
+      setIsLoading(false);
       return;
     }
 
@@ -193,6 +194,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
       if (!videoUrl) {
         setIsLoading(false);
+        addToast("Video upload failed", "error");
         return; // Abort submission if the video upload fails
       }
     }
@@ -258,7 +260,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
             {/* Title Input */}
             <div className="mb-4">
               <label
-                className="block font-medium mb-1 dark:text-white text-black"
+                className="block font-medium mb-1 dark:text-white text-black text-sm"
                 htmlFor="title"
               >
                 Creative Name<span className="text-red-500">*</span>
@@ -281,7 +283,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
             {/* Add tabs */}
             <div className="mb-4">
-              <div className="flex font-medium">
+              <div className="flex font-medium text-sm items-center">
                 <button
                   type="button"
                   className={`py-2 px-4 ${
@@ -293,6 +295,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 >
                   Video Link {activeTab === 'download' && (<span className="text-red-500">*</span>)}
                 </button>
+                <span className="px-4 text-gray-400">or</span>
                 <button
                   type="button"
                   className={`py-2 px-4 ${
@@ -374,7 +377,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
             </div>
 
             <div className="mb-4">
-              <label className="block font-medium mb-1 text-black dark:text-white">
+              <label className="block font-medium mb-1 text-black dark:text-white text-sm">
                 Display Dates<span className="text-red-500">*</span>
               </label>
               <DateRangePicker
@@ -400,7 +403,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
             <div className="mb-4">
               <label
-                className="block font-medium mb-1 text-black dark:text-white"
+                className="block font-medium mb-1 text-sm text-black dark:text-white"
                 htmlFor="adBoardId"
               >
                 Inventory<span className="text-red-500">*</span>
@@ -415,7 +418,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 }`}
                 required
               >
-                <option value="" disabled className="border-b border-gray-300">
+                <option value="" disabled className="border-b text-xs border-gray-300">
                   Select inventory
                 </option>
                 {adBoards.map((board) => (
@@ -433,7 +436,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
             <div className="mb-4">
               <label
-                className="block font-medium mb-1 text-black dark:text-white"
+                className="block font-medium text-sm mb-1 text-black dark:text-white"
                 htmlFor="adDuration"
               > 
                 Duration (seconds)<span className="text-red-500">*</span>
@@ -462,7 +465,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 className="block text-sm font-medium mb-1 text-black dark:text-white"
                 htmlFor="remarks"
               >
-                Remarks
+                Add more details <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="remarks"
@@ -470,9 +473,14 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 value={adData.remarks}
                 onChange={handleChange}
                 rows={5}
-                className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200`}
-                placeholder="Enter remarks"
+                className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${errors.remarks ? "border-red-500" : ""}`}
+                placeholder="Enter more details"
               />
+              {errors.remarks && (
+                <p className="text-red-500 text-sm mt-1">
+                  Add details of the creative
+                </p>
+              )}
             </div>
 
             {uploadProgress !== null && (
@@ -488,9 +496,9 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
             <div className="mb-4">
               <label
-                className="font-medium text-black dark:text-white"
+                className="font-medium text-black dark:text-white text-sm"
               >
-                Creative thumbnail (max 5MB)
+                Thumbnail (max 5MB)
               </label><span className="text-red-500">*</span>
               <label className="cursor-pointer block border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700" htmlFor="thumbnail"
                 style={{ width: '145px' }}>

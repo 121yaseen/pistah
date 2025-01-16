@@ -33,21 +33,21 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
 
     // Daily Rate validation
     if (field === "dailyRate" && (Number(value) <= 0 || isNaN(Number(value)))) {
-      newErrors.dailyRate = "Daily rate must be a positive number.";
+      newErrors.dailyRate = "Enter a positive number.";
     } else {
       delete newErrors.dailyRate;
     }
 
     // Owner Contact validation
     if (field === "ownerContact" && !/^\d{10}$/.test(value.toString())) {
-      newErrors.ownerContact = "Contact must be a valid phone number.";
+      newErrors.ownerContact = "Enter a valid phone number.";
     } else {
       delete newErrors.ownerContact;
     }
 
     // Image validation
     if (field === "images" && !value) {
-      newErrors.image = "Please upload an image less than 5MB.";
+      newErrors.image = "Upload an image less than 5MB.";
     } else {
       delete newErrors.image;
     }
@@ -96,7 +96,7 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
           placeholder="inventory name"
           value={adBoard.boardName}
           onChange={(e) => handleChange("boardName", e.target.value)}
-          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
+          className={`w-full p-3 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${errors.boardName ? "border-red-500" : ""}`}
         />
         {errors.boardName && <p className="text-red-500 text-sm">{errors.boardName}</p>}
       </div>
@@ -105,7 +105,7 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
         <label className="block text-sm font-medium mb-1 text-black dark:text-white">
           Inventory Images (max 5MB each)<span className="text-red-500">*</span>
         </label>
-        <label className="cursor-pointer block p-3 border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700" htmlFor="invImage"
+        <label className={`cursor-pointer block p-3 border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700 ${errors.image ? "border-red-500" : ""}`} htmlFor="invImage"
           style={{ width: '145px' }}>
           <div className="flex items-center"><UploadIcon /> &nbsp;Add Images </div>
         </label>
@@ -116,19 +116,18 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
           accept="image/*"
           onChange={(e) => {
             handleFileChange(e);
-            e.target.value = ''; // Clear the input after files are selected
+            e.target.value = '';
           }}
           multiple
-          placeholder="Add images"
           className="hidden"
         />
         {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
 
-        <div className="mt-2 grid grid-cols-4 gap-2">
+        <div className="mt-2 grid grid-cols-4 gap-4">
           {/* Show existing images from imageUrls */}
           {adBoard.imageUrls?.map((url, index) => (
-            <div key={`existing-${index}`} className="relative">
-              <div className="relative w-32 h-32 rounded-lg overflow-hidden">
+            <div key={`existing-${index}`} className="relative w-34">
+              <div className="relative w-34 h-32 rounded-lg overflow-hidden">
                 <Image
                   src={url}
                   alt={`Inventory image ${index + 1}`}
@@ -142,7 +141,7 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
                   newUrls.splice(index, 1);
                   onChange("imageUrls", newUrls);
                 }}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                className="absolute -top-2 -right-2 bg-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center text-2xl"
               >
                 ×
               </button>
@@ -174,14 +173,14 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
       {/* Location */}
       <div>
         <label className="block text-sm font-medium mb-1 text-black dark:text-white">
-          Location
+          Location<span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           placeholder="location"
           value={adBoard.location}
           onChange={(e) => handleChange("location", e.target.value)}
-          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
+          className={`w-full p-3 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${errors.location ? "border-red-500" : ""}`}
         />
         {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
       </div>
@@ -213,9 +212,9 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
           <input
             type="number"
             value={adBoard.dailyRate}
-            onChange={(e) => handleChange("dailyRate", parseFloat(e.target.value))}
-            className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
-            placeholder="1500"
+            onChange={(e) => handleChange("dailyRate", parseFloat(e.target.value ?? 0))}
+            className={`w-full p-3 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${errors.dailyRate ? "border-red-500" : ""}`}
+            placeholder="enter daily rate"
           />
         </div>
         {errors.dailyRate && <p className="text-red-500 text-sm">{errors.dailyRate}</p>}
@@ -233,7 +232,7 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
             value={adBoard.ownerContact}
             placeholder="mobile number"
             onChange={(e) => handleChange("ownerContact", e.target.value)}
-            className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg dark:bg-gray-700 bg-gray-100 text-gray-900 dark:text-gray-100"
+            className={`w-full p-3 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${errors.ownerContact ? "border-red-500" : ""}`}
           />
         </div>
         {errors.ownerContact && <p className="text-red-500 text-sm">{errors.ownerContact}</p>}
