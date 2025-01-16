@@ -48,7 +48,9 @@ export const updateAdBoard = async (
 
   const formData = new FormData();
   if (adBoard.images) {
-    //formData.append("image", adBoard.images as File);
+    adBoard.images.forEach((image) => {
+      formData.append("image", image);
+    });
   }
   formData.append("id", adBoard.id ?? "");
   formData.append("boardName", adBoard.boardName ?? "");
@@ -56,6 +58,11 @@ export const updateAdBoard = async (
   formData.append("dailyRate", adBoard.dailyRate.toString() ?? "");
   formData.append("ownerContact", adBoard.ownerContact ?? "");
   formData.append("boardType", adBoard.boardType ?? "");
+  if (adBoard.imageUrls && adBoard.imageUrls.length > 0) {
+    adBoard.imageUrls.forEach((url) => {
+      formData.append("imageUrls", url);
+    });
+  }
 
   const response = await fetch("/api/adBoard", {
     method: "PUT",

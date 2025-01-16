@@ -63,7 +63,7 @@ export const updateAdBoardAsync = async (adBoard: AdBoard, user: User) => {
     boardType,
     dailyRate,
     ownerContact,
-    //imageUrl,
+    imageUrls,
   } = adBoard;
 
   const existingAdBoard = await prisma.adBoard.findUnique({
@@ -77,11 +77,6 @@ export const updateAdBoardAsync = async (adBoard: AdBoard, user: User) => {
     throw new Error("Ad board not found");
   }
 
-  //if (!imageUrl) {
-  // Keep the existing image URL if no new image is uploaded
-  //  adBoard.imageUrl = existingAdBoard.imageUrl;
-  //}
-
   return await prisma.adBoard.update({
     where: {
       id,
@@ -92,7 +87,7 @@ export const updateAdBoardAsync = async (adBoard: AdBoard, user: User) => {
       boardType,
       dailyRate,
       ownerContact,
-      //imageUrl,
+      imageUrl: "[" + imageUrls?.toString() + "]",
     },
   });
 };

@@ -121,8 +121,16 @@ export default async function handler(
         console.error("Error parsing form:", err);
         return res.status(500).json({ error: "Error parsing form data" });
       }
-      const { id, boardName, location, dailyRate, ownerContact, boardType } =
-        fields as { [key: string]: string | string[] };
+
+      const {
+        id,
+        boardName,
+        location,
+        dailyRate,
+        ownerContact,
+        boardType,
+        imageUrls,
+      } = fields as { [key: string]: string | string[] };
 
       const adBoard: AdBoard = {
         id: Array.isArray(id) ? id[0] : id,
@@ -135,6 +143,7 @@ export default async function handler(
         boardType: Array.isArray(boardType)
           ? (boardType[0] as AdBoardType)
           : (boardType as AdBoardType),
+        imageUrls: Array.isArray(imageUrls) ? imageUrls : [imageUrls],
       };
 
       if (
@@ -149,23 +158,33 @@ export default async function handler(
       }
 
       if (files.image) {
-        const file = Array.isArray(files.image) ? files.image[0] : files.image;
-        if (file.size > 5 * 1024 * 1024) {
-          return res
-            .status(400)
-            .json({ error: "Inventory Image must be less than 5MB" });
+        const images = Array.isArray(files.image) ? files.image : [files.image];
+        const imageUrls: string[] = [];
+
+        for (const image of images) {
+          if (image.size > 5 * 1024 * 1024) {
+            return res
+              .status(400)
+              .json({ error: "Each inventory image must be less than 5MB" });
+          }
+
+          try {
+            const fileBuffer = await fs.promises.readFile(image.filepath);
+            const imageUrl = await uploadToS3(
+              fileBuffer,
+              image.originalFilename || "default-filename"
+            );
+            imageUrls.push(imageUrl);
+          } catch (error) {
+            console.error("Error uploading image to S3:", error);
+            return res.status(500).json({ error: "Failed to upload image" });
+          }
         }
 
-        try {
-          //const fileBuffer = await fs.promises.readFile(file.filepath);
-          //const imageUrl = await uploadToS3(
-          //  fileBuffer,
-          //  file.originalFilename || "default-filename"
-          //);
-          //adBoard.imageUrls = [imageUrl];
-        } catch (error) {
-          console.error("Error uploading image to S3:", error);
-          return res.status(500).json({ error: "Failed to upload image" });
+        if (adBoard.imageUrls) {
+          adBoard.imageUrls.push(...imageUrls);
+        } else {
+          adBoard.imageUrls = imageUrls;
         }
       }
 
@@ -173,8 +192,8 @@ export default async function handler(
         const response = await updateAdBoard(adBoard, user);
         return res.status(200).json(response);
       } catch (error) {
-        console.error("Error creating ad board:", error);
-        return res.status(500).json({ error: "Failed to create ad board" });
+        console.error("Error updating ad board:", error);
+        return res.status(500).json({ error: "Failed to update ad board" });
       }
     });
   } else if (req.method === "DELETE") {

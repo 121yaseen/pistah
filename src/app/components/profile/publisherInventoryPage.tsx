@@ -127,11 +127,6 @@ const PublisherInventoryPage: React.FC = () => {
         await loadAdBoards();
         setIsLoading(false);
       }
-
-      // const updatedAdBoards = [...adBoards];
-      // updatedAdBoards[editingIndex] = currentAdBoard;
-      // setAdBoards(updatedAdBoards);
-      // addToast("Inventory edited successfully!", "success");
       closeModal();
     }
   };
@@ -169,7 +164,12 @@ const PublisherInventoryPage: React.FC = () => {
 
   // Validate the form when any field is updated
   const validateForm = () => {
-    if(currentAdBoard && currentAdBoard.images && currentAdBoard.imageUrls && (currentAdBoard.imageUrls.length + currentAdBoard.images.length > 7)){
+    if (
+      currentAdBoard &&
+      currentAdBoard.images &&
+      currentAdBoard.imageUrls &&
+      currentAdBoard.imageUrls.length + currentAdBoard.images.length > 7
+    ) {
       addToast("Maximum 7 images allowed!", "error");
       return false;
     }
@@ -179,8 +179,11 @@ const PublisherInventoryPage: React.FC = () => {
           currentAdBoard.dailyRate > 0 &&
           currentAdBoard.ownerContact &&
           /^\d{10}$/.test(currentAdBoard.ownerContact) &&
-          currentAdBoard.images &&
-          currentAdBoard.images.every((image) => image.size < 5 * 1024 * 1024)
+          ((currentAdBoard.images &&
+            currentAdBoard.images.every(
+              (image) => image.size < 5 * 1024 * 1024
+            )) ||
+            (currentAdBoard.imageUrls && currentAdBoard.imageUrls?.length > 0))
       : false;
   };
 
