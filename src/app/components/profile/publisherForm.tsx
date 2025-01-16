@@ -89,7 +89,7 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
       {/* Board Name */}
       <div>
         <label className="block text-sm font-medium mb-1 text-black dark:text-white">
-          Inventory Name
+          Inventory Name<span className="text-red-500">*</span>
         </label>
         <input
           type="text"
@@ -103,7 +103,7 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
 
       <div>
         <label className="block text-sm font-medium mb-1 text-black dark:text-white">
-          Inventory Images (Max 5MB each)
+          Inventory Images (max 5MB each)<span className="text-red-500">*</span>
         </label>
         <label className="cursor-pointer block p-3 border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700" htmlFor="invImage"
           style={{ width: '145px' }}>
@@ -168,6 +168,7 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
             </div>
           ))}
         </div>
+        <i className="text-gray-500 block text-sm">Add more images to let your inventory standout (maximum of 7)</i>
       </div>
 
       {/* Location */}
@@ -188,7 +189,7 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
       {/* Board Type */}
       <div>
         <label className="block text-sm font-medium mb-1 text-black dark:text-white">
-          Board Type
+          Board Type<span className="text-red-500">*</span>
         </label>
         <select
           value={adBoard.boardType}
@@ -205,7 +206,7 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
       {/* Daily Rate */}
       <div>
         <label className="block text-sm font-medium mb-1 text-black dark:text-white">
-          Daily Rate (₹)
+          Daily Rate<span className="text-red-500">*</span>
         </label>
         <div className="flex items-center">
           <span className="mr-2 text-black dark:text-white">₹</span>
@@ -223,7 +224,7 @@ const AdBoardForm: React.FC<AdBoardFormProps> = ({ adBoard, onChange }) => {
       {/* Owner Contact */}
       <div>
         <label className="block text-sm font-medium mb-1 text-black dark:text-white">
-          Contact
+          Contact<span className="text-red-500">*</span>
         </label>
         <div className="flex items-center">
           <span className="mr-2 text-black dark:text-white">+91</span>

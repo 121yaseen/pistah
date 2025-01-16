@@ -160,6 +160,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    setIsLoading(true);
     e.preventDefault();
 
     // Validate fields
@@ -187,7 +188,6 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
     let videoUrl = null;
     if (adData.videoFile) {
-      setIsLoading(true);
       setUploadProgress(0);
       videoUrl = await uploadVideoToS3(adData.videoFile);
 
@@ -261,7 +261,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 className="block font-medium mb-1 dark:text-white text-black"
                 htmlFor="title"
               >
-                Title
+                Creative Name<span className="text-red-500">*</span>
               </label>
               <input
                 id="title"
@@ -269,14 +269,13 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 type="text"
                 value={adData.title}
                 onChange={handleChange}
-                className={` w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 dark:border-gray-600 border-gray-300 text-black dark:text-gray-200 ${
-                  errors.title ? "border-red-500" : ""
-                }`}
-                placeholder="Title"
+                className={` w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 dark:border-gray-600 border-gray-300 text-black dark:text-gray-200 ${errors.title ? "border-red-500" : ""
+                  }`}
+                placeholder="Enter creative name"
                 required
               />
               {errors.title && (
-                <p className="text-red-500 text-sm mt-1">Title is required</p>
+                <p className="text-red-500 text-sm mt-1">Creative name is required</p>
               )}
             </div>
 
@@ -292,7 +291,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                   }`}
                   onClick={() => setActiveTab("download")}
                 >
-                  Video Link
+                  Video Link {activeTab === 'download' && (<span className="text-red-500">*</span>)}
                 </button>
                 <button
                   type="button"
@@ -303,7 +302,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                   }`}
                   onClick={() => setActiveTab("video")}
                 >
-                  Video Upload
+                  Video Upload {activeTab === 'video' && (<span className="text-red-500">*</span>)}
                 </button>
               </div>
 
@@ -316,15 +315,14 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                     type="url"
                     value={adData.downloadLink}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${
-                      errors.downloadLink ? "border-red-500" : ""
-                    }`}
-                    placeholder="Link to download"
-                    required={activeTab === "download"}
+                    className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${errors.downloadLink ? "border-red-500" : ""
+                      }`}
+                    placeholder="Link to download video"
+                    required={activeTab === 'download'}
                   />
                   {errors.downloadLink && (
                     <p className="text-red-500 text-sm mt-1">
-                      Invalid download link URL
+                      Invalid video link URL
                     </p>
                   )}
                 </div>
@@ -377,7 +375,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
             <div className="mb-4">
               <label className="block font-medium mb-1 text-black dark:text-white">
-                Display Dates
+                Display Dates<span className="text-red-500">*</span>
               </label>
               <DateRangePicker
                 startDate={startDate}
@@ -405,7 +403,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 className="block font-medium mb-1 text-black dark:text-white"
                 htmlFor="adBoardId"
               >
-                Display on Ad Board
+                Inventory<span className="text-red-500">*</span>
               </label>
               <select
                 id="adBoardId"
@@ -418,7 +416,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 required
               >
                 <option value="" disabled className="border-b border-gray-300">
-                  Select an ad board
+                  Select inventory
                 </option>
                 {adBoards.map((board) => (
                   <option key={board.id} value={board.id.toString()}>
@@ -428,7 +426,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
               </select>
               {errors.adBoardId && (
                 <p className="text-red-500 text-sm mt-1">
-                  Ad board selection is required
+                  Inventory required
                 </p>
               )}
             </div>
@@ -437,8 +435,8 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
               <label
                 className="block font-medium mb-1 text-black dark:text-white"
                 htmlFor="adDuration"
-              >
-                Duration (seconds)
+              > 
+                Duration (seconds)<span className="text-red-500">*</span>
               </label>
               <input
                 id="adDuration"
@@ -490,20 +488,13 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
             <div className="mb-4">
               <label
-                className="block font-medium mb-1 text-black dark:text-white"
-                htmlFor="thumbnail"
+                className="font-medium text-black dark:text-white"
               >
-                Thumbnail (Max 5MB)
-              </label>
-              <label
-                className="cursor-pointer block border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700"
-                htmlFor="thumbnail"
-                style={{ width: "145px" }}
-              >
-                <div className="flex items-center">
-                  <UploadIcon />
-                  &nbsp;Add Image{" "}
-                </div>
+                Creative thumbnail (max 5MB)
+              </label><span className="text-red-500">*</span>
+              <label className="cursor-pointer block border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700" htmlFor="thumbnail"
+                style={{ width: '145px' }}>
+                <div className="flex items-center"><UploadIcon />&nbsp;Add Image </div>
               </label>
               <input
                 id="thumbnail"
