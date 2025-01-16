@@ -27,12 +27,12 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads }) => {
     setIsPreviewModalOpen(true);
   };
 
-  const openDeleteConfirmModal = (index: number) => {
+  const openDeleteConfirmModal = () => {
     //setDeleteIndex(index);
     setIsDeleteConfirmationOpen(true);
   };
 
-  const handleDeleteConfirmation = async (confirmed: boolean) => {
+  const handleDeleteConfirmation = async () => {
     // if (confirmed && deleteIndex !== null) {
     //   setIsLoading(true);
     //   const adBoardId = adBoards[deleteIndex]?.id;
@@ -140,7 +140,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads }) => {
                       </button>
                       <button
                         type="button"
-                        onClick={() => openDeleteConfirmModal(ad.id || 0)}
+                        onClick={() => openDeleteConfirmModal()}
                         className="p-2 border border-red-500 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition flex items-center justify-center"
                         style={{ width: "40px", height: "40px" }}
                       >
@@ -162,13 +162,13 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads }) => {
             <p>Are you sure you want to delete this creative ?</p>
             <div className="flex justify-end mt-4 space-x-2">
               <button
-                onClick={() => handleDeleteConfirmation(false)}
+                onClick={() => handleDeleteConfirmation()}
                 className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
               >
                 Cancel
               </button>
               <button
-                onClick={() => handleDeleteConfirmation(true)}
+                onClick={() => handleDeleteConfirmation()}
                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
               >
                 Delete
