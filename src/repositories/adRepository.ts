@@ -30,6 +30,7 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
     thumbnailUrl,
     remarks,
     videoUrl,
+    videoUrl,
   } = ad;
 
   const utcStartDate = new Date(
