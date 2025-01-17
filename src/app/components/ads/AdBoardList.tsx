@@ -148,7 +148,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
                   {/* Column 3: Download Button (25%) */}
                   <div className="col-span-3 flex items-center gap-4 justify-end">
                     <a
-                      href={ad.downloadLink}
+                      href={ad.downloadLink ? ad.downloadLink : ad.videoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-5 py-2 border border-blue-500 text-blue-500 rounded-full text-sm hover:bg-blue-500 hover:text-white transition text-center whitespace-nowrap"
