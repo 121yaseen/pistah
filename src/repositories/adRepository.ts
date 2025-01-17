@@ -30,6 +30,7 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
     thumbnailUrl,
     remarks,
     videoUrl,
+    videoUrl,
   } = ad;
 
   const utcStartDate = new Date(
@@ -38,6 +39,19 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
   const utcEndDate = new Date(
     adDisplayEndDate.split("T")[0] + "T00:00:00.000Z"
   );
+
+  console.log({
+    title,
+    downloadLink,
+    adBoardId,
+    adDisplayStartDate: utcStartDate,
+    adDisplayEndDate: utcEndDate,
+    adDuration,
+    thumbnailUrl,
+    createdById: createdUser.id,
+    remarks,
+    videoUrl,
+  });
 
   console.log({
     title,
