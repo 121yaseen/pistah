@@ -103,7 +103,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
   };
 
   return (
-    <div className="space-y-8 flex flex-col items-center pb-12">
+    <div className="flex flex-col items-center pb-12">
       {loading && <Loader isVisible={true} />}
       {Object.entries(groupedAds).map(([boardName, boardAds]) => {
         const location = boardAds[0].adBoard.location;

@@ -148,6 +148,17 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
     }));
   };
 
+  const removeUrl = (type: "thumbnailUrl" | "videoUrl") => {
+    setAdData((prevData) => ({
+      ...prevData,
+      [type]: "",
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [type]: false,
+    }));
+  };
+
   const uploadVideoToS3 = async (file: File): Promise<string | null> => {
     try {
       // Step 1: Get pre-signed URL
@@ -292,7 +303,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
         }}
       >
         {/* Header */}
-        <div className="px-6 py-4 bg-[#001464] dark:bg-gray-800 dark:text-gray-200 flex justify-between items-center border-b border-gray-300 dark:border-gray-600">
+        <div className="px-6 py-4 bg-[#001464] dark:bg-gray-800 dark:text-gray-200 flex justify-between items-center border-b border-gray-300 dark:border-gray-600 text-white">
           <h2 className="text-2xl font-bold">{editMode ? 'Edit Creative' : 'Add Creative'}</h2>
         </div>
 
@@ -356,7 +367,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
                     id="downloadLink"
                     name="downloadLink"
                     type="url"
-                    value={adData.downloadLink}
+                    value={adData.downloadLink || ""}
                     onChange={handleChange}
                     className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${errors.downloadLink ? "border-red-500" : ""
                       }`}
@@ -405,6 +416,21 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
                       <button
                         onClick={() => {
                           handleRemoveFile("video");
+                        }}
+                        className="absolute -top-2 -right-2 bg-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center text-2xl"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  )}
+                  {adData.videoUrl && (
+                    <div className="relative mt-2" style={{ width: "200px" }}>
+                      <div className="relative w-34 h-30 rounded-lg overflow-hidden border border-blue-300 text-blue-500 bg-blue-50">
+                        <VideoIcon />
+                      </div>
+                      <button
+                        onClick={() => {
+                          removeUrl("videoUrl");
                         }}
                         className="absolute -top-2 -right-2 bg-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center text-2xl"
                       >
@@ -579,6 +605,26 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
                   </button>
                 </div>
               )}
+              {adData.thumbnailUrl && (
+                <div className="relative mt-2" style={{ width: "200px" }}>
+                  <div className="relative w-34 h-32 rounded-lg overflow-hidden">
+                    <Image
+                      src={adData.thumbnailUrl}
+                      alt="Thumbnail"
+                      layout="fill"
+                      objectFit="cover"
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      removeUrl("thumbnailUrl");
+                    }}
+                    className="absolute -top-2 -right-2 bg-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
             </div>
           </form>
         </div>
@@ -588,7 +634,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded hover:bg-gray-400 bg-gray-600 dark:hover:bg-gray-500"
+            className="px-4 py-2 rounded hover:bg-gray-400 bg-gray-600 dark:hover:bg-gray-500 text-white"
           >
             Cancel
           </button>
