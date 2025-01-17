@@ -48,7 +48,7 @@ const PublisherInventoryPage: React.FC = () => {
   const openAddModal = () => {
     setIsEditing(false);
     setCurrentAdBoard({
-      id: undefined,
+      id: "",
       imageUrls: [],
       boardType: AdBoardType.STATIC,
       boardName: "",

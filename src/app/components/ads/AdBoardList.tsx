@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AdWithBoard } from "@/types/ad";
 import Image from "next/image"; // Import the Image component from Next.js
 import PencilIcon from "@/icons/pencilIcon";
@@ -6,6 +6,7 @@ import DeleteIcon from "@/icons/deleteIcon";
 import CreativeDetails from "../modals/CreativeDetails";
 import { useToast } from "@/app/context/ToastContext";
 import Loader from "../shared/LoaderComponent";
+import CreateAdModal from "../modals/CreateAdModal";
 
 interface AdBoardListProps {
   ads: AdWithBoard[];
@@ -13,10 +14,31 @@ interface AdBoardListProps {
 }
 
 const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
     useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [selectedAd, setSelectedAd] = useState<AdWithBoard | null>(null);
+  const [editMode, setEditMode] = useState(false);
+
+  const openEditModal = (ad: AdWithBoard) => {
+    setSelectedAd(ad);
+    setEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  useEffect(() => {
+    if (isModalOpen || isDeleteConfirmationOpen || isPreviewModalOpen) {
+        document.body.style.overflow = "hidden";
+    } else {
+        document.body.style.overflow = "";
+    }
+
+    // Cleanup when the component is unmounted
+    return () => {
+        document.body.style.overflow = "";
+    };
+}, [isModalOpen, isDeleteConfirmationOpen, isPreviewModalOpen]);
   const [deleteIndex, setDeleteIndex] = useState("");
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
@@ -158,7 +180,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
                     <div className="flex gap-2">
                       <button
                         type="button"
-                        //onClick={() => openEditModal(index)}
+                        onClick={() => openEditModal(ad)}
                         className="p-2 border border-blue-500 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white transition flex items-center justify-center"
                         style={{ width: "40px", height: "40px" }}
                       >
@@ -209,6 +231,22 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
           ad={selectedAd}
           onClose={() => setIsPreviewModalOpen(false)}
         />
+      )}
+
+      {/* Create Ad Modal */}
+      {isModalOpen && (
+                <div className="z-50 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+
+        <CreateAdModal
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditMode(false);
+            setSelectedAd(null);
+          }}
+          editMode={editMode}
+          adToEdit={selectedAd}
+        />
+        </div>
       )}
     </div>
   );
