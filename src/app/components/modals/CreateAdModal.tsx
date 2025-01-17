@@ -9,19 +9,49 @@ import UploadIcon from "@/icons/uploadIcon";
 import Image from "next/image";
 import VideoUploadIcon from "@/icons/videoUploadIcon";
 import VideoIcon from "@/icons/videoIcon";
+import { Ad } from "@/types/ad";
 
 type CreateAdModalProps = {
   onClose: () => void;
+  editMode: boolean;
+  adToEdit: Ad | null;
 };
 
-const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
+const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false, adToEdit = null }) => {
   const [activeTab, setActiveTab] = useState<"download" | "video">("download");
   const { addToast } = useToast();
   const [isLoading, setIsLoading] = useState(false); // Loader state
   const [uploadProgress, setUploadProgress] = useState<number | null>(null); // Progress state
 
+  useEffect(() => {
+    if (editMode && adToEdit) {
+      setAdData({
+        id: adToEdit.id,
+        title: adToEdit.title,
+        downloadLink: adToEdit.downloadLink || "",
+        adBoardId: adToEdit.adBoardId.toString(),
+        adDisplayStartDate: adToEdit.adDisplayStartDate,
+        adDisplayEndDate: adToEdit.adDisplayEndDate,
+        adDuration: adToEdit.adDuration,
+        thumbnailUrl: adToEdit.thumbnailUrl,
+        videoUrl: adToEdit.videoUrl || "",
+        remarks: adToEdit.remarks,
+        thumbnailFile: null,
+        videoFile: null
+      });
+
+      // Set dates if they exist
+      if (adToEdit.adDisplayStartDate) {
+        setStartDate(new Date(adToEdit.adDisplayStartDate));
+      }
+      if (adToEdit.adDisplayEndDate) {
+        setEndDate(new Date(adToEdit.adDisplayEndDate));
+      }
+    }
+  }, [editMode, adToEdit]);
+
   const [adData, setAdData] = useState({
-    id: Date.now(),
+    id: "",
     title: "",
     downloadLink: "",
     adBoardId: "",
@@ -31,6 +61,8 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
     thumbnailFile: null as File | null,
     videoFile: null as File | null,
     remarks: "",
+    thumbnailUrl: "",
+    videoUrl: "",
   });
 
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -201,7 +233,9 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
 
     const formData = new FormData();
     formData.append("title", adData.title);
-    formData.append("downloadLink", adData.downloadLink);
+    if (adData.downloadLink) {
+      formData.append("downloadLink", adData.downloadLink);
+    }
     formData.append("adBoardId", adData.adBoardId);
     formData.append("adDisplayStartDate", startDate?.toISOString() ?? "");
     formData.append("adDisplayEndDate", endDate?.toISOString() ?? "");
@@ -221,7 +255,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
       });
 
       if (response.ok) {
-        addToast("Creative added successfully in Dashboard!", "success");
+        addToast(`Creative ${editMode ? 'updated' : 'added'} successfully in Dashboard!`, "success");
         onClose();
 
         // Reload Page
@@ -231,27 +265,35 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
       }
     } catch (error) {
       addToast("Something went wrong!", "error");
-      console.error("Error creating ad:", error);
+      console.error(`Error ${editMode ? 'updating' : 'creating'} ad:`, error);
     } finally {
       setIsLoading(false);
       setUploadProgress(null);
     }
   };
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[9999]">
       <Loader isVisible={isLoading} />
       <div
         className="bg-white dark:bg-gray-800 dark:text-gray-200 rounded-lg shadow-lg flex flex-col"
         style={{
           width: "50%",
-          maxHeight: "90%",
+          maxHeight: "90vh",
           overflow: "hidden",
         }}
       >
         {/* Header */}
         <div className="px-6 py-4 bg-[#001464] dark:bg-gray-800 dark:text-gray-200 flex justify-between items-center border-b border-gray-300 dark:border-gray-600">
-          <h2 className="text-2xl font-bold">Add Creative</h2>
+          <h2 className="text-2xl font-bold">{editMode ? 'Edit Creative' : 'Add Creative'}</h2>
         </div>
 
         {/* Scrollable Content */}
@@ -286,11 +328,10 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
               <div className="flex font-medium text-sm items-center">
                 <button
                   type="button"
-                  className={`py-2 px-4 ${
-                    activeTab === "download"
-                      ? "border-b-2 border-blue-500 text-blue-600"
-                      : "text-gray-500"
-                  }`}
+                  className={`py-2 px-4 ${activeTab === "download"
+                    ? "border-b-2 border-blue-500 text-blue-600"
+                    : "text-gray-500"
+                    }`}
                   onClick={() => setActiveTab("download")}
                 >
                   Video Link {activeTab === 'download' && (<span className="text-red-500">*</span>)}
@@ -298,11 +339,10 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 <span className="px-4 text-gray-400">or</span>
                 <button
                   type="button"
-                  className={`py-2 px-4 ${
-                    activeTab === "video"
-                      ? "border-b-2 border-blue-500 text-blue-600"
-                      : "text-gray-500"
-                  }`}
+                  className={`py-2 px-4 ${activeTab === "video"
+                    ? "border-b-2 border-blue-500 text-blue-600"
+                    : "text-gray-500"
+                    }`}
                   onClick={() => setActiveTab("video")}
                 >
                   Video Upload {activeTab === 'video' && (<span className="text-red-500">*</span>)}
@@ -391,7 +431,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                   setEndDate(today);
                 }}
                 showSearchIcon={false}
-                onSearch={() => {}}
+                onSearch={() => { }}
               />
               {errors.adDisplayStartDate ||
                 (errors.adDisplayEndDate && (
@@ -413,9 +453,8 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 name="adBoardId"
                 value={adData.adBoardId}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded bg-gray-100 border-gray-300 text-black dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${
-                  errors.adBoardId ? "border-red-500" : ""
-                }`}
+                className={`w-full px-3 py-2 border rounded bg-gray-100 border-gray-300 text-black dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${errors.adBoardId ? "border-red-500" : ""
+                  }`}
                 required
               >
                 <option value="" disabled className="border-b text-xs border-gray-300">
@@ -438,7 +477,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
               <label
                 className="block font-medium text-sm mb-1 text-black dark:text-white"
                 htmlFor="adDuration"
-              > 
+              >
                 Duration (seconds)<span className="text-red-500">*</span>
               </label>
               <input
@@ -447,9 +486,8 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
                 type="number"
                 value={adData.adDuration}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 bg-gray-100 border-gray-300 text-black border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${
-                  errors.adDuration ? "border-red-500" : ""
-                }`}
+                className={`w-full px-3 py-2 bg-gray-100 border-gray-300 text-black border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${errors.adDuration ? "border-red-500" : ""
+                  }`}
                 placeholder="Enter duration in seconds"
                 required
               />
@@ -559,7 +597,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose }) => {
             form="createAdForm"
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
           >
-            Add
+            {editMode ? 'Update' : 'Add'}
           </button>
         </div>
       </div>

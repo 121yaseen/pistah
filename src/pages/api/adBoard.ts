@@ -45,6 +45,7 @@ export default async function handler(
         fields as { [key: string]: string | string[] };
 
       const adBoard: AdBoard = {
+        id: "",
         boardName: Array.isArray(boardName) ? boardName[0] : boardName,
         location: Array.isArray(location) ? location[0] : location,
         dailyRate: Number(Array.isArray(dailyRate) ? dailyRate[0] : dailyRate),

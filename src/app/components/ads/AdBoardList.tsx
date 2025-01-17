@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AdWithBoard } from "@/types/ad";
 import Image from "next/image"; // Import the Image component from Next.js
 import PencilIcon from "@/icons/pencilIcon";
@@ -6,6 +6,7 @@ import DeleteIcon from "@/icons/deleteIcon";
 import CreativeDetails from "../modals/CreativeDetails";
 import { useToast } from "@/app/context/ToastContext";
 import Loader from "../shared/LoaderComponent";
+import CreateAdModal from "../modals/CreateAdModal";
 
 interface AdBoardListProps {
   ads: AdWithBoard[];
@@ -13,10 +14,31 @@ interface AdBoardListProps {
 }
 
 const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
     useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [selectedAd, setSelectedAd] = useState<AdWithBoard | null>(null);
+  const [editMode, setEditMode] = useState(false);
+
+  const openEditModal = (ad: AdWithBoard) => {
+    setSelectedAd(ad);
+    setEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  useEffect(() => {
+    if (isModalOpen || isDeleteConfirmationOpen || isPreviewModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    // Cleanup when the component is unmounted
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isModalOpen, isDeleteConfirmationOpen, isPreviewModalOpen]);
   const [deleteIndex, setDeleteIndex] = useState("");
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
@@ -63,10 +85,10 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
       deleteAdBoard(deleteIndex)
         .then(
           () => {
-            addToast("Inventory deleted successfully!", "success");
+            addToast("Creative deleted successfully!", "success");
           },
           () => {
-            addToast("Failed to delete Inventory!", "error");
+            addToast("Failed to delete Creative!", "error");
           }
         )
         .finally(async () => {
@@ -74,7 +96,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
           setLoading(false);
         });
     } else {
-      addToast("Inventory Id is undefined!", "error");
+      addToast("Creative Id is undefined!", "error");
     }
     setIsDeleteConfirmationOpen(false);
     setDeleteIndex("");
@@ -158,7 +180,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
                     <div className="flex gap-2">
                       <button
                         type="button"
-                        //onClick={() => openEditModal(index)}
+                        onClick={() => openEditModal(ad)}
                         className="p-2 border border-blue-500 text-blue-500 rounded-full hover:bg-blue-500 hover:text-white transition flex items-center justify-center"
                         style={{ width: "40px", height: "40px" }}
                       >
@@ -188,7 +210,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
             <p>Are you sure you want to delete this creative ?</p>
             <div className="flex justify-end mt-4 space-x-2">
               <button
-                onClick={() => handleDeleteConfirmation()}
+                onClick={() => setIsDeleteConfirmationOpen(false)}
                 className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
               >
                 Cancel
@@ -208,6 +230,19 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
         <CreativeDetails
           ad={selectedAd}
           onClose={() => setIsPreviewModalOpen(false)}
+        />
+      )}
+
+      {/* Create Ad Modal */}
+      {isModalOpen && (
+        <CreateAdModal
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditMode(false);
+            setSelectedAd(null);
+          }}
+          editMode={editMode}
+          adToEdit={selectedAd}
         />
       )}
     </div>

@@ -252,7 +252,7 @@ export default function Header({ navLinks = [] }: HeaderProps) {
         )}
       </div>
       {/* Create Ad Modal */}
-      {isModalOpen && <CreateAdModal onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && <CreateAdModal onClose={() => setIsModalOpen(false)} editMode={false} adToEdit={null} />}
     </header>
   );
 }
