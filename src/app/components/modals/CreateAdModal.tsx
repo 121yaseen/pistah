@@ -283,14 +283,6 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
     }
   };
 
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[9999]">
       <Loader isVisible={isLoading} />

@@ -8,8 +8,6 @@ interface PreviewAdModalProps {
 }
 
 const CreativeDetails: React.FC<PreviewAdModalProps> = ({ ad, onClose }) => {
-  const downloadUrl = ad.downloadLink ? ad.downloadLink : ad.videoUrl;
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
