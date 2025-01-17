@@ -1,7 +1,5 @@
 import prisma from "@/app/libs/prismadb";
 import { Ad, User } from "@/types/ad";
-import { parse } from "date-fns";
-import { zonedTimeToUtc } from "date-fns-tz";
 
 // Fetch all ads
 export const getAds = async (startDate: string, endDate: string) => {
