@@ -117,8 +117,7 @@ export default async function handler(
 
       const imageUrls = await handleImageUpload(files, res);
       if (res.statusCode !== 200) return;
-      const adBoard: AdBoard = { ...adBoardData, imageUrls };
-
+      const adBoard: AdBoard = { ...adBoardData, imageUrls, id: "" };
       try {
         const response = await createAdBoard(adBoard, user);
         return res.status(201).json(response);
@@ -161,6 +160,7 @@ export default async function handler(
         imageUrls: adBoardData.imageUrls
           ? [...adBoardData.imageUrls, ...imageUrls]
           : imageUrls,
+        id: adBoardData.id,
       };
 
       try {

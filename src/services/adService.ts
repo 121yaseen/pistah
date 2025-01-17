@@ -22,6 +22,7 @@ export const fetchFilteredAds = async (
 };
 
 export const createAd = async (adData: Ad, createdUser: User) => {
+  console.log(adData);
   await createAdAsync(adData, createdUser);
 };
 

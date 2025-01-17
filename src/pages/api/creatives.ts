@@ -112,14 +112,14 @@ export default async function handler(
         {
           id: "",
           title: adTitle,
-          downloadLink: adDownloadLink,
+          downloadLink: adDownloadLink ?? "",
           adBoardId: adAdBoardId,
           adDisplayStartDate: adAdDisplayStartDate,
           adDisplayEndDate: adAdDisplayEndDate,
           adDuration: adAdDuration,
           thumbnailUrl,
           remarks: adRemarks,
-          videoUrl: adVideoUrl,
+          videoUrl: adVideoUrl ?? "",
         },
         user
       );

@@ -34,19 +34,12 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
     videoUrl,
   } = ad;
 
-  const parsedStartDate = parse(
-    adDisplayStartDate,
-    "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
-    new Date()
+  const utcStartDate = new Date(
+    adDisplayStartDate.split("T")[0] + "T00:00:00.000Z"
   );
-  const parsedEndDate = parse(
-    adDisplayEndDate,
-    "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
-    new Date()
+  const utcEndDate = new Date(
+    adDisplayEndDate.split("T")[0] + "T00:00:00.000Z"
   );
-
-  const utcStartDate = zonedTimeToUtc(parsedStartDate, "UTC").toISOString();
-  const utcEndDate = zonedTimeToUtc(parsedEndDate, "UTC").toISOString();
 
   console.log({
     title,
