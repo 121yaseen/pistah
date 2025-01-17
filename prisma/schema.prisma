@@ -17,12 +17,13 @@ model Ad {
   adDuration         String
   thumbnailUrl       String
   remarks            String
+  videoUrl           String   @default("")
   createdById        String   @db.ObjectId
   createdUser        User     @relation(fields: [createdById], references: [id])
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   // This need to be updated on enable features centered on ads such as ad editing, ad deletion, ad display status
-  adBoard            AdBoard  @relation("AdToAdBoard", fields: [adBoardId], references: [id], onDelete: Cascade)
+  adBoard            AdBoard  @relation("AdToAdBoard", fields: [adBoardId], references: [id])
 }
 
 model AdBoard {

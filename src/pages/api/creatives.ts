@@ -99,13 +99,14 @@ export default async function handler(
         const newAd = await createAd(
           {
             title: adTitle,
-            downloadLink: adVideoUrl,
+            downloadLink: adDownloadLink,
             adBoardId: adAdBoardId,
             adDisplayStartDate: adAdDisplayStartDate,
             adDisplayEndDate: adAdDisplayEndDate,
             adDuration: adAdDuration,
             thumbnailUrl,
             remarks: adRemarks,
+            videoUrl: adVideoUrl,
           },
           user
         );
@@ -121,6 +122,7 @@ export default async function handler(
           adDuration: adAdDuration,
           thumbnailUrl,
           remarks: adRemarks,
+          videoUrl: adVideoUrl,
         },
         user
       );
