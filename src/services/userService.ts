@@ -5,7 +5,7 @@ import { NextApiRequest } from "next";
 import { getToken } from "next-auth/jwt";
 
 export const findUserByEmail = async (email: string) => {
-  return await prisma.user.findUnique({
+  return prisma.user.findUnique({
     where: { email },
     include: { accounts: true, Company: true },
   });
@@ -14,9 +14,7 @@ export const findUserByEmail = async (email: string) => {
 export const verifyPassword = async (
   password: string,
   hashedPassword: string
-) => {
-  return await bcrypt.compare(password, hashedPassword);
-};
+) => bcrypt.compare(password, hashedPassword);
 
 export const createUser = async (
   name: string,
@@ -24,7 +22,7 @@ export const createUser = async (
   password?: string
 ) => {
   const hashedPassword = password ? await bcrypt.hash(password, 12) : null;
-  return await prisma.user.create({
+  return prisma.user.create({
     data: { name, email, password: hashedPassword },
   });
 };
@@ -40,48 +38,45 @@ export async function updateUserProfile(
   email: string,
   data: UpdateUserProfileData
 ) {
+  const existingUser = await findUserByEmail(email);
+
+  if (!existingUser) {
+    throw new Error("User not found");
+  }
+
   try {
-    // Ensure the user exists
-    const existingUser = await findUserByEmail(email);
-
-    if (!existingUser) {
-      throw new Error("User not found");
-    }
-
-    // Update the user's profile
-    const updatedUser = await prisma.user.update({
+    return await prisma.user.update({
       where: { email },
       data: {
-        name: data.name || existingUser.name,
-        profilePicUrl: data.profilePicUrl || existingUser.profilePicUrl,
+        name: data.name ?? existingUser.name,
+        profilePicUrl: data.profilePicUrl ?? existingUser.profilePicUrl,
         Company: {
           upsert: {
             update: {
-              name: data.companyName || existingUser.Company?.name || "",
+              name: data.companyName ?? existingUser.Company?.name ?? "",
             },
             create: {
-              name: data.companyName || "",
+              name: data.companyName ?? "",
             },
           },
         },
       },
     });
-
-    return updatedUser;
   } catch (error) {
     console.error("Error updating user profile:", error);
     throw new Error("Failed to update user profile");
   }
 }
 
-export async function getLoggedInUser(req: NextApiRequest) {
+export async function getLoggedInUser(req: NextApiRequest): Promise<User> {
   const token = (await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
   })) as CustomToken;
 
   const user = await findUserByEmail(token.user?.email ?? "");
-  const loggedInUser: User = {
+
+  return {
     id: user?.id ?? "",
     name: user?.name ?? "",
     email: user?.email ?? "",
@@ -91,5 +86,4 @@ export async function getLoggedInUser(req: NextApiRequest) {
       name: user?.Company?.name ?? "",
     },
   };
-  return loggedInUser;
 }

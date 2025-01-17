@@ -24,6 +24,12 @@ model Ad {
   updatedAt          DateTime @updatedAt
   // This need to be updated on enable features centered on ads such as ad editing, ad deletion, ad display status
   adBoard            AdBoard  @relation("AdToAdBoard", fields: [adBoardId], references: [id])
+
+  @@index([title])
+  @@index([adBoardId])
+  @@index([createdById])
+  @@index([adDisplayStartDate])
+  @@index([adDisplayEndDate])
 }
 
 model AdBoard {
@@ -43,6 +49,10 @@ model AdBoard {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
   ads                 Ad[]     @relation("AdToAdBoard")
+
+  @@index([boardName])
+  @@index([location])
+  @@index([createdById])
 }
 
 model User {
@@ -57,6 +67,8 @@ model User {
   Company       Company?
   Ad            Ad[]
   AdBoard       AdBoard[]
+
+  @@index([name])
 }
 
 model Account {
@@ -69,6 +81,10 @@ model Account {
   accessTokenExpires DateTime?
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([provider])
+  @@index([providerAccountId])
 }
 
 model Company {
@@ -78,4 +94,6 @@ model Company {
   updatedAt DateTime @updatedAt
   userid    String   @unique @db.ObjectId
   user      User     @relation(fields: [userid], references: [id])
+
+  @@index([name])
 }

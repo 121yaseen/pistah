@@ -6,9 +6,9 @@ export const createAdBoardAsync = async (
   adBoard: AdBoard,
   createdUser: User
 ) => {
-  const { boardName, location, boardType, dailyRate, ownerContact } = adBoard;
+  const { boardName, location, boardType, dailyRate, ownerContact, imageUrls } =
+    adBoard;
 
-  console.log(adBoard);
   return await prisma.adBoard.create({
     data: {
       boardName,
@@ -20,7 +20,7 @@ export const createAdBoardAsync = async (
       operationalHours: "9 AM - 5 PM",
       ownerContact,
       lastMaintenanceDate: new Date().toISOString(),
-      imageUrl: "[" + adBoard.imageUrls?.toString() + "]",
+      imageUrl: imageUrls ? `[${imageUrls.join(",")}]` : "[]",
       createdById: createdUser.id,
     },
   });
@@ -39,7 +39,7 @@ export const getAdBoards = async (createdBy: User) => {
 export const getAds = async () => {
   return await prisma.ad.findMany({
     include: {
-      adBoard: true, // Include related AdBoard details
+      adBoard: true,
     },
   });
 };
@@ -66,28 +66,30 @@ export const updateAdBoardAsync = async (adBoard: AdBoard, user: User) => {
     imageUrls,
   } = adBoard;
 
-  const existingAdBoard = await prisma.adBoard.findUnique({
+  const updateData = {
+    boardName,
+    location,
+    boardType,
+    dailyRate,
+    ownerContact,
+    imageUrl: imageUrls ? `[${imageUrls.join(",")}]` : "[]",
+  };
+
+  const result = await prisma.adBoard.updateMany({
     where: {
       id,
       createdById: user.id,
     },
+    data: updateData,
   });
 
-  if (!existingAdBoard) {
+  if (result.count === 0) {
     throw new Error("Ad board not found");
   }
 
-  return await prisma.adBoard.update({
+  return await prisma.adBoard.findUniqueOrThrow({
     where: {
       id,
-    },
-    data: {
-      boardName,
-      location,
-      boardType,
-      dailyRate,
-      ownerContact,
-      imageUrl: "[" + imageUrls?.toString() + "]",
     },
   });
 };

@@ -5,13 +5,16 @@ import { zonedTimeToUtc } from "date-fns-tz";
 
 // Fetch all ads
 export const getAds = async (startDate: string, endDate: string) => {
+  const parsedStartDate = new Date(startDate);
+  const parsedEndDate = new Date(endDate);
+
   return await prisma.ad.findMany({
     where: {
       adDisplayStartDate: {
-        lte: new Date(endDate),
+        lte: parsedEndDate,
       },
       adDisplayEndDate: {
-        gte: new Date(startDate),
+        gte: parsedStartDate,
       },
     },
   });
@@ -42,19 +45,8 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
     new Date()
   );
 
-  const startOfDayStartDate = new Date(
-    parsedStartDate.getFullYear(),
-    parsedStartDate.getMonth(),
-    parsedStartDate.getDate()
-  );
-  const startOfDayEndDate = new Date(
-    parsedEndDate.getFullYear(),
-    parsedEndDate.getMonth(),
-    parsedEndDate.getDate()
-  );
-
-  const utcStartDate = zonedTimeToUtc(startOfDayStartDate, "UTC").toISOString();
-  const utcEndDate = zonedTimeToUtc(startOfDayEndDate, "UTC").toISOString();
+  const utcStartDate = zonedTimeToUtc(parsedStartDate, "UTC").toISOString();
+  const utcEndDate = zonedTimeToUtc(parsedEndDate, "UTC").toISOString();
 
   console.log({
     title,

@@ -1,53 +1,42 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getPresignedUploadUrl } from "@/services/s3Service";
 
-// Utility function to map file extensions to content types
+const contentTypeMap: { [key: string]: string } = {
+  mp4: "video/mp4",
+  mkv: "video/x-matroska",
+  avi: "video/x-msvideo",
+  mov: "video/quicktime",
+  webm: "video/webm",
+};
+
 const getContentTypeFromFileName = (fileName: string): string => {
   const extension = fileName.split(".").pop()?.toLowerCase();
-  switch (extension) {
-    case "mp4":
-      return "video/mp4";
-    case "mkv":
-      return "video/x-matroska";
-    case "avi":
-      return "video/x-msvideo";
-    case "mov":
-      return "video/quicktime";
-    case "webm":
-      return "video/webm";
-    default:
-      throw new Error("Unsupported video file type.");
+  const contentType = contentTypeMap[extension || ""];
+  if (!contentType) {
+    throw new Error("Unsupported video file type.");
   }
+  return contentType;
 };
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", ["POST"]);
+    return res.status(405).json({ error: "Method not allowed. Use POST." });
+  }
+
+  const { fileName } = req.body;
+
+  if (!fileName) {
+    return res.status(400).json({ error: "Missing fileName in request body." });
+  }
+
   try {
-    if (req.method === "POST") {
-      const { fileName } = req.body;
-
-      if (!fileName) {
-        return res
-          .status(400)
-          .json({ error: "Missing fileName in request body." });
-      }
-
-      // Determine the content type dynamically
-      let contentType;
-      try {
-        contentType = getContentTypeFromFileName(fileName);
-      } catch (error) {
-        return res.status(400).json({ error: (error as Error).message });
-      }
-
-      // Generate the presigned URL
-      const presignedUrl = await getPresignedUploadUrl(fileName, contentType);
-      return res.status(200).json({ url: presignedUrl });
-    } else {
-      return res.status(405).json({ error: "Method not allowed. Use POST." });
-    }
+    const contentType = getContentTypeFromFileName(fileName);
+    const presignedUrl = await getPresignedUploadUrl(fileName, contentType);
+    return res.status(200).json({ url: presignedUrl });
   } catch (error) {
     console.error("Error generating presigned URL:", error);
     return res.status(500).json({ error: (error as Error).message });

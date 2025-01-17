@@ -40,8 +40,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  company: Company;
-  profilePicUrl: string;
+  company: Company | null;
+  profilePicUrl: string | null;
 }
 
 export interface CustomToken {

@@ -1,4 +1,4 @@
-import { createAdAsync, getAds } from "@/repositories/adRepository";
+import { createAdAsync, getAds, deleteAd } from "@/repositories/adRepository";
 import { getAdBoards } from "@/repositories/adBoardRepository";
 import { Ad, User } from "@/types/ad";
 
@@ -7,23 +7,23 @@ export const fetchFilteredAds = async (
   endDate: string,
   createdUser: User
 ) => {
-  let ads = await getAds(startDate, endDate);
-  const adBoards = await getAdBoards(createdUser);
+  const [ads, adBoards] = await Promise.all([
+    getAds(startDate, endDate),
+    getAdBoards(createdUser),
+  ]);
 
-  ads = ads.filter((ad) => adBoards.some((board) => board.id == ad.adBoardId));
+  const adBoardMap = new Map(adBoards.map((board) => [board.id, board]));
 
-  const filteredAds = ads.map((ad) => {
-    const adBoard = adBoards.find((board) => board.id == ad.adBoardId);
-    return { ...ad, adBoard: adBoard || undefined };
-  });
+  const filteredAds = ads
+    .filter((ad) => adBoardMap.has(ad.adBoardId))
+    .map((ad) => ({ ...ad, adBoard: adBoardMap.get(ad.adBoardId) }));
+
   return filteredAds;
 };
 
 export const createAd = async (adData: Ad, createdUser: User) => {
   await createAdAsync(adData, createdUser);
 };
-
-import { deleteAd } from "@/repositories/adRepository";
 
 export const deleteAdService = async (id: string, userId: string) => {
   await deleteAd(id, userId);

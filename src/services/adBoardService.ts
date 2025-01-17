@@ -5,28 +5,16 @@ import {
 } from "@/repositories/adBoardRepository";
 import { AdBoard, User } from "@/types/ad";
 
-export const createAdBoard = async (
-  adBoard: AdBoard,
-  createdByUser: User
-): Promise<unknown> => {
-  const response = await createAdBoardAsync(adBoard, createdByUser);
-  return response;
+export const createAdBoard = async (adBoard: AdBoard, createdByUser: User) => {
+  return await createAdBoardAsync(adBoard, createdByUser);
 };
 
 // Delete an Ad Board
-export const deleteAdBoard = async (
-  id: string,
-  user: User
-): Promise<unknown> => {
-  const response = await deleteAdBoardAsync(id, user);
-  return response;
+export const deleteAdBoard = async (id: string, user: User) => {
+  return await deleteAdBoardAsync(id, user);
 };
 
 // Update an Ad Board
-export const updateAdBoard = async (
-  adBoard: AdBoard,
-  user: User
-): Promise<unknown> => {
-  const response = await updateAdBoardAsync(adBoard, user);
-  return response;
+export const updateAdBoard = async (adBoard: AdBoard, user: User) => {
+  return await updateAdBoardAsync(adBoard, user);
 };

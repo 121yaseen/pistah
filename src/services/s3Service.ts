@@ -6,43 +6,49 @@ const s3 = new AWS.S3({
   region: process.env.AWS_REGION,
 });
 
-export const uploadToS3 = async (file: Buffer, fileName: string) => {
+const getBucketName = () => {
   if (!process.env.AWS_S3_BUCKET_NAME) {
     throw new Error("AWS_S3_BUCKET_NAME is not defined");
   }
+  return process.env.AWS_S3_BUCKET_NAME;
+};
+
+export const uploadToS3 = async (
+  file: Buffer,
+  fileName: string,
+  contentType: string = "image/jpeg"
+) => {
+  const bucketName = getBucketName();
 
   const params = {
-    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Bucket: bucketName,
     Key: fileName,
     Body: file,
-    ContentType: "image/jpeg", // Update content type based on your use case
+    ContentType: contentType,
   };
 
-  return s3
-    .upload(params)
-    .promise()
-    .then((data) => data.Location) // Returns the uploaded file's URL
-    .catch((error) => {
-      console.error("Error uploading to S3:", error);
-      throw error;
-    });
+  try {
+    const data = await s3.upload(params).promise();
+    return data.Location;
+  } catch (error) {
+    console.error("Error uploading to S3:", error);
+    throw error;
+  }
 };
 
 export const getPresignedUploadUrl = async (
   fileName: string,
-  contentType: string = "video/mp4"
+  contentType: string = "video/mp4",
+  expires: number = 60
 ) => {
-  if (!process.env.AWS_S3_BUCKET_NAME) {
-    throw new Error("AWS_S3_BUCKET_NAME is not defined");
-  }
+  const bucketName = getBucketName();
 
   const params = {
-    Bucket: process.env.AWS_S3_BUCKET_NAME,
-    Key: fileName, // e.g. "videos/myCoolVideo.mp4"
+    Bucket: bucketName,
+    Key: fileName,
     ContentType: contentType,
-    Expires: 60, // URL expiration in seconds (e.g., 1 min)
+    Expires: expires,
   };
 
-  // Returns a promise that resolves to a pre-signed URL
   return s3.getSignedUrlPromise("putObject", params);
 };
