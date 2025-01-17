@@ -78,7 +78,7 @@ export const deleteAd = async (id: string, userId: string) => {
   });
 
   if (!ad) {
-    throw new Error("Ad not found");
+    throw new Error("Ad not found ");
   }
 
   if (ad.createdById !== userId) {
