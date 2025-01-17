@@ -106,21 +106,14 @@ const CreativeDetails: React.FC<PreviewAdModalProps> = ({ ad, onClose }) => {
                 </strong>
               </div>
 
-              {downloadUrl && (
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400">
-                    Download Link
-                  </h3>
-                  <a
-                    href={downloadUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline break-all"
-                  >
-                    {downloadUrl}
-                  </a>
-                </div>
-              )}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                  Duration  
+                </h3>
+                <strong className="text-md text-gray-900 dark:text-gray-100">
+                  {ad.adDuration} seconds
+                </strong>
+              </div>
             </div>
           </div>
         </div>
