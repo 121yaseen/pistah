@@ -29,16 +29,16 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
 
   useEffect(() => {
     if (isModalOpen || isDeleteConfirmationOpen || isPreviewModalOpen) {
-        document.body.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
     } else {
-        document.body.style.overflow = "";
+      document.body.style.overflow = "";
     }
 
     // Cleanup when the component is unmounted
     return () => {
-        document.body.style.overflow = "";
+      document.body.style.overflow = "";
     };
-}, [isModalOpen, isDeleteConfirmationOpen, isPreviewModalOpen]);
+  }, [isModalOpen, isDeleteConfirmationOpen, isPreviewModalOpen]);
   const [deleteIndex, setDeleteIndex] = useState("");
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
@@ -235,8 +235,6 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
 
       {/* Create Ad Modal */}
       {isModalOpen && (
-                <div className="z-50 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-
         <CreateAdModal
           onClose={() => {
             setIsModalOpen(false);
@@ -246,7 +244,6 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
           editMode={editMode}
           adToEdit={selectedAd}
         />
-        </div>
       )}
     </div>
   );
