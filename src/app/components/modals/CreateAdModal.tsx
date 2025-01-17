@@ -539,17 +539,6 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
               )}
             </div>
 
-            {uploadProgress !== null && (
-              <div className="w-full bg-gray-300 rounded-full h-4 mt-4">
-                <div
-                  className="bg-blue-600 h-4 rounded-full text-center text-white"
-                  style={{ width: `${uploadProgress}%` }}
-                >
-                  {uploadProgress}%
-                </div>
-              </div>
-            )}
-
             <div className="mb-4">
               <label
                 className="font-medium text-black dark:text-white text-sm"
@@ -622,21 +611,34 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 dark:bg-gray-800 flex justify-end gap-4 border-t border-gray-300 dark:border-gray-600">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 rounded hover:bg-gray-400 bg-gray-600 dark:hover:bg-gray-500 text-white"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            form="createAdForm"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-          >
-            {editMode ? 'Update' : 'Add'}
-          </button>
+        <div className="px-6 py-4 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-600">
+          {uploadProgress !== null && (
+                <div className="w-full bg-gray-400 h-3 -mt-4 mb-4 relative" style={{ width: 'calc(100% + 50px)', left: '-25px' }}>
+                  <div
+                    className="bg-blue-600 h-3"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center text-white text-xs">
+                    uploading video {uploadProgress} %
+                  </span>
+                </div>
+          )}
+          <div className="flex justify-end gap-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded hover:bg-gray-400 bg-gray-600 dark:hover:bg-gray-500 text-white"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="createAdForm"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+            >
+              {editMode ? 'Update' : 'Add'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
