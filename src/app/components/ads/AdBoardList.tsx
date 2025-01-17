@@ -85,10 +85,10 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
       deleteAdBoard(deleteIndex)
         .then(
           () => {
-            addToast("Inventory deleted successfully!", "success");
+            addToast("Creative deleted successfully!", "success");
           },
           () => {
-            addToast("Failed to delete Inventory!", "error");
+            addToast("Failed to delete Creative!", "error");
           }
         )
         .finally(async () => {
@@ -96,7 +96,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
           setLoading(false);
         });
     } else {
-      addToast("Inventory Id is undefined!", "error");
+      addToast("Creative Id is undefined!", "error");
     }
     setIsDeleteConfirmationOpen(false);
     setDeleteIndex("");
@@ -210,7 +210,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
             <p>Are you sure you want to delete this creative ?</p>
             <div className="flex justify-end mt-4 space-x-2">
               <button
-                onClick={() => handleDeleteConfirmation()}
+                onClick={() => setIsDeleteConfirmationOpen(false)}
                 className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
               >
                 Cancel

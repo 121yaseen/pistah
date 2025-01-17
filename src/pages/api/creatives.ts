@@ -98,6 +98,7 @@ export default async function handler(
         console.log("adVideoUrl: ", adVideoUrl);
         const newAd = await createAd(
           {
+            id: "",
             title: adTitle,
             downloadLink: adDownloadLink,
             adBoardId: adAdBoardId,
@@ -114,6 +115,7 @@ export default async function handler(
       }
       const newAd = await createAd(
         {
+          id: "",
           title: adTitle,
           downloadLink: adDownloadLink,
           adBoardId: adAdBoardId,
