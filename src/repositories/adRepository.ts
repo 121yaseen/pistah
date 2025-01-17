@@ -81,3 +81,25 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
     },
   });
 };
+
+export const deleteAd = async (id: string, userId: string) => {
+  const ad = await prisma.ad.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!ad) {
+    throw new Error("Ad not found");
+  }
+
+  if (ad.createdById !== userId) {
+    throw new Error("You are not authorized to delete this ad");
+  }
+
+  return await prisma.ad.delete({
+    where: {
+      id,
+    },
+  });
+};

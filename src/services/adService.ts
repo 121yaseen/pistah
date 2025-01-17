@@ -22,3 +22,9 @@ export const fetchFilteredAds = async (
 export const createAd = async (adData: Ad, createdUser: User) => {
   await createAdAsync(adData, createdUser);
 };
+
+import { deleteAd } from "@/repositories/adRepository";
+
+export const deleteAdService = async (id: string, userId: string) => {
+  await deleteAd(id, userId);
+};

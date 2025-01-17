@@ -75,7 +75,7 @@ const Dashboard: React.FC = () => {
         ) : !ads || loading ? (
           <Loader isVisible={true} />
         ) : ads && ads.length > 0 ? (
-          <AdBoardList ads={ads} />
+          <AdBoardList ads={ads} reloadAds={reloadAds} />
         ) : (
           <p className="text-center text-gray-700 dark:text-gray-300">
             No ads available for the selected date.

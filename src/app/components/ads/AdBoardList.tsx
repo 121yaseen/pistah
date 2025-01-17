@@ -4,15 +4,22 @@ import Image from "next/image"; // Import the Image component from Next.js
 import PencilIcon from "@/icons/pencilIcon";
 import DeleteIcon from "@/icons/deleteIcon";
 import CreativeDetails from "../modals/CreativeDetails";
+import { useToast } from "@/app/context/ToastContext";
+import Loader from "../shared/LoaderComponent";
 
 interface AdBoardListProps {
   ads: AdWithBoard[];
+  reloadAds: () => void;
 }
 
-const AdBoardList: React.FC<AdBoardListProps> = ({ ads }) => {
-  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
+    useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [selectedAd, setSelectedAd] = useState<AdWithBoard | null>(null);
+  const [deleteIndex, setDeleteIndex] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   // Group ads by Ad Board
   const groupedAds = ads.reduce((acc, ad) => {
@@ -27,39 +34,55 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads }) => {
     setIsPreviewModalOpen(true);
   };
 
-  const openDeleteConfirmModal = () => {
-    //setDeleteIndex(index);
+  const openDeleteConfirmModal = (id: string) => {
+    setDeleteIndex(id);
     setIsDeleteConfirmationOpen(true);
   };
 
+  const deleteAdBoard = async (adId: string) => {
+    try {
+      const response = await fetch(`/api/creative/${adId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(
+          `Failed to delete ad. Server responded with ${response.status}: ${message}`
+        );
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error deleting ad:", error);
+      throw error;
+    }
+  };
+
   const handleDeleteConfirmation = async () => {
-    // if (confirmed && deleteIndex !== null) {
-    //   setIsLoading(true);
-    //   const adBoardId = adBoards[deleteIndex]?.id;
-    //   if (adBoardId) {
-    //     deleteAdBoard(adBoardId)
-    //       .then(
-    //         () => {
-    //           addToast("Inventory deleted successfully!", "success");
-    //         },
-    //         () => {
-    //           addToast("Failed to delete Inventory!", "error");
-    //         }
-    //       )
-    //       .finally(async () => {
-    //         await loadAdBoards();
-    //         setIsLoading(false);
-    //       });
-    //   } else {
-    //     addToast("Inventory Id is undefined!", "error");
-    //   }
-    // }
+    setLoading(true);
+    if (deleteIndex && deleteIndex !== "") {
+      deleteAdBoard(deleteIndex)
+        .then(
+          () => {
+            addToast("Inventory deleted successfully!", "success");
+          },
+          () => {
+            addToast("Failed to delete Inventory!", "error");
+          }
+        )
+        .finally(async () => {
+          await reloadAds();
+          setLoading(false);
+        });
+    } else {
+      addToast("Inventory Id is undefined!", "error");
+    }
     setIsDeleteConfirmationOpen(false);
-    // setDeleteIndex(null);
+    setDeleteIndex("");
   };
 
   return (
     <div className="space-y-8 flex flex-col items-center pb-12">
+      {loading && <Loader isVisible={true} />}
       {Object.entries(groupedAds).map(([boardName, boardAds]) => {
         const location = boardAds[0].adBoard.location;
         return (
@@ -84,7 +107,10 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads }) => {
                 >
                   {/* Column 1: Thumbnail and Ad Info (25%) */}
                   <div className="col-span-4 flex items-center gap-4">
-                    <div className="relative" style={{ width: "180px", height: "140px" }}>
+                    <div
+                      className="relative"
+                      style={{ width: "180px", height: "140px" }}
+                    >
                       <Image
                         src={ad.thumbnailUrl || ""}
                         alt="Ad Thumbnail"
@@ -140,7 +166,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads }) => {
                       </button>
                       <button
                         type="button"
-                        onClick={() => openDeleteConfirmModal()}
+                        onClick={() => openDeleteConfirmModal(ad.id ?? "")}
                         className="p-2 border border-red-500 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition flex items-center justify-center"
                         style={{ width: "40px", height: "40px" }}
                       >
