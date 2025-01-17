@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AdWithBoard } from "@/types/ad";
 import Image from "next/image";
 
@@ -8,6 +8,22 @@ interface PreviewAdModalProps {
 }
 
 const CreativeDetails: React.FC<PreviewAdModalProps> = ({ ad, onClose }) => {
+  const downloadUrl = ad.downloadLink ? ad.downloadLink : ad.videoUrl;
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-[600px] max-h-[90vh] flex flex-col">
@@ -78,18 +94,18 @@ const CreativeDetails: React.FC<PreviewAdModalProps> = ({ ad, onClose }) => {
                 </p>
               </div>
 
-              {ad.downloadLink && (
+              {downloadUrl && (
                 <div>
                   <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400">
                     Download Link
                   </h3>
                   <a
-                    href={ad.downloadLink}
+                    href={downloadUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-500 hover:underline break-all"
                   >
-                    {ad.downloadLink}
+                    {downloadUrl}
                   </a>
                 </div>
               )}
