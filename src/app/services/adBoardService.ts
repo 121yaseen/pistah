@@ -58,8 +58,8 @@ export const updateAdBoard = async (
   formData.append("dailyRate", adBoard.dailyRate.toString() ?? "");
   formData.append("ownerContact", adBoard.ownerContact ?? "");
   formData.append("boardType", adBoard.boardType ?? "");
-  if (adBoard.imageUrls && adBoard.imageUrls.length > 0) {
-    adBoard.imageUrls.forEach((url) => {
+  if (adBoard.imageUrl && adBoard.imageUrl.length > 0) {
+    adBoard.imageUrl.forEach((url) => {
       formData.append("imageUrls", url);
     });
   }

@@ -35,6 +35,7 @@ export interface AdBoard {
   updatedAt: string;
   dimensions: string;
   isAvailable: boolean;
+  images?: File[];
 }
 
 export interface Company {

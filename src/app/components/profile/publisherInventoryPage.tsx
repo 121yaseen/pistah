@@ -49,15 +49,19 @@ const PublisherInventoryPage: React.FC = () => {
     setIsEditing(false);
     setCurrentAdBoard({
       id: "",
-      imageUrls: [],
+      imageUrl: [],
       boardType: AdBoardType.STATIC,
       boardName: "",
       location: "",
       dailyRate: 1500,
       ownerContact: "",
-      count: 1,
-      size: "",
-      more: "",
+      operationalHours: "",
+      lastMaintenanceDate: new Date().toISOString(),
+      createdById: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      dimensions: "1920 x 1080",
+      isAvailable: true,
     });
     setIsModalOpen(true);
   };
@@ -167,8 +171,8 @@ const PublisherInventoryPage: React.FC = () => {
     if (
       currentAdBoard &&
       currentAdBoard.images &&
-      currentAdBoard.imageUrls &&
-      currentAdBoard.imageUrls.length + currentAdBoard.images.length > 7
+      currentAdBoard.imageUrl &&
+      currentAdBoard.imageUrl.length + currentAdBoard.images.length > 7
     ) {
       addToast("Maximum 7 images allowed!", "error");
       return false;
@@ -183,7 +187,7 @@ const PublisherInventoryPage: React.FC = () => {
             currentAdBoard.images.every(
               (image) => image.size < 5 * 1024 * 1024
             )) ||
-            (currentAdBoard.imageUrls && currentAdBoard.imageUrls?.length > 0))
+            (currentAdBoard.imageUrl && currentAdBoard.imageUrl?.length > 0))
       : false;
   };
 
@@ -230,7 +234,7 @@ const PublisherInventoryPage: React.FC = () => {
                       className="relative w-full"
                       style={{ height: "250px" }}
                     >
-                      <ImageCarousel images={adBoard.imageUrls || []} />
+                      <ImageCarousel images={adBoard.imageUrl || []} />
                     </div>
 
                     {/* Content pushed to bottom with flex-grow */}
@@ -243,9 +247,6 @@ const PublisherInventoryPage: React.FC = () => {
                       </p>
                       <p>
                         <strong>Type:</strong> {adBoard.boardType}
-                      </p>
-                      <p>
-                        <strong>Count:</strong> {adBoard.count}
                       </p>
                       <p>
                         <strong>Location:</strong> {adBoard.location}

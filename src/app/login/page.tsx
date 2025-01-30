@@ -5,12 +5,15 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import PistahIcon from "@/icons/pistahIcon";
 import Loader from "../components/shared/LoaderComponent";
+import { useToast } from "@/app/context/ToastContext";
+import React from "react";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { addToast } = useToast();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -42,7 +45,7 @@ const Login = () => {
     if (!result?.error) {
       router.push("/dashboard");
     } else {
-      alert("Login failed. Please check your credentials.");
+      addToast("Login Failed. Please check your creds!", "error");
     }
     setIsLoading(false);
   };

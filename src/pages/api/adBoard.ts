@@ -161,7 +161,7 @@ export default async function handler(
         return res.status(200).json(
           adBoards.map((adBoard) => ({
             ...adBoard,
-            imageUrls: parseAsArray(adBoard.imageUrl),
+            imageUrl: parseAsArray(adBoard.imageUrl),
           }))
         );
       } catch (error) {
