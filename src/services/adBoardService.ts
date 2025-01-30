@@ -6,6 +6,7 @@ import {
 import { AdBoard, User } from "@/types/ad";
 
 export const createAdBoard = async (adBoard: AdBoard, createdByUser: User) => {
+  console.log("Creating Ad Board...", adBoard);
   return await createAdBoardAsync(adBoard, createdByUser);
 };
 

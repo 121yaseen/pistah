@@ -5,7 +5,7 @@ import {
   deleteAdBoard,
   updateAdBoard,
 } from "@/services/adBoardService";
-import { AdBoard } from "@/types/ad";
+import { AdBoard, User } from "@/types/ad";
 import { getAdBoards } from "@/repositories/adBoardRepository";
 import formidable from "formidable";
 import { AdBoardType } from "@/app/enums/AdBoardType";
@@ -19,10 +19,12 @@ export const config = {
 };
 
 function parseAsArray(str: string): string[] {
-  return str
-    .slice(1, -1)
-    .split(",")
-    .map((item) => item.trim());
+  return (
+    str
+      // .slice(1, -1)
+      .split(",")
+      .map((item) => item.trim())
+  );
 }
 
 const handleImageUpload = async (
@@ -59,8 +61,9 @@ const handleImageUpload = async (
 };
 
 const processAdBoardData = (
-  fields: formidable.Fields
-): Omit<AdBoard, "id" | "imageUrl"> & { id?: string; imageUrls?: string[] } => {
+  fields: formidable.Fields,
+  user: User
+): Omit<AdBoard, "imageUrl"> & { imageUrls?: string[] } => {
   const {
     boardName,
     location,
@@ -69,17 +72,32 @@ const processAdBoardData = (
     boardType,
     id,
     imageUrls,
+    // dimensions,
+    // isAvailable,
+    // operationalHours,
+    // lastMaintenanceDate,
   } = fields as { [key: string]: string | string[] };
+
+  const createdById = user.id;
+  const createdAt = new Date().toISOString();
+  const updatedAt = new Date().toISOString();
 
   return {
     id: Array.isArray(id) ? id[0] : id,
     boardName: Array.isArray(boardName) ? boardName[0] : boardName,
     location: Array.isArray(location) ? location[0] : location,
     dailyRate: Number(Array.isArray(dailyRate) ? dailyRate[0] : dailyRate),
+    createdById,
+    createdAt,
+    updatedAt,
     ownerContact: Array.isArray(ownerContact) ? ownerContact[0] : ownerContact,
     boardType: Array.isArray(boardType)
       ? (boardType[0] as AdBoardType)
       : (boardType as AdBoardType),
+    dimensions: "1920 x 1080",
+    isAvailable: true,
+    operationalHours: "12 AM - 12 PM",
+    lastMaintenanceDate: new Date().toISOString(),
     imageUrls: Array.isArray(imageUrls)
       ? imageUrls
       : imageUrls
@@ -93,6 +111,9 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const user = await getLoggedInUser(req);
+  if (!user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
   const form = formidable();
 
@@ -103,7 +124,7 @@ export default async function handler(
     }
 
     if (req.method === "POST") {
-      const adBoardData = processAdBoardData(fields);
+      const adBoardData = processAdBoardData(fields, user);
 
       if (
         !adBoardData.boardName ||
@@ -111,13 +132,22 @@ export default async function handler(
         !adBoardData.dailyRate ||
         !adBoardData.ownerContact ||
         !adBoardData.boardType
+        // ||
+        // !adBoardData.dimensions ||
+        // !adBoardData.isAvailable ||
+        // !adBoardData.operationalHours ||
+        // !adBoardData.lastMaintenanceDate
       ) {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
       const imageUrls = await handleImageUpload(files, res);
       if (res.statusCode !== 200) return;
-      const adBoard: AdBoard = { ...adBoardData, imageUrls, id: "" };
+      const adBoard: AdBoard = {
+        ...adBoardData,
+        imageUrl: imageUrls,
+        id: "",
+      };
       try {
         const response = await createAdBoard(adBoard, user);
         return res.status(201).json(response);
@@ -139,7 +169,7 @@ export default async function handler(
         return res.status(500).json({ error: "Failed to fetch ad boards" });
       }
     } else if (req.method === "PUT") {
-      const adBoardData = processAdBoardData(fields);
+      const adBoardData = processAdBoardData(fields, user);
 
       if (
         !adBoardData.id ||
@@ -147,7 +177,11 @@ export default async function handler(
         !adBoardData.location ||
         !adBoardData.dailyRate ||
         !adBoardData.ownerContact ||
-        !adBoardData.boardType
+        !adBoardData.boardType ||
+        !adBoardData.dimensions ||
+        !adBoardData.isAvailable ||
+        !adBoardData.operationalHours ||
+        !adBoardData.lastMaintenanceDate
       ) {
         return res.status(400).json({ error: "Missing required fields" });
       }
@@ -157,7 +191,7 @@ export default async function handler(
 
       const adBoard: AdBoard = {
         ...adBoardData,
-        imageUrls: adBoardData.imageUrls
+        imageUrl: adBoardData.imageUrls
           ? [...adBoardData.imageUrls, ...imageUrls]
           : imageUrls,
         id: adBoardData.id,
