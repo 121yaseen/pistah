@@ -18,12 +18,16 @@ const PublisherProfilePage: React.FC = () => {
     profilePicUrl: string | File;
     name: string;
     email: string;
-    companyName: string;
+    company: {
+      name: string;
+    };
   }>({
     profilePicUrl: "",
     name: "",
     email: "",
-    companyName: "",
+    company: {
+      name: "",
+    },
   });
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -39,7 +43,9 @@ const PublisherProfilePage: React.FC = () => {
             profilePicUrl: data.profilePicUrl || "",
             name: data.name || "",
             email: data.email || "",
-            companyName: data.Company?.name || "",
+            company: {
+              name: data.company?.name || "",
+            },
           });
         } else {
           console.error("Failed to fetch user profile");
@@ -84,7 +90,7 @@ const PublisherProfilePage: React.FC = () => {
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
       formDataToSend.append("email", formData.email);
-      formDataToSend.append("companyName", formData.companyName);
+      formDataToSend.append("companyName", formData.company.name);
 
       if (formData.profilePicUrl instanceof File) {
         formDataToSend.append("profilePic", formData.profilePicUrl);
@@ -102,7 +108,9 @@ const PublisherProfilePage: React.FC = () => {
           profilePicUrl: updatedData.profilePicUrl || "",
           name: updatedData.name || "",
           email: updatedData.email || "",
-          companyName: updatedData.companyName || "",
+          company: {
+            name: updatedData.companyName || "",
+          },
         });
         setPreview(null);
       } else {
@@ -207,7 +215,7 @@ const PublisherProfilePage: React.FC = () => {
                 <input
                   type="text"
                   name="companyName"
-                  value={formData.companyName}
+                  value={formData.company.name}
                   onChange={handleInputChange}
                   required
                   className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-300"

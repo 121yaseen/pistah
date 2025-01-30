@@ -19,12 +19,14 @@ export const config = {
 };
 
 function parseAsArray(str: string): string[] {
-  return (
-    str
-      // .slice(1, -1)
+  if (!str) return [];
+  if (str.startsWith("[") && str.endsWith("]")) {
+    return str
+      .slice(1, -1)
       .split(",")
-      .map((item) => item.trim())
-  );
+      .map((item) => item.trim().replace(/^"(.*)"$/, "$1"));
+  }
+  return [];
 }
 
 const handleImageUpload = async (
@@ -158,6 +160,7 @@ export default async function handler(
     } else if (req.method === "GET") {
       try {
         const adBoards = await getAdBoards(user);
+        console.log("adBoards", adBoards);
         return res.status(200).json(
           adBoards.map((adBoard) => ({
             ...adBoard,

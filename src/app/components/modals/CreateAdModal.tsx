@@ -17,7 +17,11 @@ type CreateAdModalProps = {
   adToEdit: Ad | null;
 };
 
-const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false, adToEdit = null }) => {
+const CreateAdModal: React.FC<CreateAdModalProps> = ({
+  onClose,
+  editMode = false,
+  adToEdit = null,
+}) => {
   const [activeTab, setActiveTab] = useState<"download" | "video">("download");
   const { addToast } = useToast();
   const [isLoading, setIsLoading] = useState(false); // Loader state
@@ -33,11 +37,12 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
         adDisplayStartDate: adToEdit.adDisplayStartDate,
         adDisplayEndDate: adToEdit.adDisplayEndDate,
         adDuration: adToEdit.adDuration,
-        thumbnailUrl: adToEdit.thumbnailUrl,
+        thumbnailUrl: adToEdit.thumbnailUrl ?? "",
         videoUrl: adToEdit.videoUrl || "",
-        remarks: adToEdit.remarks,
+        remarks: adToEdit.remarks ?? "",
         thumbnailFile: null,
-        videoFile: null
+        videoFile: null,
+        createdById: adToEdit.createdById, // Ensure createdById is included
       });
 
       // Set dates if they exist
@@ -63,12 +68,13 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
     remarks: "",
     thumbnailUrl: "",
     videoUrl: "",
+    createdById: "", // Ensure createdById is included
   });
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
-  const [adBoards, setAdBoards] = useState<{ id: number; name: string }[]>([]);
+  const [adBoards, setAdBoards] = useState<{ id: string; name: string }[]>([]);
   const [errors, setErrors] = useState({
     title: false,
     downloadLink: false,
@@ -87,7 +93,8 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
         const response = await fetch("/api/adBoard");
         const data = await response.json();
         const adBoards = data.map(
-          (board: { id: number; boardName: string }) => ({
+          (board: { id: string; boardName: string }) => ({
+            // Ensure id is a string
             id: board.id,
             name: board.boardName,
           })
@@ -258,6 +265,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
       formData.append("videoUrl", videoUrl); // Pass the uploaded video's URL
     }
     formData.append("remarks", adData.remarks);
+    formData.append("createdById", adData.createdById); // Ensure createdById is included
 
     try {
       const response = await fetch("/api/creatives", {
@@ -266,7 +274,12 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
       });
 
       if (response.ok) {
-        addToast(`Creative ${editMode ? 'updated' : 'added'} successfully in Dashboard!`, "success");
+        addToast(
+          `Creative ${
+            editMode ? "updated" : "added"
+          } successfully in Dashboard!`,
+          "success"
+        );
         onClose();
 
         // Reload Page
@@ -276,7 +289,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
       }
     } catch (error) {
       addToast("Something went wrong!", "error");
-      console.error(`Error ${editMode ? 'updating' : 'creating'} ad:`, error);
+      console.error(`Error ${editMode ? "updating" : "creating"} ad:`, error);
     } finally {
       setIsLoading(false);
       setUploadProgress(null);
@@ -296,7 +309,9 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
       >
         {/* Header */}
         <div className="px-6 py-4 bg-[#001464] dark:bg-gray-800 dark:text-gray-200 flex justify-between items-center border-b border-gray-300 dark:border-gray-600 text-white">
-          <h2 className="text-2xl font-bold">{editMode ? 'Edit Creative' : 'Add Creative'}</h2>
+          <h2 className="text-2xl font-bold">
+            {editMode ? "Edit Creative" : "Add Creative"}
+          </h2>
         </div>
 
         {/* Scrollable Content */}
@@ -316,13 +331,16 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
                 type="text"
                 value={adData.title}
                 onChange={handleChange}
-                className={` w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 dark:border-gray-600 border-gray-300 text-black dark:text-gray-200 ${errors.title ? "border-red-500" : ""
-                  }`}
+                className={` w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 dark:border-gray-600 border-gray-300 text-black dark:text-gray-200 ${
+                  errors.title ? "border-red-500" : ""
+                }`}
                 placeholder="Enter creative name"
                 required
               />
               {errors.title && (
-                <p className="text-red-500 text-sm mt-1">Creative name is required</p>
+                <p className="text-red-500 text-sm mt-1">
+                  Creative name is required
+                </p>
               )}
             </div>
 
@@ -331,24 +349,32 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
               <div className="flex font-medium text-sm items-center">
                 <button
                   type="button"
-                  className={`py-2 px-4 ${activeTab === "download"
-                    ? "border-b-2 border-blue-500 text-blue-600"
-                    : "text-gray-500"
-                    }`}
+                  className={`py-2 px-4 ${
+                    activeTab === "download"
+                      ? "border-b-2 border-blue-500 text-blue-600"
+                      : "text-gray-500"
+                  }`}
                   onClick={() => setActiveTab("download")}
                 >
-                  Video Link {activeTab === 'download' && (<span className="text-red-500">*</span>)}
+                  Video Link{" "}
+                  {activeTab === "download" && (
+                    <span className="text-red-500">*</span>
+                  )}
                 </button>
                 <span className="px-4 text-gray-400">or</span>
                 <button
                   type="button"
-                  className={`py-2 px-4 ${activeTab === "video"
-                    ? "border-b-2 border-blue-500 text-blue-600"
-                    : "text-gray-500"
-                    }`}
+                  className={`py-2 px-4 ${
+                    activeTab === "video"
+                      ? "border-b-2 border-blue-500 text-blue-600"
+                      : "text-gray-500"
+                  }`}
                   onClick={() => setActiveTab("video")}
                 >
-                  Video Upload {activeTab === 'video' && (<span className="text-red-500">*</span>)}
+                  Video Upload{" "}
+                  {activeTab === "video" && (
+                    <span className="text-red-500">*</span>
+                  )}
                 </button>
               </div>
 
@@ -361,10 +387,11 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
                     type="url"
                     value={adData.downloadLink || ""}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${errors.downloadLink ? "border-red-500" : ""
-                      }`}
+                    className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${
+                      errors.downloadLink ? "border-red-500" : ""
+                    }`}
                     placeholder="Link to download video"
-                    required={activeTab === 'download'}
+                    required={activeTab === "download"}
                   />
                   {errors.downloadLink && (
                     <p className="text-red-500 text-sm mt-1">
@@ -449,7 +476,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
                   setEndDate(today);
                 }}
                 showSearchIcon={false}
-                onSearch={() => { }}
+                onSearch={() => {}}
               />
               {errors.adDisplayStartDate ||
                 (errors.adDisplayEndDate && (
@@ -471,23 +498,26 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
                 name="adBoardId"
                 value={adData.adBoardId}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded bg-gray-100 border-gray-300 text-black dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${errors.adBoardId ? "border-red-500" : ""
-                  }`}
+                className={`w-full px-3 py-2 border rounded bg-gray-100 border-gray-300 text-black dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${
+                  errors.adBoardId ? "border-red-500" : ""
+                }`}
                 required
               >
-                <option value="" disabled className="border-b text-xs border-gray-300">
+                <option
+                  value=""
+                  disabled
+                  className="border-b text-xs border-gray-300"
+                >
                   Select inventory
                 </option>
                 {adBoards.map((board) => (
-                  <option key={board.id} value={board.id.toString()}>
+                  <option key={board.id} value={board.id}>
                     {board.name}
                   </option>
                 ))}
               </select>
               {errors.adBoardId && (
-                <p className="text-red-500 text-sm mt-1">
-                  Inventory required
-                </p>
+                <p className="text-red-500 text-sm mt-1">Inventory required</p>
               )}
             </div>
 
@@ -504,8 +534,9 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
                 type="number"
                 value={adData.adDuration}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 bg-gray-100 border-gray-300 text-black border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${errors.adDuration ? "border-red-500" : ""
-                  }`}
+                className={`w-full px-3 py-2 bg-gray-100 border-gray-300 text-black border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${
+                  errors.adDuration ? "border-red-500" : ""
+                }`}
                 placeholder="Enter duration in seconds"
                 required
               />
@@ -529,7 +560,9 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
                 value={adData.remarks}
                 onChange={handleChange}
                 rows={5}
-                className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${errors.remarks ? "border-red-500" : ""}`}
+                className={`w-full px-3 py-2 border rounded dark:bg-gray-700 bg-gray-100 border-gray-300 text-black dark:border-gray-600 dark:text-gray-200 ${
+                  errors.remarks ? "border-red-500" : ""
+                }`}
                 placeholder="Enter more details"
               />
               {errors.remarks && (
@@ -540,14 +573,19 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
             </div>
 
             <div className="mb-4">
-              <label
-                className="font-medium text-black dark:text-white text-sm"
-              >
+              <label className="font-medium text-black dark:text-white text-sm">
                 Thumbnail (max 5MB)
-              </label><span className="text-red-500">*</span>
-              <label className="cursor-pointer block border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700" htmlFor="thumbnail"
-                style={{ width: '145px' }}>
-                <div className="flex items-center"><UploadIcon />&nbsp;Add Image </div>
+              </label>
+              <span className="text-red-500">*</span>
+              <label
+                className="cursor-pointer block border-2 rounded-lg mr-10 py-2 px-4 text-sm font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border-gray-300 dark:border-gray-700"
+                htmlFor="thumbnail"
+                style={{ width: "145px" }}
+              >
+                <div className="flex items-center">
+                  <UploadIcon />
+                  &nbsp;Add Image{" "}
+                </div>
               </label>
               <input
                 id="thumbnail"
@@ -613,15 +651,18 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
         {/* Footer */}
         <div className="px-6 py-4 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-600">
           {uploadProgress !== null && (
-                <div className="w-full bg-gray-400 h-3 -mt-4 mb-4 relative" style={{ width: 'calc(100% + 50px)', left: '-25px' }}>
-                  <div
-                    className="bg-blue-600 h-3"
-                    style={{ width: `${uploadProgress}%` }}
-                  />
-                  <span className="absolute inset-0 flex items-center justify-center text-white text-xs">
-                    uploading video {uploadProgress} %
-                  </span>
-                </div>
+            <div
+              className="w-full bg-gray-400 h-3 -mt-4 mb-4 relative"
+              style={{ width: "calc(100% + 50px)", left: "-25px" }}
+            >
+              <div
+                className="bg-blue-600 h-3"
+                style={{ width: `${uploadProgress}%` }}
+              />
+              <span className="absolute inset-0 flex items-center justify-center text-white text-xs">
+                uploading video {uploadProgress} %
+              </span>
+            </div>
           )}
           <div className="flex justify-end gap-4">
             <button
@@ -636,7 +677,7 @@ const CreateAdModal: React.FC<CreateAdModalProps> = ({ onClose, editMode = false
               form="createAdForm"
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
             >
-              {editMode ? 'Update' : 'Add'}
+              {editMode ? "Update" : "Add"}
             </button>
           </div>
         </div>

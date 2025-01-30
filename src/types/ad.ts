@@ -3,14 +3,14 @@ import { AdBoardType } from "@/app/enums/AdBoardType";
 export interface Ad {
   id: string;
   title: string;
-  downloadLink: string;
+  downloadLink?: string;
   adBoardId: string;
   adDisplayStartDate: string;
   adDisplayEndDate: string;
   adDuration: string;
-  thumbnailUrl: string;
-  remarks: string;
-  videoUrl: string;
+  thumbnailUrl?: string;
+  remarks?: string;
+  videoUrl?: string;
   createdById: string;
   createdAt: string;
   updatedAt: string;
@@ -24,6 +24,7 @@ export interface AdBoard {
   id: string;
   boardName: string;
   location: string;
+  description?: string; // Added optional description field
   boardType: AdBoardType;
   dailyRate: number;
   operationalHours: string;
@@ -36,6 +37,19 @@ export interface AdBoard {
   dimensions: string;
   isAvailable: boolean;
   images?: File[];
+  bookings?: Booking[]; // Added for SSP users to see booked ads
+}
+
+export interface Booking {
+  id: string;
+  userId: string;
+  adId: string;
+  adBoardId: string;
+  startDate: string;
+  endDate: string;
+  status: "PENDING" | "CONFIRMED" | "CANCELLED";
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Company {
@@ -47,13 +61,21 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  profilePicUrl: string | null;
-  company: Company | null;
+  profilePicUrl?: string;
+  company?: Company | null;
+  role: Role; // Ensuring correct role typing
+}
+
+export enum Role {
+  OWNER = "OWNER",
+  ADVERTISER = "ADVERTISER",
 }
 
 export interface CustomToken {
   user?: {
+    id: string;
     name?: string;
     email?: string;
+    role: "SSP" | "DSP";
   };
 }

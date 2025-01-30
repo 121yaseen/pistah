@@ -9,7 +9,7 @@ generator client {
 
 /**
  * Model: User
- * - Stores both normal users and ad board owners.
+ * - Represents both Ad Board Owners (SSP) and Advertisers (DSP).
  */
 model User {
   id            String   @id @default(uuid())
@@ -17,7 +17,7 @@ model User {
   email         String   @unique
   password      String?
   profilePicUrl String?  @default("")
-  role          String // e.g. "USER" or "OWNER"
+  role          Role // "ADVERTISER" (DSP) or "OWNER" (SSP)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -26,12 +26,21 @@ model User {
   adBoards AdBoard[] @relation("UserAdBoards")
   bookings Booking[] @relation("UserBookings")
   accounts Account[] @relation("UserAccounts")
-  Company  Company?
+  company  Company?
+}
+
+/**
+ * Enum: Role
+ * - Differentiates between Advertisers (DSP) and Ad Board Owners (SSP).
+ */
+enum Role {
+  ADVERTISER
+  OWNER
 }
 
 /**
  * Model: Ad
- * - Represents advertisements with download links, durations, and relationships.
+ * - Represents advertisements created by Advertisers (DSP) or Board Owners (SSP).
  */
 model Ad {
   id                 String   @id @default(uuid())
@@ -62,10 +71,11 @@ model Ad {
 
 /**
  * Model: AdBoard
- * - Represents ad boards and their characteristics.
+ * - Represents advertising boards created by SSP owners.
  */
 model AdBoard {
   id                  String   @id @default(uuid())
+  ownerId             String
   boardName           String
   location            String
   description         String?
@@ -76,20 +86,19 @@ model AdBoard {
   operationalHours    String
   ownerContact        String
   lastMaintenanceDate DateTime
-  createdById         String
   imageUrl            String   @default("[]")
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
   // Relations
-  createdUser         User                @relation("UserAdBoards", fields: [createdById], references: [id])
+  owner               User                @relation("UserAdBoards", fields: [ownerId], references: [id])
   ads                 Ad[]                @relation("AdToAdBoard")
   bookings            Booking[]           @relation("AdBoardBookings")
   boardAvailabilities BoardAvailability[] @relation("AdBoardAvailabilities")
 
   @@index([boardName])
   @@index([location])
-  @@index([createdById])
+  @@index([ownerId])
 }
 
 /**
@@ -111,7 +120,7 @@ model BoardAvailability {
 
 /**
  * Model: Booking
- * - Associates users, ads, and ad boards within date ranges.
+ * - Associates DSP advertisers with an Ad Board over a date range.
  */
 model Booking {
   id        String   @id @default(uuid())
@@ -153,7 +162,7 @@ model Account {
 
 /**
  * Model: Company
- * - Associates a user with a company.
+ * - Associates a user with a company (for Advertisers in DSP).
  */
 model Company {
   id        String   @id @default(uuid())

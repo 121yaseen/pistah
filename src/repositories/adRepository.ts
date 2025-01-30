@@ -14,6 +14,8 @@ export const getAds = async (startDate: string, endDate: string) => {
     },
     include: {
       adBoard: true,
+      createdUser: true, // Added to fetch user details who created the ad
+      bookings: true, // Added to fetch booking details if relevant
     },
   });
 };
@@ -23,14 +25,14 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
   return await prisma.ad.create({
     data: {
       title: ad.title,
-      downloadLink: ad.downloadLink,
+      downloadLink: ad.downloadLink ?? null, // Ensure optional fields are handled
       adBoardId: ad.adBoardId,
       adDisplayStartDate: new Date(ad.adDisplayStartDate),
       adDisplayEndDate: new Date(ad.adDisplayEndDate),
       adDuration: ad.adDuration,
-      thumbnailUrl: ad.thumbnailUrl,
-      remarks: ad.remarks,
-      videoUrl: ad.videoUrl,
+      thumbnailUrl: ad.thumbnailUrl ?? null,
+      remarks: ad.remarks ?? "",
+      videoUrl: ad.videoUrl ?? "",
       createdById: createdUser.id,
     },
   });
@@ -40,6 +42,7 @@ export const createAdAsync = async (ad: Ad, createdUser: User) => {
 export const deleteAd = async (id: string, userId: string) => {
   const ad = await prisma.ad.findUnique({
     where: { id },
+    include: { adBoard: true },
   });
 
   if (!ad) {

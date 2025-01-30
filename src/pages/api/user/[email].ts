@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { uploadToS3 } from "@/services/s3Service";
 import { updateUserProfile } from "@/services/userService";
+import { Role } from "@/types/ad";
 
 const SAFE_ROOT_DIR = "/var/www/uploads";
 
@@ -28,7 +29,7 @@ export default async function handler(
     try {
       const user = await prisma.user.findUnique({
         where: { email },
-        include: { Company: true },
+        include: { company: true }, // Updated casing to match schema
       });
 
       if (!user) {
@@ -57,7 +58,7 @@ export default async function handler(
         });
       });
 
-      const { name, companyName } = fields;
+      const { name, companyName, role } = fields; // Added role field
       let profilePicUrl = "";
 
       if (files.profilePic) {
@@ -77,7 +78,11 @@ export default async function handler(
         name: Array.isArray(name) ? name[0] : name,
         companyName: Array.isArray(companyName) ? companyName[0] : companyName,
         profilePicUrl,
+        role: Array.isArray(role)
+          ? (role[0] as Role)
+          : (role as unknown as Role),
       });
+
       return res.status(200).json(updatedUser);
     } catch (error) {
       console.error("Error processing request:", error);

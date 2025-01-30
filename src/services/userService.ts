@@ -1,5 +1,5 @@
 import prisma from "@/app/libs/prismadb";
-import { CustomToken, User } from "@/types/ad";
+import { CustomToken, User, Role } from "@/types/ad";
 import bcrypt from "bcryptjs";
 import { NextApiRequest } from "next";
 import { getToken } from "next-auth/jwt";
@@ -7,7 +7,7 @@ import { getToken } from "next-auth/jwt";
 export const findUserByEmail = async (email: string) => {
   return prisma.user.findUnique({
     where: { email },
-    include: { accounts: true, Company: true },
+    include: { accounts: true, company: true },
   });
 };
 
@@ -19,23 +19,35 @@ export const verifyPassword = async (
 export const createUser = async (
   name: string,
   email: string,
-  password?: string
+  password?: string,
+  role: Role = Role.OWNER // Default role to OWNER for SSP users
 ) => {
-  // Check if the user already exists
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-  });
-  if (existingUser) {
-    const error = new Error("User with this email already exists");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (error as any).code = "P2002";
-    throw error;
-  }
+  return await prisma.$transaction(async (prisma) => {
+    // Check if the user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
 
-  const hashedPassword = password ? await bcrypt.hash(password, 12) : undefined;
+    if (existingUser) {
+      const error = new Error("User with this email already exists");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (error as any).code = "P2002";
+      throw error;
+    }
 
-  return prisma.user.create({
-    data: { name, email, password: hashedPassword, role: "USER" },
+    const hashedPassword = password
+      ? await bcrypt.hash(password, 12)
+      : undefined;
+
+    return prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role,
+        profilePicUrl: "",
+      },
+    });
   });
 };
 
@@ -44,6 +56,7 @@ interface UpdateUserProfileData {
   email?: string;
   companyName?: string;
   profilePicUrl?: string;
+  role?: Role;
 }
 
 export async function updateUserProfile(
@@ -62,16 +75,20 @@ export async function updateUserProfile(
       data: {
         name: data.name ?? existingUser.name,
         profilePicUrl: data.profilePicUrl ?? existingUser.profilePicUrl,
-        Company: {
-          upsert: {
-            update: {
-              name: data.companyName ?? existingUser.Company?.name ?? "",
-            },
-            create: {
-              name: data.companyName ?? "",
-            },
-          },
-        },
+        role: data.role ?? existingUser.role,
+        company: data.companyName
+          ? {
+              upsert: {
+                update: { name: data.companyName },
+                create: {
+                  name: data.companyName,
+                },
+                where: {
+                  userId: existingUser.id,
+                },
+              },
+            }
+          : undefined,
       },
     });
   } catch (error) {
@@ -86,16 +103,24 @@ export async function getLoggedInUser(req: NextApiRequest): Promise<User> {
     secret: process.env.NEXTAUTH_SECRET,
   })) as CustomToken;
 
-  const user = await findUserByEmail(token.user?.email ?? "");
+  if (!token?.user?.email) {
+    throw new Error("Unauthorized: No token found");
+  }
+
+  const user = await findUserByEmail(token.user.email);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
 
   return {
-    id: user?.id ?? "",
-    name: user?.name ?? "",
-    email: user?.email ?? "",
-    profilePicUrl: user?.profilePicUrl ?? "",
-    company: {
-      id: user?.Company?.id ?? "",
-      name: user?.Company?.name ?? "",
-    },
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    profilePicUrl: user.profilePicUrl ?? "",
+    company: user.company
+      ? { id: user.company.id, name: user.company.name }
+      : null,
+    role: user.role as Role,
   };
 }

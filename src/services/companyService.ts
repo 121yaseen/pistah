@@ -1,11 +1,12 @@
 import prisma from "@/app/libs/prismadb";
-import { Company } from "@/types/ad";
 
 // Create company
-export const createCompany = async (company: Company, userId: string) => {
-  return await prisma.company.create({
-    data: {
-      name: company.name,
+export const createCompany = async (companyName: string, userId: string) => {
+  return await prisma.company.upsert({
+    where: { userId }, // Ensure only one company per user
+    update: { name: companyName },
+    create: {
+      name: companyName,
       userId: userId,
     },
   });
