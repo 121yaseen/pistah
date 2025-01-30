@@ -15,15 +15,22 @@ export default async function handler(
 
     try {
       const newUser = await createUser(name, email, password);
-      const newCompany = await createCompany(companyName, newUser.id);
+      await createCompany(companyName, newUser.id);
       res.status(201).json({
         message: "User created successfully.",
-        user: newUser,
-        company: newCompany,
       });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Failed to create user." });
+      console.error("Error creating user:", (error as Error).message);
+      if (error instanceof Error) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((error as any).code === "P2002") {
+          res.status(400).json({ error: "Email already in use." });
+        } else {
+          res.status(500).json({ error: "Something went wrong." });
+        }
+      } else {
+        res.status(500).json({ error: "An unexpected error occurred." });
+      }
     }
   } else {
     res.setHeader("Allow", ["POST"]);

@@ -21,9 +21,21 @@ export const createUser = async (
   email: string,
   password?: string
 ) => {
-  const hashedPassword = password ? await bcrypt.hash(password, 12) : null;
+  // Check if the user already exists
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+  });
+  if (existingUser) {
+    const error = new Error("User with this email already exists");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (error as any).code = "P2002";
+    throw error;
+  }
+
+  const hashedPassword = password ? await bcrypt.hash(password, 12) : undefined;
+
   return prisma.user.create({
-    data: { name, email, password: hashedPassword },
+    data: { name, email, password: hashedPassword, role: "USER" },
   });
 };
 

@@ -1,29 +1,57 @@
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // e.g. "postgresql://user:password@localhost:5432/mydb"
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
+/**
+ * Model: User
+ * - Stores both normal users and ad board owners.
+ */
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  password      String?
+  profilePicUrl String?  @default("")
+  role          String // e.g. "USER" or "OWNER"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  ads      Ad[]      @relation("UserAds")
+  adBoards AdBoard[] @relation("UserAdBoards")
+  bookings Booking[] @relation("UserBookings")
+  accounts Account[] @relation("UserAccounts")
+  Company  Company?
+}
+
+/**
+ * Model: Ad
+ * - Represents advertisements with download links, durations, and relationships.
+ */
 model Ad {
-  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  id                 String   @id @default(uuid())
+  createdById        String
   title              String
-  downloadLink       String
-  adBoardId          String   @db.ObjectId
+  downloadLink       String?
+  thumbnailUrl       String?
+  adBoardId          String
   adDisplayStartDate DateTime
   adDisplayEndDate   DateTime
   adDuration         String
-  thumbnailUrl       String
   remarks            String
   videoUrl           String   @default("")
-  createdById        String   @db.ObjectId
-  createdUser        User     @relation(fields: [createdById], references: [id])
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
-  // This need to be updated on enable features centered on ads such as ad editing, ad deletion, ad display status
-  adBoard            AdBoard  @relation("AdToAdBoard", fields: [adBoardId], references: [id])
+
+  // Relations
+  createdUser User      @relation("UserAds", fields: [createdById], references: [id])
+  adBoard     AdBoard   @relation("AdToAdBoard", fields: [adBoardId], references: [id], onDelete: Cascade)
+  bookings    Booking[]
 
   @@index([title])
   @@index([adBoardId])
@@ -32,10 +60,15 @@ model Ad {
   @@index([adDisplayEndDate])
 }
 
+/**
+ * Model: AdBoard
+ * - Represents ad boards and their characteristics.
+ */
 model AdBoard {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  id                  String   @id @default(uuid())
   boardName           String
   location            String
+  description         String?
   dimensions          String
   boardType           String
   isAvailable         Boolean
@@ -43,57 +76,93 @@ model AdBoard {
   operationalHours    String
   ownerContact        String
   lastMaintenanceDate DateTime
-  createdById         String   @db.ObjectId
-  createdUser         User     @relation(fields: [createdById], references: [id])
+  createdById         String
   imageUrl            String   @default("[]")
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
-  ads                 Ad[]     @relation("AdToAdBoard")
+
+  // Relations
+  createdUser         User                @relation("UserAdBoards", fields: [createdById], references: [id])
+  ads                 Ad[]                @relation("AdToAdBoard")
+  bookings            Booking[]           @relation("AdBoardBookings")
+  boardAvailabilities BoardAvailability[] @relation("AdBoardAvailabilities")
 
   @@index([boardName])
   @@index([location])
   @@index([createdById])
 }
 
-model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  email         String    @unique
-  password      String?
-  profilePicUrl String?   @default("")
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  Company       Company?
-  Ad            Ad[]
-  AdBoard       AdBoard[]
+/**
+ * Model: BoardAvailability
+ * - Defines availability for specific dates and capacities.
+ */
+model BoardAvailability {
+  id        String   @id @default(uuid())
+  adBoardId String
+  date      DateTime
+  capacity  Int?
 
-  @@index([name])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  adBoard AdBoard @relation("AdBoardAvailabilities", fields: [adBoardId], references: [id])
 }
 
+/**
+ * Model: Booking
+ * - Associates users, ads, and ad boards within date ranges.
+ */
+model Booking {
+  id        String   @id @default(uuid())
+  userId    String
+  adId      String
+  adBoardId String
+  startDate DateTime
+  endDate   DateTime
+  status    String?  @default("PENDING")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user    User    @relation("UserBookings", fields: [userId], references: [id])
+  ad      Ad      @relation(fields: [adId], references: [id])
+  adBoard AdBoard @relation("AdBoardBookings", fields: [adBoardId], references: [id])
+}
+
+/**
+ * Model: Account
+ * - Handles OAuth accounts for users.
+ */
 model Account {
-  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId             String    @db.ObjectId
+  id                 String    @id @default(uuid())
+  userId             String
   provider           String
   providerAccountId  String
   refreshToken       String?
   accessToken        String?
   accessTokenExpires DateTime?
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation("UserAccounts", fields: [userId], references: [id])
 
   @@index([userId])
   @@index([provider])
   @@index([providerAccountId])
 }
 
+/**
+ * Model: Company
+ * - Associates a user with a company.
+ */
 model Company {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(uuid())
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  userid    String   @unique @db.ObjectId
-  user      User     @relation(fields: [userid], references: [id])
+  userId    String   @unique
+
+  user User @relation(fields: [userId], references: [id])
 
   @@index([name])
 }

@@ -11,6 +11,9 @@ export interface Ad {
   thumbnailUrl: string;
   remarks: string;
   videoUrl: string;
+  createdById: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AdWithBoard extends Ad {
@@ -19,16 +22,19 @@ export interface AdWithBoard extends Ad {
 
 export interface AdBoard {
   id: string;
-  images?: File[];
-  boardType: AdBoardType;
   boardName: string;
   location: string;
+  boardType: AdBoardType;
   dailyRate: number;
+  operationalHours: string;
   ownerContact: string;
-  count?: number;
-  size?: string;
-  more?: string;
-  imageUrls?: string[];
+  lastMaintenanceDate: string;
+  imageUrl: string[];
+  createdById: string;
+  createdAt: string;
+  updatedAt: string;
+  dimensions: string;
+  isAvailable: boolean;
 }
 
 export interface Company {
@@ -40,8 +46,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  company: Company | null;
   profilePicUrl: string | null;
+  company: Company | null;
 }
 
 export interface CustomToken {

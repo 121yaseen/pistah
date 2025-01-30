@@ -6,21 +6,18 @@ export const createAdBoardAsync = async (
   adBoard: AdBoard,
   createdUser: User
 ) => {
-  const { boardName, location, boardType, dailyRate, ownerContact, imageUrls } =
-    adBoard;
-
   return await prisma.adBoard.create({
     data: {
-      boardName,
-      location,
-      dimensions: "10x20 ft",
-      boardType: boardType ?? "Static",
-      isAvailable: true,
-      dailyRate,
-      operationalHours: "9 AM - 5 PM",
-      ownerContact,
-      lastMaintenanceDate: new Date().toISOString(),
-      imageUrl: imageUrls ? `[${imageUrls.join(",")}]` : "[]",
+      boardName: adBoard.boardName,
+      location: adBoard.location,
+      boardType: adBoard.boardType,
+      dailyRate: adBoard.dailyRate,
+      dimensions: adBoard.dimensions,
+      isAvailable: adBoard.isAvailable,
+      operationalHours: adBoard.operationalHours,
+      ownerContact: adBoard.ownerContact,
+      lastMaintenanceDate: adBoard.lastMaintenanceDate,
+      imageUrl: adBoard.imageUrl.join(","),
       createdById: createdUser.id,
     },
   });
@@ -35,18 +32,8 @@ export const getAdBoards = async (createdBy: User) => {
   });
 };
 
-// Fetch all Ads
-export const getAds = async () => {
-  return await prisma.ad.findMany({
-    include: {
-      adBoard: true,
-    },
-  });
-};
-
-// Delete an Ad board and all its Ads
+// Delete an Ad board and all related Ads
 export const deleteAdBoardAsync = async (id: string, user: User) => {
-  console.log("Id: ", id, " User: ", user);
   return await prisma.adBoard.delete({
     where: {
       id,
@@ -57,31 +44,19 @@ export const deleteAdBoardAsync = async (id: string, user: User) => {
 
 // Update an Ad Board
 export const updateAdBoardAsync = async (adBoard: AdBoard, user: User) => {
-  const {
-    id,
-    boardName,
-    location,
-    boardType,
-    dailyRate,
-    ownerContact,
-    imageUrls,
-  } = adBoard;
-
-  const updateData = {
-    boardName,
-    location,
-    boardType,
-    dailyRate,
-    ownerContact,
-    imageUrl: imageUrls ? `[${imageUrls.join(",")}]` : "[]",
-  };
-
   const result = await prisma.adBoard.updateMany({
     where: {
-      id,
+      id: adBoard.id,
       createdById: user.id,
     },
-    data: updateData,
+    data: {
+      boardName: adBoard.boardName,
+      location: adBoard.location,
+      boardType: adBoard.boardType,
+      dailyRate: adBoard.dailyRate,
+      ownerContact: adBoard.ownerContact,
+      imageUrl: adBoard.imageUrl.join(","),
+    },
   });
 
   if (result.count === 0) {
@@ -89,8 +64,6 @@ export const updateAdBoardAsync = async (adBoard: AdBoard, user: User) => {
   }
 
   return await prisma.adBoard.findUniqueOrThrow({
-    where: {
-      id,
-    },
+    where: { id: adBoard.id },
   });
 };

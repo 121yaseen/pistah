@@ -1,104 +1,54 @@
 import prisma from "@/app/libs/prismadb";
 import { Ad, User } from "@/types/ad";
 
-// Fetch all ads
+// Fetch all ads within the given date range
 export const getAds = async (startDate: string, endDate: string) => {
-  const parsedStartDate = new Date(startDate);
-  const parsedEndDate = new Date(endDate);
-
   return await prisma.ad.findMany({
     where: {
       adDisplayStartDate: {
-        lte: parsedEndDate,
+        lte: new Date(endDate),
       },
       adDisplayEndDate: {
-        gte: parsedStartDate,
+        gte: new Date(startDate),
       },
     },
+    include: {
+      adBoard: true,
+    },
   });
 };
 
-// Create a new Ad
+// Create a new ad
 export const createAdAsync = async (ad: Ad, createdUser: User) => {
-  const {
-    title,
-    downloadLink,
-    adBoardId,
-    adDisplayStartDate,
-    adDisplayEndDate,
-    adDuration,
-    thumbnailUrl,
-    remarks,
-    videoUrl,
-  } = ad;
-
-  const utcStartDate = new Date(
-    adDisplayStartDate.split("T")[0] + "T00:00:00.000Z"
-  );
-  const utcEndDate = new Date(
-    adDisplayEndDate.split("T")[0] + "T00:00:00.000Z"
-  );
-
-  console.log({
-    title,
-    downloadLink,
-    adBoardId,
-    adDisplayStartDate: utcStartDate,
-    adDisplayEndDate: utcEndDate,
-    adDuration,
-    thumbnailUrl,
-    createdById: createdUser.id,
-    remarks,
-    videoUrl,
-  });
-
-  console.log({
-    title,
-    downloadLink,
-    adBoardId,
-    adDisplayStartDate: utcStartDate,
-    adDisplayEndDate: utcEndDate,
-    adDuration,
-    thumbnailUrl,
-    createdById: createdUser.id,
-    remarks,
-    videoUrl,
-  });
-
   return await prisma.ad.create({
     data: {
-      title,
-      downloadLink,
-      adBoardId,
-      adDisplayStartDate: utcStartDate,
-      adDisplayEndDate: utcEndDate,
-      adDuration,
-      thumbnailUrl,
+      title: ad.title,
+      downloadLink: ad.downloadLink,
+      adBoardId: ad.adBoardId,
+      adDisplayStartDate: new Date(ad.adDisplayStartDate),
+      adDisplayEndDate: new Date(ad.adDisplayEndDate),
+      adDuration: ad.adDuration,
+      thumbnailUrl: ad.thumbnailUrl,
+      remarks: ad.remarks,
+      videoUrl: ad.videoUrl,
       createdById: createdUser.id,
-      remarks,
-      videoUrl,
     },
   });
 };
 
+// Delete an Ad by ID
 export const deleteAd = async (id: string, userId: string) => {
   const ad = await prisma.ad.findUnique({
-    where: {
-      id,
-    },
+    where: { id },
   });
 
   if (!ad) {
-    throw new Error("Ad not found ");
+    throw new Error("Ad not found");
   }
 
   if (ad.createdById !== userId) {
-    throw new Error("You are not authorized to delete this ad");
+    throw new Error("Unauthorized to delete this ad");
   }
 
-  return await prisma.ad.delete({
-    where: {
-      id,
-    },
-  });
+  return await prisma.ad.delete({ where: { id } });
 };
