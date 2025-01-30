@@ -103,7 +103,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
   };
 
   return (
-    <div className="flex flex-col items-center pb-12">
+    <div className="flex flex-col items-center pb-12 space-y-6">
       {loading && <Loader isVisible={true} />}
       {Object.entries(groupedAds).map(([boardName, boardAds]) => {
         const location = boardAds[0].adBoard.location;
@@ -207,7 +207,7 @@ const AdBoardList: React.FC<AdBoardListProps> = ({ ads, reloadAds }) => {
         <div className="z-50 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md">
             <h3 className="text-xl font-semibold mb-4">Confirm Delete</h3>
-            <p>Are you sure you want to delete this creative ?</p>
+            <p>Are you sure you want to delete this creative?</p>
             <div className="flex justify-end mt-4 space-x-2">
               <button
                 onClick={() => setIsDeleteConfirmationOpen(false)}
