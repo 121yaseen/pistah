@@ -10,7 +10,7 @@ export const createAdBoardAsync = async (
     data: {
       boardName: adBoard.boardName,
       location: adBoard.location,
-      description: adBoard.description, // Added description field
+      description: adBoard.description,
       boardType: adBoard.boardType,
       dailyRate: adBoard.dailyRate,
       dimensions: adBoard.dimensions,
@@ -18,39 +18,56 @@ export const createAdBoardAsync = async (
       operationalHours: adBoard.operationalHours,
       ownerContact: adBoard.ownerContact,
       lastMaintenanceDate: adBoard.lastMaintenanceDate,
-      imageUrl: JSON.stringify(adBoard.imageUrl), // Store as JSON string
-      ownerId: createdUser.id, // Updated field
+      imageUrl: JSON.stringify(adBoard.imageUrl),
+      ownerId: createdUser.id,
     },
   });
 };
 
 // Fetch all Ad Boards owned by a user
 export const getAdBoards = async (createdBy: User) => {
-  return await prisma.adBoard.findMany({
+  const adBoards = await prisma.adBoard.findMany({
     where: {
-      ownerId: createdBy.id, // Updated field
+      ownerId: createdBy.id,
     },
     include: {
-      ads: true, // Include related ads
-      bookings: true, // Include related bookings
+      bookings: {
+        include: {
+          ad: {
+            include: {
+              createdUser: true,
+            },
+          },
+        },
+      },
     },
   });
+
+  // Transform adBoards to match the old AdBoard structure
+  const transformedAdBoards = adBoards.map((adBoard) => ({
+    ...adBoard,
+    ads: adBoard.bookings.map((booking) => ({
+      ...booking.ad,
+      adDisplayStartDate: booking.startDate,
+      adDisplayEndDate: booking.endDate,
+    })),
+  }));
+
+  return transformedAdBoards;
 };
 
-// Delete an Ad Board and all related Ads and Bookings
+// Delete an Ad Board and all related Bookings
 export const deleteAdBoardAsync = async (id: string, user: User) => {
+  // Delete associated bookings first
   await prisma.booking.deleteMany({
     where: { adBoardId: id },
   });
 
-  await prisma.ad.deleteMany({
-    where: { adBoardId: id },
-  });
-
+  // Then delete the ad board
   return await prisma.adBoard.delete({
     where: {
       id,
-      ownerId: user.id, // Updated field
+      ownerId: user.id,
     },
   });
 };
@@ -60,12 +77,12 @@ export const updateAdBoardAsync = async (adBoard: AdBoard, user: User) => {
   const result = await prisma.adBoard.updateMany({
     where: {
       id: adBoard.id,
-      ownerId: user.id, // Updated field
+      ownerId: user.id,
     },
     data: {
       boardName: adBoard.boardName,
       location: adBoard.location,
-      description: adBoard.description, // Added field
+      description: adBoard.description,
       boardType: adBoard.boardType,
       dailyRate: adBoard.dailyRate,
       dimensions: adBoard.dimensions,
@@ -73,7 +90,7 @@ export const updateAdBoardAsync = async (adBoard: AdBoard, user: User) => {
       operationalHours: adBoard.operationalHours,
       ownerContact: adBoard.ownerContact,
       lastMaintenanceDate: adBoard.lastMaintenanceDate,
-      imageUrl: JSON.stringify(adBoard.imageUrl), // Store as JSON string
+      imageUrl: JSON.stringify(adBoard.imageUrl),
     },
   });
 

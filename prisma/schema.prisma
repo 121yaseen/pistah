@@ -43,30 +43,24 @@ enum Role {
  * - Represents advertisements created by Advertisers (DSP) or Board Owners (SSP).
  */
 model Ad {
-  id                 String   @id @default(uuid())
-  createdById        String
-  title              String
-  downloadLink       String?
-  thumbnailUrl       String?
-  adBoardId          String
-  adDisplayStartDate DateTime
-  adDisplayEndDate   DateTime
-  adDuration         String
-  remarks            String
-  videoUrl           String   @default("")
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id           String   @id @default(uuid())
+  createdById  String
+  title        String
+  downloadLink String?
+  thumbnailUrl String?
+  adDuration   String
+  remarks      String
+  videoUrl     String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relations
   createdUser User      @relation("UserAds", fields: [createdById], references: [id])
-  adBoard     AdBoard   @relation("AdToAdBoard", fields: [adBoardId], references: [id], onDelete: Cascade)
   bookings    Booking[]
+  adBoardId   String?
 
   @@index([title])
-  @@index([adBoardId])
   @@index([createdById])
-  @@index([adDisplayStartDate])
-  @@index([adDisplayEndDate])
 }
 
 /**
@@ -92,7 +86,6 @@ model AdBoard {
 
   // Relations
   owner               User                @relation("UserAdBoards", fields: [ownerId], references: [id])
-  ads                 Ad[]                @relation("AdToAdBoard")
   bookings            Booking[]           @relation("AdBoardBookings")
   boardAvailabilities BoardAvailability[] @relation("AdBoardAvailabilities")
 

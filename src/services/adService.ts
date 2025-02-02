@@ -1,4 +1,9 @@
-import { createAdAsync, getAds, deleteAd } from "@/repositories/adRepository";
+import {
+  createAdAsync,
+  getAds,
+  deleteAd,
+  updateAd,
+} from "@/repositories/adRepository";
 import { getAdBoards } from "@/repositories/adBoardRepository";
 import { Ad, User } from "@/types/ad";
 
@@ -15,17 +20,24 @@ export const fetchFilteredAds = async (
   const adBoardMap = new Map(adBoards.map((board) => [board.id, board]));
 
   const filteredAds = ads
-    .filter((ad) => adBoardMap.has(ad.adBoardId))
-    .map((ad) => ({ ...ad, adBoard: adBoardMap.get(ad.adBoardId) }));
+    .filter((ad) => ad.adBoard && adBoardMap.has(ad.adBoard.id))
+    .map((ad) => ({ ...ad, adBoard: adBoardMap.get(ad.adBoard.id) }));
 
   return filteredAds;
 };
 
 export const createAd = async (adData: Ad, createdUser: User) => {
-  console.log(adData);
-  await createAdAsync(adData, createdUser);
+  return await createAdAsync(adData, createdUser);
 };
 
 export const deleteAdService = async (id: string, userId: string) => {
-  await deleteAd(id, userId);
+  return await deleteAd(id, userId);
+};
+
+export const updateAdService = async (
+  id: string,
+  adData: Partial<Ad>,
+  userId: string
+) => {
+  return await updateAd(id, adData, userId);
 };

@@ -160,7 +160,6 @@ export default async function handler(
     } else if (req.method === "GET") {
       try {
         const adBoards = await getAdBoards(user);
-        console.log("adBoards", adBoards);
         return res.status(200).json(
           adBoards.map((adBoard) => ({
             ...adBoard,
