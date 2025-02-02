@@ -11,7 +11,6 @@ import InventoryIcon from "@/icons/inventoryIcon";
 import DashboardIcon from "@/icons/dashboardIcon";
 import { signOut, useSession } from "next-auth/react";
 import CreateAdIcon from "@/icons/createAdIcon";
-import PistahIcon from "@/icons/pistahIcon";
 
 type HeaderProps = {
   navLinks?: { href: string; label: string }[];
@@ -83,16 +82,16 @@ export default function Header({ navLinks = [] }: HeaderProps) {
   };
 
   useEffect(() => {
-      if (isModalOpen) {
-          document.body.style.overflow = "hidden";
-      } else {
-          document.body.style.overflow = "";
-      }
-  
-      // Cleanup when the component is unmounted
-      return () => {
-          document.body.style.overflow = "";
-      };
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    // Cleanup when the component is unmounted
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isModalOpen]);
 
   return (
@@ -100,7 +99,7 @@ export default function Header({ navLinks = [] }: HeaderProps) {
       {/* Left Section: Logo */}
       <div className="flex items-center">
         <Link href="/" className="flex items-center">
-        <PistahIcon/>
+          <Image src={"/pistah.jpeg"} alt={""} width={"140"} height={"100"} />
         </Link>
       </div>
 
@@ -252,7 +251,13 @@ export default function Header({ navLinks = [] }: HeaderProps) {
         )}
       </div>
       {/* Create Ad Modal */}
-      {isModalOpen && <CreateAdModal onClose={() => setIsModalOpen(false)} editMode={false} adToEdit={null} />}
+      {isModalOpen && (
+        <CreateAdModal
+          onClose={() => setIsModalOpen(false)}
+          editMode={false}
+          adToEdit={null}
+        />
+      )}
     </header>
   );
 }
